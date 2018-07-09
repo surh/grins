@@ -24,5 +24,5 @@ tools are optimal for the specific language.
 
 List of directories at the root of the repositories.
 
-	detection	Code an scripts to test methods to detect grist
+detection | Code an scripts to test methods to detect grist
 
