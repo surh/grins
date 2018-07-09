@@ -22,7 +22,9 @@ tools are optimal for the specific language.
 
 ## Directories
 
-List of directories at the root of the repositories.
+List of directories at the root of the repositories. Modify this
+section whenever a new directory is added to the root.
 
-detection | Code an scripts to test methods to detect grist
-
+| Directory | Description                                     |
+| --------- | ----------------------------------------------- |
+| detection | Code an scripts to test methods to detect grist |
