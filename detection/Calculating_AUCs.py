@@ -209,9 +209,9 @@ if __name__ == "__main__":
 
 
     # Calculating skewsand plotting them; calculating AUCs and plotting them
-    print files
+    print(files)
     for item in files:
-        print "Working on file",item
+        print("Working on file",item)
         record = SeqIO.read(mypath+item, "gb")
         input_DNA=record.seq
         record_name=record.name
