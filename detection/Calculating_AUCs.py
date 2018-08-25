@@ -192,7 +192,7 @@ def autolabel(series):
 
 if __name__ == "__main__":
     # Making a list of annotated GenBank files
-    mypath = "/Users/aleks/Google_Drive/Postdoc/Projects/GRINS/GRINS_detection/Annotated_files/"
+    mypath = "input/"
     files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
     # print files
     # files_test=files[0:2]
