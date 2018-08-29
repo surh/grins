@@ -5,21 +5,22 @@ from os.path import isfile, join
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import matplotlib.colors as clr
+# import matplotlib.colors as clr
 import seaborn as sns
 from Bio import SeqIO
-from Bio.Seq import Seq
-from Bio.SeqRecord import SeqRecord
-from Bio.Alphabet import IUPAC
-from Bio.SeqFeature import SeqFeature,FeatureLocation
+# from Bio.Seq import Seq
+# from Bio.SeqRecord import SeqRecord
+# from Bio.Alphabet import IUPAC
+# from Bio.SeqFeature import SeqFeature,FeatureLocation
 from sklearn import metrics
 import argparse
 
-sns.set(style="whitegrid",font_scale=1.5)
+
+sns.set(style="whitegrid", font_scale=1.5)
 font = {'family': 'sans-serif',
-        'color':  'black',
+        'color': 'black',
         'weight': 'normal',
-        'size': 20, 'rotation':0,
+        'size': 20, 'rotation': 0,
         'verticalalignment': 'bottom',
         'horizontalalignment': 'left'
         }
@@ -27,13 +28,14 @@ font = {'family': 'sans-serif',
 
 # Calculating skews
 def GC_skew(string):
-    G_number=string.count("G")
-    C_number=string.count("C")
-    if G_number+C_number!=0:
-        skew=float(G_number-C_number)/float(G_number+C_number)
+    G_number = string.count("G")
+    C_number = string.count("C")
+    if G_number+C_number != 0:
+        skew = float(G_number-C_number)/float(G_number+C_number)
     else:
-        skew=0
+        skew = 0
     return skew
+
 
 def TA_skew(string):
     A_number=string.count("A")
@@ -45,15 +47,17 @@ def TA_skew(string):
     return skew
 
 
-# Finding places where each skew crosses the x axis, and finding regions of overlap
+# Finding places where each skew crosses the x axis,
+# and finding regions of overlap
 def x_crossing(GCskew_array,TAskew_array,step,length_threshold):
-    # Defining the threshold (e.g. 500/step means that we detect intervals of 500bp or more)
+    # Defining the threshold (e.g. 500/step means that we
+    # detect intervals of 500bp or more)
     interval_threshold=np.round(length_threshold/step,0)
     # Finding positions where GC skew values cross the x axis
-    GCskew_x_crossing_pos=[]
-    GCskew_x_crossing_neg=[]
-    for i in range(0,len(GCskew_array)-1):
-        if (GCskew_array[i]>=0 and GCskew_array[i+1]<0):
+    GCskew_x_crossing_pos = []
+    GCskew_x_crossing_neg = []
+    for i in range(0, len(GCskew_array)-1):
+        if (GCskew_array[i] >= 0 and GCskew_array[i+1] < 0):
             GCskew_x_crossing_neg.append(i+1)
         elif (GCskew_array[i]<0 and GCskew_array[i+1]>=0):
             GCskew_x_crossing_pos.append(i+1)
@@ -61,21 +65,26 @@ def x_crossing(GCskew_array,TAskew_array,step,length_threshold):
     significant_GCskew_intervals_pos=[]
     significant_GCskew_intervals_neg=[]
     # case when first crossing is "pos"
-    if GCskew_x_crossing_pos[0]<GCskew_x_crossing_neg[0]:
-        for j in range(0,len(GCskew_x_crossing_neg)):
-            if GCskew_x_crossing_neg[j]-GCskew_x_crossing_pos[j]>=interval_threshold:
-                significant_GCskew_intervals_pos.append((GCskew_x_crossing_pos[j],GCskew_x_crossing_neg[j]))
-        for j in range(1,len(GCskew_x_crossing_pos)):
-            if GCskew_x_crossing_pos[j]-GCskew_x_crossing_neg[j-1]>=interval_threshold:
-                significant_GCskew_intervals_neg.append((GCskew_x_crossing_neg[j-1],GCskew_x_crossing_pos[j]))
+    if GCskew_x_crossing_pos[0] < GCskew_x_crossing_neg[0]:
+        for j in range(0, len(GCskew_x_crossing_neg)):
+            if GCskew_x_crossing_neg[j]-GCskew_x_crossing_pos[j] >= interval_threshold:
+                significant_GCskew_intervals_pos.append((GCskew_x_crossing_pos[j],
+                                                         GCskew_x_crossing_neg[j]))
+        for j in range(1, len(GCskew_x_crossing_pos)):
+            if GCskew_x_crossing_pos[j]-GCskew_x_crossing_neg[j-1] >= interval_threshold:
+                significant_GCskew_intervals_neg.append((GCskew_x_crossing_neg[j-1],
+                                                         GCskew_x_crossing_pos[j]))
     # case when first crossing is "neg"
     elif GCskew_x_crossing_neg[0]<GCskew_x_crossing_pos[0]:
         for j in range(0,len(GCskew_x_crossing_pos)):
-            if GCskew_x_crossing_pos[j]-GCskew_x_crossing_neg[j]>=interval_threshold:
-                significant_GCskew_intervals_neg.append((GCskew_x_crossing_neg[j],GCskew_x_crossing_pos[j]))
+            if GCskew_x_crossing_pos[j]-GCskew_x_crossing_neg[j] >= interval_threshold:
+                significant_GCskew_intervals_neg.append((GCskew_x_crossing_neg[j],
+                                                         GCskew_x_crossing_pos[j]))
         for j in range(1,len(GCskew_x_crossing_neg)):
-            if GCskew_x_crossing_neg[j]-GCskew_x_crossing_pos[j-1]>=interval_threshold:
-                significant_GCskew_intervals_pos.append((GCskew_x_crossing_pos[j-1],GCskew_x_crossing_neg[j]))
+            if GCskew_x_crossing_neg[j]-GCskew_x_crossing_pos[j-1] >= interval_threshold:
+                significant_GCskew_intervals_pos.append((GCskew_x_crossing_pos[j-1],
+                                                         GCskew_x_crossing_neg[j]))
+
     # Finding positions where TA skew values cross the x axis
     TAskew_x_crossing_pos=[]
     TAskew_x_crossing_neg=[]
@@ -84,9 +93,12 @@ def x_crossing(GCskew_array,TAskew_array,step,length_threshold):
             TAskew_x_crossing_neg.append(i+1)
         elif (TAskew_array[i]<0 and TAskew_array[i+1]>=0):
             TAskew_x_crossing_pos.append(i+1)
-    # Finding intervals of 500bp or longer, where the GC skew sign does not change
+
+    # Finding intervals of 500bp or longer,
+    # where the GC skew sign does not change
     significant_TAskew_intervals_pos=[]
     significant_TAskew_intervals_neg=[]
+
     # case when first crossing is "pos"
     if TAskew_x_crossing_pos[0]<TAskew_x_crossing_neg[0]:
         for j in range(0,len(TAskew_x_crossing_neg)):
@@ -103,12 +115,14 @@ def x_crossing(GCskew_array,TAskew_array,step,length_threshold):
         for j in range(1,len(TAskew_x_crossing_neg)):
             if TAskew_x_crossing_neg[j]-TAskew_x_crossing_pos[j-1]>=interval_threshold:
                 significant_TAskew_intervals_pos.append((TAskew_x_crossing_pos[j-1],TAskew_x_crossing_neg[j]))
-    # Finding intervals where GC and TA skews are both of positive sign, and overlap over 500bp or longer
+
+    # Finding intervals where GC and TA skews are both of positive sign,
+    # and overlap over 500bp or longer
     overlapping_pos_intervals=[]
     for k1 in range(0,len(significant_GCskew_intervals_pos)):
         for k2 in range(0,len(significant_TAskew_intervals_pos)):
             # case where the start of TA region is within the GC region
-            if (significant_GCskew_intervals_pos[k1][0]<=significant_TAskew_intervals_pos[k2][0]) and (significant_GCskew_intervals_pos[k1][1]>significant_TAskew_intervals_pos[k2][0]):
+            if (significant_GCskew_intervals_pos[k1][0] <= significant_TAskew_intervals_pos[k2][0]) and (significant_GCskew_intervals_pos[k1][1]>significant_TAskew_intervals_pos[k2][0]):
                 interval_start=significant_TAskew_intervals_pos[k2][0]
                 interval_end=min(significant_GCskew_intervals_pos[k1][1],significant_TAskew_intervals_pos[k2][1])
                 if interval_end-interval_start>=interval_threshold:
@@ -119,6 +133,7 @@ def x_crossing(GCskew_array,TAskew_array,step,length_threshold):
                 interval_end=min(significant_TAskew_intervals_pos[k2][1],significant_GCskew_intervals_pos[k1][1])
                 if interval_end-interval_start>=interval_threshold:
                     overlapping_pos_intervals.append((interval_start,interval_end))
+
     # Finding intervals where GC and TA skews are both of negative sign, and overlap over 500bp or longer
     overlapping_neg_intervals=[]
     for k1 in range(0,len(significant_GCskew_intervals_neg)):
@@ -140,6 +155,8 @@ def x_crossing(GCskew_array,TAskew_array,step,length_threshold):
 
 # Plotting figure of overlapping regions
 def save_fig_overlap(folder_name,record_name,GCskew_array,TAskew_array,overlapping_pos_intervals,overlapping_neg_intervals):
+    """Plotting figure of overlapping regions"""
+
     a1=range(0,len(GCskew_array))
     plt.figure(1)
     fig,ax1=plt.subplots(figsize=(10, 4))
@@ -159,8 +176,12 @@ def save_fig_overlap(folder_name,record_name,GCskew_array,TAskew_array,overlappi
     plt.savefig(folder_name+"/Figures/"+record_name+"_found_intervals.png")
     plt.close()
 
+
 # Plotting figure of predicted GRINS regions, according to AUCs
-def save_fig_AUC(folder_name,record_name,GCskew_array,TAskew_array,predicted_GRINS):
+def save_fig_AUC(folder_name, record_name, GCskew_array,
+                 TAskew_array, predicted_GRINS):
+    """Plotting figure of predicted GRINS regions, according to AUCs"""
+
     a1=range(0,len(GCskew_array))
     plt.figure(1)
     fig,ax1=plt.subplots(figsize=(10, 4))
@@ -169,9 +190,12 @@ def save_fig_AUC(folder_name,record_name,GCskew_array,TAskew_array,predicted_GRI
     ax1.grid(False)
     plt.plot(a1,GCskew_array,color="blue",linewidth=0.5)
     plt.plot(a1,TAskew_array,color="green",linewidth=0.5)
-    plt.plot([0,len(GCskew_array)],[0,0],color="black",linewidth=0.5)
+    plt.plot([0, len(GCskew_array)], [0, 0], color="black", linewidth=0.5)
     for i in range(0,len(predicted_GRINS)):
-        rect = patches.Rectangle((predicted_GRINS[i][0],1),predicted_GRINS[i][1]-predicted_GRINS[i][0],-2,linewidth=1,edgecolor='gray',facecolor='gray', alpha=0.3)
+        rect = patches.Rectangle((predicted_GRINS[i][0],1),
+                                 predicted_GRINS[i][1] - predicted_GRINS[i][0],
+                                 -2, linewidth=1, edgecolor='gray',
+                                 facecolor='gray', alpha=0.3)
         ax1.add_patch(rect)
     plt.legend(["GC skew","TA skew"],loc=3)
     plt.savefig(folder_name+"/Figures/"+record_name+"_found_GRINSs.png")
@@ -180,11 +204,14 @@ def save_fig_AUC(folder_name,record_name,GCskew_array,TAskew_array,predicted_GRI
 
 # Adding values to bar graphs
 def autolabel(series):
+    """Adding values to bar graphs"""
+
     for value in series:
         height = np.round(value.get_height(),2)
         ax.text(value.get_x() + value.get_width()/2., 1.05*height,
                 str(height),
                 ha='center', va='bottom')
+
 
 def AUC_cutoff(overlapping_interval,AUC_threshold):
     global predicted_GRINS
@@ -205,21 +232,28 @@ if __name__ == "__main__":
     # print files
     # files_test=files[0:2]
 
-    # Setting parameters 
+    # Setting parameters
     parser=argparse.ArgumentParser(description="User-specified parameters for GRINS detection")
     # Size of the sliding window
-    parser.add_argument('-w',"--window",type=int, help="window size for calculating skews", default=150)
+    parser.add_argument('-w',"--window",type=int,
+                        help="window size for calculating skews", default=150)
     # Size of the step
-    parser.add_argument('-s',"--step",type=int, help="step size for calculating skews", default=30)
+    parser.add_argument('-s',"--step",type=int,
+                        help="step size for calculating skews", default=30)
     # Threshold for minimal region of non-interrupted skew
-    parser.add_argument('-lent',"--length_threshold",type=float, help="threshold for fragment length", default=250)
+    parser.add_argument('-lent', "--length_threshold",
+                        type=float,
+                        help="threshold for fragment length", default=250)
     # Threshold for AUC-to-length ratio:
-    parser.add_argument('-AUCt ',"--AUC_threshold",type=float, help="threshold for AUC-to-length ratio", default=0.1)
+    parser.add_argument('-AUCt ', "--AUC_threshold", type=float,
+                        help="threshold for AUC-to-length ratio", default=0.1)
     # Folder name:
-    parser.add_argument('-name ',"--folder_name",type=str, default="Results", help="name of the folder to store files")
+    parser.add_argument('-name ', "--folder_name", type=str,
+                        default="Results",
+                        help="name of the folder to store files")
 
-    args=parser.parse_args()
-    
+    args = parser.parse_args()
+
     if args.folder_name=="Results":
         folder_name="./Window{}_step{}_length{}_AUC{}/".format(args.window,args.step,args.length_threshold,args.AUC_threshold)
     else:
@@ -233,11 +267,9 @@ if __name__ == "__main__":
     TP=0
     TN=0
 
-
-
     with open(folder_name+"Detection_results.txt",'w') as results_file:
         results_file.write("Detection with sliding window of "+str(args.window)+" bp, step of "+str(args.step)+", region threshold of "+str(args.length_threshold)+" bp and AUC-to-length threshold of "+str(args.AUC_threshold)+"\n")
-        
+
         # Calculating skews and plotting them; calculating AUCs and plotting them
         print(files)
         for item in files:
@@ -273,7 +305,7 @@ if __name__ == "__main__":
 
             # Showing AUCs
             save_fig_AUC(folder_name,record_name,GCskew_array,TAskew_array,predicted_GRINS)
-            
+
             # Recording annotated GRINSs
             for item in predicted_GRINS:
                 results_file.write(str(item[0])+"-"+str(item[1])+"\n")
@@ -281,7 +313,7 @@ if __name__ == "__main__":
 
             #  Generating a list of regions with annotated GRINS
             annotated_GRINS=[]
-            
+
             results_file.write("Annotated GRINSs:\n")
             for feature in feature_list:
                 if feature.type=="GRINS":
@@ -327,4 +359,3 @@ if __name__ == "__main__":
         results_file2.write("sensitivity "+str(np.round(sensitivity,3))+"\n")
         results_file2.write("specificity "+str(np.round(specificity,3))+"\n")
         results_file2.write("precision "+str(np.round(precision,3))+"\n")
-    
