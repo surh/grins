@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 from os import listdir
 from os.path import isfile, join
@@ -207,13 +208,13 @@ if __name__ == "__main__":
     # Setting parameters 
     parser=argparse.ArgumentParser(description="User-specified parameters for GRINS detection")
     # Size of the sliding window
-    parser.add_argument('-w',"--window",type=int, help="window size for calculating skews")
+    parser.add_argument('-w',"--window",type=int, help="window size for calculating skews", default=150)
     # Size of the step
-    parser.add_argument('-s',"--step",type=int, help="step size for calculating skews")
+    parser.add_argument('-s',"--step",type=int, help="step size for calculating skews", default=30)
     # Threshold for minimal region of non-interrupted skew
-    parser.add_argument('-lent',"--length_threshold",type=float, help="threshold for fragment length")
+    parser.add_argument('-lent',"--length_threshold",type=float, help="threshold for fragment length", default=250)
     # Threshold for AUC-to-length ratio:
-    parser.add_argument('-AUCt ',"--AUC_threshold",type=float, help="threshold for AUC-to-length ratio")
+    parser.add_argument('-AUCt ',"--AUC_threshold",type=float, help="threshold for AUC-to-length ratio", default=0.1)
     # Folder name:
     parser.add_argument('-name ',"--folder_name",type=str, default="Results", help="name of the folder to store files")
 
@@ -240,7 +241,7 @@ if __name__ == "__main__":
         # Calculating skews and plotting them; calculating AUCs and plotting them
         print(files)
         for item in files:
-            print "Working on file",item
+            print("Working on file",item)
             record = SeqIO.read(mypath+item, "gb")
             input_DNA=record.seq
             record_name=record.name
