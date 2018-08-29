@@ -12,7 +12,7 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Alphabet import IUPAC
 from Bio.SeqFeature import SeqFeature,FeatureLocation
 from sklearn import metrics
-import pandas as pd
+import argparse
 
 sns.set(style="whitegrid",font_scale=1.5)
 font = {'family': 'sans-serif',
@@ -22,11 +22,7 @@ font = {'family': 'sans-serif',
         'verticalalignment': 'bottom',
         'horizontalalignment': 'left'
         }
-# Minimal region of non-interrupted skew
-region_length=250
 
-# Threshold for AUC-to-length ratio:
-threshold_AUC=0.1
 
 # Calculating skews
 def GC_skew(string):
@@ -49,9 +45,9 @@ def TA_skew(string):
 
 
 # Finding places where each skew crosses the x axis, and finding regions of overlap
-def x_crossing(GCskew_array,TAskew_array,step,region_length):
+def x_crossing(GCskew_array,TAskew_array,step,length_threshold):
     # Defining the threshold (e.g. 500/step means that we detect intervals of 500bp or more)
-    interval_threshold=np.round(region_length/step,0)
+    interval_threshold=np.round(length_threshold/step,0)
     # Finding positions where GC skew values cross the x axis
     GCskew_x_crossing_pos=[]
     GCskew_x_crossing_neg=[]
@@ -142,7 +138,7 @@ def x_crossing(GCskew_array,TAskew_array,step,region_length):
 
 
 # Plotting figure of overlapping regions
-def save_fig_overlap(record_name,GCskew_array,TAskew_array,overlapping_pos_intervals,overlapping_neg_intervals,parameter_set):
+def save_fig_overlap(folder_name,record_name,GCskew_array,TAskew_array,overlapping_pos_intervals,overlapping_neg_intervals):
     a1=range(0,len(GCskew_array))
     plt.figure(1)
     fig,ax1=plt.subplots(figsize=(10, 4))
@@ -159,11 +155,11 @@ def save_fig_overlap(record_name,GCskew_array,TAskew_array,overlapping_pos_inter
         rect = patches.Rectangle((overlapping_neg_intervals[i][0],1),overlapping_neg_intervals[i][1]-overlapping_neg_intervals[i][0],-2,linewidth=1,edgecolor='pink',facecolor='pink', alpha=0.3)
         ax1.add_patch(rect)
     plt.legend(["GC skew","TA skew"],loc=3)
-    plt.savefig("./Figs_overlapping_regions/"+record_name+"_found_skew_intervals_window"+str(parameter_set[0])+"_step"+str(parameter_set[1])+".png")
+    plt.savefig(folder_name+"/Figures/"+record_name+"_found_intervals.png")
     plt.close()
 
 # Plotting figure of predicted GRINS regions, according to AUCs
-def save_fig_AUC(record_name,GCskew_array,TAskew_array,predicted_GRINS,parameter_set):
+def save_fig_AUC(folder_name,record_name,GCskew_array,TAskew_array,predicted_GRINS):
     a1=range(0,len(GCskew_array))
     plt.figure(1)
     fig,ax1=plt.subplots(figsize=(10, 4))
@@ -177,7 +173,7 @@ def save_fig_AUC(record_name,GCskew_array,TAskew_array,predicted_GRINS,parameter
         rect = patches.Rectangle((predicted_GRINS[i][0],1),predicted_GRINS[i][1]-predicted_GRINS[i][0],-2,linewidth=1,edgecolor='gray',facecolor='gray', alpha=0.3)
         ax1.add_patch(rect)
     plt.legend(["GC skew","TA skew"],loc=3)
-    plt.savefig("./Figs_detected_GRINS/"+record_name+"_found_GRINS_window"+str(parameter_set[0])+"_step"+str(parameter_set[1])+".png")
+    plt.savefig(folder_name+"/Figures/"+record_name+"_found_GRINSs.png")
     plt.close()
 
 
@@ -189,6 +185,17 @@ def autolabel(series):
                 str(height),
                 ha='center', va='bottom')
 
+def AUC_cutoff(overlapping_interval,AUC_threshold):
+    global predicted_GRINS
+    interval_length=float(overlapping_interval[1]-overlapping_interval[0])
+    x=range(overlapping_interval[0],overlapping_interval[1])
+    y_GC=GCskew_array[overlapping_interval[0]:overlapping_interval[1]]
+    y_TA=TAskew_array[overlapping_interval[0]:overlapping_interval[1]]
+    AUC_GCskew=abs(metrics.auc(x,y_GC))
+    AUC_TAskew=abs(metrics.auc(x,y_TA))
+    if AUC_GCskew/interval_length>=AUC_threshold and AUC_TAskew/interval_length>=AUC_threshold:
+        predicted_GRINS.append(overlapping_interval)
+
 
 if __name__ == "__main__":
     # Making a list of annotated GenBank files
@@ -197,82 +204,91 @@ if __name__ == "__main__":
     # print files
     # files_test=files[0:2]
 
-    # Setting parameters for calculating skews
-    parameters=[(150,30),(50,10),(30,30),(300,50)]
+    # Setting parameters 
+    parser=argparse.ArgumentParser(description="User-specified parameters for GRINS detection")
+    # Size of the sliding window
+    parser.add_argument('-w',"--window",type=int, help="window size for calculating skews")
+    # Size of the step
+    parser.add_argument('-s',"--step",type=int, help="step size for calculating skews")
+    # Threshold for minimal region of non-interrupted skew
+    parser.add_argument('-lent',"--length_threshold",type=float, help="threshold for fragment length")
+    # Threshold for AUC-to-length ratio:
+    parser.add_argument('-AUCt ',"--AUC_threshold",type=float, help="threshold for AUC-to-length ratio")
+    # Folder name:
+    parser.add_argument('-name ',"--folder_name",type=str, default="Results", help="name of the folder to store files")
+
+    args=parser.parse_args()
+    
+    if args.folder_name=="Results":
+        folder_name="./Window{}_step{}_length{}_AUC{}/".format(args.window,args.step,args.length_threshold,args.AUC_threshold)
+    else:
+        folder_name="./{}/".format(args.folder_name)
+    os.mkdir(folder_name)
+    os.mkdir(folder_name+"/Figures/")
+
+    # Variables and vectors to keep results
+    FP=0
+    FN=0
+    TP=0
+    TN=0
 
 
-    # Vectors to keep results
-    False_pos=[0 for a in range(0,len(parameters))]
-    False_neg=[0 for a in range(0,len(parameters))]
-    True_pos=[0 for a in range(0,len(parameters))]
-    True_neg=[0 for a in range(0,len(parameters))]
 
+    with open(folder_name+"Detection_results.txt",'w') as results_file:
+        results_file.write("Detection with sliding window of "+str(args.window)+" bp, step of "+str(args.step)+", region threshold of "+str(args.length_threshold)+" bp and AUC-to-length threshold of "+str(args.AUC_threshold)+"\n")
+        
+        # Calculating skews and plotting them; calculating AUCs and plotting them
+        print(files)
+        for item in files:
+            print "Working on file",item
+            record = SeqIO.read(mypath+item, "gb")
+            input_DNA=record.seq
+            record_name=record.name
+            feature_list=record.features
+            results_file.write(record_name+"\n")
+            results_file.write("Detected GRINSs:\n")
 
-    # Calculating skewsand plotting them; calculating AUCs and plotting them
-    print(files)
-    for item in files:
-        print("Working on file",item)
-        record = SeqIO.read(mypath+item, "gb")
-        input_DNA=record.seq
-        record_name=record.name
-        feature_list=record.features
-        n=-1
-
-        for parameter_set in parameters:
-            n+=1
-            window=parameter_set[0]
-            step=parameter_set[1]
+            #Calculating skews
             GCskew_array=[]
             TAskew_array=[]
             ATskew_array=[]
-
-            #Calculating skews
-            for i in range(0,len(input_DNA),step):
-                fragment=input_DNA[i:i+window]
+            for i in range(0,len(input_DNA),args.step):
+                fragment=input_DNA[i:i+args.window]
                 GCskew_array.append(GC_skew(fragment))
                 TAskew_array.append(TA_skew(fragment))
 
             # Finding regions in which to calculate AUCs:
             # regions of >=500bp where both GC and TA skews are of the same sign (either both positive, or both negative)
-            overlapping_pos_intervals,overlapping_neg_intervals=x_crossing(GCskew_array,TAskew_array,step,region_length)
-            # save_fig_overlap(record_name,GCskew_array,TAskew_array,overlapping_pos_intervals,overlapping_neg_intervals,parameter_set)
+            overlapping_pos_intervals,overlapping_neg_intervals=x_crossing(GCskew_array,TAskew_array,args.step,args.length_threshold)
+            save_fig_overlap(folder_name,record_name,GCskew_array,TAskew_array,overlapping_pos_intervals,overlapping_neg_intervals)
 
             # Finding regions where AUC to interval length is larger than a threshold
             predicted_GRINS=[]
             # print parameter_set
             for i in range(0,len(overlapping_pos_intervals)):
-                interval_length=float(overlapping_pos_intervals[i][1]-overlapping_pos_intervals[i][0])
-                x=range(overlapping_pos_intervals[i][0],overlapping_pos_intervals[i][1])
-                y_GC=GCskew_array[overlapping_pos_intervals[i][0]:overlapping_pos_intervals[i][1]]
-                y_TA=TAskew_array[overlapping_pos_intervals[i][0]:overlapping_pos_intervals[i][1]]
-                AUC_GCskew=metrics.auc(x,y_GC)
-                AUC_TAskew=metrics.auc(x,y_TA)
-                if AUC_GCskew/interval_length>threshold_AUC and AUC_TAskew/interval_length>threshold_AUC:
-                    predicted_GRINS.append(overlapping_pos_intervals[i])
+                AUC_cutoff(overlapping_pos_intervals[i],args.AUC_threshold)
             for i in range(0,len(overlapping_neg_intervals)):
-                interval_length=float(overlapping_neg_intervals[i][1]-overlapping_neg_intervals[i][0])
-                x=range(overlapping_neg_intervals[i][0],overlapping_neg_intervals[i][1])
-                y_GC=GCskew_array[overlapping_neg_intervals[i][0]:overlapping_neg_intervals[i][1]]
-                y_TA=TAskew_array[overlapping_neg_intervals[i][0]:overlapping_neg_intervals[i][1]]
-                AUC_GCskew=metrics.auc(x,y_GC)
-                AUC_TAskew=metrics.auc(x,y_TA)
-                if AUC_GCskew/interval_length>threshold_AUC and AUC_TAskew/interval_length>threshold_AUC:
-                    predicted_GRINS.append(overlapping_neg_intervals[i])
+                AUC_cutoff(overlapping_neg_intervals[i],args.AUC_threshold)
 
             # Showing AUCs
-            # save_fig_AUC(record_name,GCskew_array,TAskew_array,predicted_GRINS,parameter_set)
+            save_fig_AUC(folder_name,record_name,GCskew_array,TAskew_array,predicted_GRINS)
+            
+            # Recording annotated GRINSs
+            for item in predicted_GRINS:
+                results_file.write(str(item[0])+"-"+str(item[1])+"\n")
+
 
             #  Generating a list of regions with annotated GRINS
             annotated_GRINS=[]
+            
+            results_file.write("Annotated GRINSs:\n")
             for feature in feature_list:
                 if feature.type=="GRINS":
                     annotated_GRINS.append((np.round(feature.location.start/30,0),np.round(feature.location.end/30,0)))
+                    results_file.write(str(np.round(feature.location.start/30,0))+"-"+str(np.round(feature.location.end/30,0))+"\n")
+            results_file.write("\n")
 
             # Comparing GRINS annotations with detected GRINSs, and determining FP, FN, TP, TN
-            FP=0
-            FN=0
-            TP=0
-            TN=0
             for i in range(0,len(input_DNA)):
                 true_GRINS=0
                 annot_GRINS=0
@@ -294,62 +310,20 @@ if __name__ == "__main__":
                     FP+=1
                 else:
                     TN+=1
-            False_pos[n]+=FP
-            False_neg[n]+=FN
-            True_pos[n]+=TP
-            True_neg[n]+=TN
-    # print False_pos
-    # print False_neg
-    # print True_pos
-    # print True_neg
 
 
-    # Making figures of sensitivity and selectivity
-    sensitivities=[0 for a in range(0,len(parameters))]
-    specificities=[0 for a in range(0,len(parameters))]
-    precision=[0 for a in range(0,len(parameters))]
-    for i in range(0,len(True_pos)):
-        sensitivities[i]=(float(True_pos[i])/float(True_pos[i]+False_neg[i]))
-        specificities[i]=(float(True_neg[i])/float(True_neg[i]+False_pos[i]))
-        precision[i]=(float(True_pos[i])/float(True_pos[i]+False_pos[i]))
-    recall=sensitivities
+        # Saving results
+        sensitivity=0
+        specificity=0
+        precision=0
+        sensitivity=(float(TP)/float(TP+FN))
+        specificity=(float(TN)/float(TN+FP))
+        precision=(float(TP)/float(TP+FP))
+        recall=sensitivity
 
-    with open("Detection_results.txt",'w') as results_file:
-        results_file.write("Detection with region threshold of "+str(region_length)+"bp and AUC-to-length threshold of "+str(threshold_AUC)+"\n")
-        results_file.write("for parameter sets \n")
-        for k in range(0,len(parameters)):
-            results_file.write("\n")
-            results_file.write("window "+str(parameters[k][0])+" , step "+str(parameters[k][1])+":\n")
-            results_file.write("sensitivity "+str(np.round(sensitivities[k],3))+"\n")
-            results_file.write("specificity "+str(np.round(specificities[k],3))+"\n")
-            results_file.write("precision "+str(np.round(precision[k],3))+"\n")
-
-
-    x=[1,2,3,4]
-    plt.figure(1)
-    ax=plt.subplot(111)
-    ax.set_ylim(0,1.2)
-    sensit=ax.bar([a-0.15 for a in x],sensitivities,width=0.2,color="red", align="center")
-    autolabel(sensit)
-    specif=ax.bar([a+0.15 for a in x],specificities,width=0.2,color="blue", align="center")
-    autolabel(specif)
-    ax.set_xticks(x)
-    ax.set_xticklabels(["w150\ns30","w50\ns10","w30\ns30","w300\ns50"])
-    ax.legend(["Sensitivity","Specificity"])
-    ax.set_title("Region threshold = "+str(region_length)+"bp\nAUC-to-length threshold = "+str(threshold_AUC))
-    plt.savefig("Detection_results_sens_spec.pdf")
-    plt.close()
-
-    plt.figure(2)
-    ax=plt.subplot(111)
-    ax.set_ylim(0,1.2)
-    prec=ax.bar([a-0.15 for a in x],precision,width=0.2,color="purple", align="center")
-    autolabel(prec)
-    rec=ax.bar([a+0.15 for a in x],recall,width=0.2,color="red", align="center")
-    autolabel(rec)
-    ax.set_xticks(x)
-    ax.set_xticklabels(["w150\ns30","w50\ns10","w30\ns30","w300\ns50"])
-    ax.legend(["Precision","Recall"])
-    ax.set_title("Region threshold = "+str(region_length)+"bp\nAUC-to-length threshold = "+str(threshold_AUC))
-    plt.savefig("Detection_results_prec_rec.pdf")
-    plt.close()
+    with open(folder_name+"Detection_result_summary.txt",'w') as results_file2:
+        results_file2.write("Detection with sliding window of "+str(args.window)+" bp, step of "+str(args.step)+", region threshold of "+str(args.length_threshold)+" bp and AUC-to-length threshold of "+str(args.AUC_threshold)+"\n")
+        results_file2.write("sensitivity "+str(np.round(sensitivity,3))+"\n")
+        results_file2.write("specificity "+str(np.round(specificity,3))+"\n")
+        results_file2.write("precision "+str(np.round(precision,3))+"\n")
+    
