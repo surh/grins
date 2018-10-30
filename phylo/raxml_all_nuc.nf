@@ -77,7 +77,7 @@ process raxml{
     -p ${params.seed} \
     -# ${params.bootstrap} \
     -m GTRGAMMA \
-    -T ${params.threads}
+    -T ${params.threads} \
     -n $filename
   """
 }
