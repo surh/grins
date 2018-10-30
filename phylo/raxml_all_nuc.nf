@@ -14,11 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Nextflow pipeline that takes a matrix of SNP frequencies, a file
-// with phenotypes and a matrix of covariates and performs association
-// for all SNPs and testing via permutation.
+// Nextflow pipeline to run phylogeny in all alingnments in folder_name
+// It will look for all files in the input directory with extension `.aln`
+// and call the single thread raxmlHPC executable (this can be changed without
+// the --bin parameter). It assumes there is a module called raxml that
+// can be loaded with module load raxml, and that by default loads version
+// 8.2.X.
 
-// Script to run phylogeny in a alingnments in folder_name
+// For each allignment, the RAxML command  will first conduct a bootstrap
+// search and once that is done a search for the best–scoring
+// maximum likelihood tree.
+
+// It will return the bootstrapped trees, the best scoring maximum likelihood
+// tree, and the bootstrap support values drawn on the best-scoring tree
+// as node labels and branch labels.
+
+// By increasing the number of bootstrap  replicates (--bootstrap parameter)
+// the maximum lilkelihood will also be more thourough. The option
+// --bootstrap autoMRE can also be passed and RAxML will execute a maximum
+// of 1000 bootstrap though it might converge earlier.
+
+// Example run:
+// nextflow run raxml_all_nuc.nf --bootstrap autoMRE --indir myalns/ --seed 12345
 
 // Parameters
 params.indir = './'
