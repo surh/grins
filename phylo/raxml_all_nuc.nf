@@ -42,6 +42,10 @@ process raxml{
   set filename, file(aln) from ALNS
 
   output:
+  file "RAxML_bestTree.${filename}"
+  file "RAxML_bipartitionsBranchLabels.${filename}"
+  file "RAxML_bipartitions.${filename}"
+  file "RAxML_bootstrap.${filename}"
 
   """
   ${params.bin} \
