@@ -27,3 +27,4 @@ nextflow run raxml_all_nuc.nf --bootstrap autoMRE --indir myalns/ --seed 12345
 2. Include alignment in pipeline (clustalo or mafft)
 3. Add alignment QC before inference
 4. Automatic model selection for phylogeny?
+5. Specify cores in multithread version of RAxML
