@@ -16,10 +16,11 @@
 
 // Nextflow pipeline to run phylogeny in all alingnments in folder_name
 // It will look for all files in the input directory with extension `.aln`
-// and call the single thread raxmlHPC executable (this can be changed without
-// the --bin parameter). It assumes there is a module called raxml that
-// can be loaded with module load raxml, and that by default loads version
-// 8.2.X.
+// and call the specified raxml executable (default is --bin raxmlHPC).
+// If an executable that allows for threads is passed, then the number of
+// threads can be specified with --threads <n>. Nextflow assumes that
+// there is a module called raxml that can be loaded with
+// module load raxml, and that by default loads version 8.2.X.
 
 // For each allignment, the RAxML command  will first conduct a bootstrap
 // search and once that is done a search for the best–scoring
@@ -42,6 +43,7 @@ params.indir = './'
 params.bin = 'raxmlHPC'
 params.seed = 12345
 params.bootstrap = 100
+params.threads = 1
 // params.bootstrap = 'autoMRE'
 
 // Process inputs
@@ -50,7 +52,7 @@ ALNS = Channel.
   map{file -> tuple(file.baseName, file)}
 
 process raxml{
-  cpus 1
+  cpus params.threads
   maxForks 10
   module 'raxml'
   time 100.h
@@ -73,6 +75,7 @@ process raxml{
     -p ${params.seed} \
     -# ${params.bootstrap} \
     -m GTRGAMMA \
+    -T ${params.threads}
     -n $filename
   """
 }
