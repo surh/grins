@@ -56,7 +56,7 @@ process raxml{
   cpus params.threads
   maxForks 10
   module 'raxml'
-  time 100.h
+  time 150.h
   memory 2.G
   queue params.queue
 
