@@ -47,9 +47,9 @@ process raxml{
     -s $aln \
     -f­ a \
     -x ${params.seed} \
-    -­p ${params.seed} \
-    -­# ${params.bootstrap} \
-    -­m GTRGAMMA \
-    -­n $filename
+    -p ${params.seed} \
+    -# ${params.bootstrap} \
+    -m GTRGAMMA \
+    -n $filename
   """
 }
