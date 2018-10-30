@@ -45,7 +45,7 @@ process raxml{
   """
   ${params.bin} \
     -s $aln \
-    -f­ a \
+    -f a \
     -x ${params.seed} \
     -p ${params.seed} \
     -# ${params.bootstrap} \
