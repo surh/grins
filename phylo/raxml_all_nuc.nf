@@ -45,6 +45,7 @@ params.seed = 12345
 params.bootstrap = 100
 params.threads = 1
 // params.bootstrap = 'autoMRE'
+params.queue = 'hbfraser'
 
 // Process inputs
 ALNS = Channel.
@@ -57,6 +58,7 @@ process raxml{
   module 'raxml'
   time 100.h
   memory 2.G
+  queue params.queue
 
   input:
   set filename, file(aln) from ALNS
