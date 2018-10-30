@@ -57,7 +57,7 @@ process raxml{
   maxForks 10
   module 'raxml'
   time 150.h
-  memory 2.G
+  memory 2.GB
   queue params.queue
 
   input:
