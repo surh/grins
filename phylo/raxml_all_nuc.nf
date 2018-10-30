@@ -36,6 +36,7 @@ process raxml{
   cpus 1
   maxForks 10
   module 'raxml'
+  time 72:00:00
 
   input:
   set filename, file(aln) from ALNS
