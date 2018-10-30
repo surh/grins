@@ -54,6 +54,7 @@ process raxml{
   maxForks 10
   module 'raxml'
   time 100.h
+  memory 2.G
 
   input:
   set filename, file(aln) from ALNS
