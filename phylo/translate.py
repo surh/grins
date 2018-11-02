@@ -69,6 +69,7 @@ if __name__ == "__main__":
 
     with open(args.infile, 'r') as ih, open(args.outfile, 'w') as oh:
 
+        i = 0;
         for record in SeqIO.parse(ih, args.format,
                                   alphabet=generic_dna):
             prot = record.seq.translate(table=args.table,
@@ -83,5 +84,7 @@ if __name__ == "__main__":
 
             # Write
             SeqIO.write(record, oh, args.format)
+            i = i + 1
     ih.close()
     oh.close()
+    print("Processed {} sequence records.".format(str(i)))
