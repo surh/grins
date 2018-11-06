@@ -3,6 +3,7 @@
 import argparse
 from Bio import SeqIO
 from Bio.Alphabet import generic_dna
+import warnings
 
 
 def process_arguments():
@@ -62,13 +63,17 @@ def process_arguments():
                         type=str,
                         default="Standard")
 
-
     # Read arguments
     print("Reading arguments")
     args = parser.parse_args()
 
     # Processing goes here if needed
     args.to_stop = not args.dont_stop
+
+    if(args.format != 'fasta'):
+        warnings.warn(("WARNING: The script has only been tested with fasta "
+                       "sequences. While use of other formats is supported "
+                       "by Bio.SeqIO, it might lead to unexpected results."))
 
     return args
 
@@ -79,7 +84,7 @@ if __name__ == "__main__":
     NAMES = dict()
     with open(args.infile, 'r') as ih, open(args.outfile, 'w') as oh:
 
-        i = 0;
+        i = 0
         for record in SeqIO.parse(ih, args.format,
                                   alphabet=generic_dna):
             prot = record.seq.translate(table=args.table,
