@@ -27,7 +27,7 @@ params.aln_extension = ".aln"
 
 params.outdir = "out/"
 params.aligner = 'mafft'
-params.aligner = 'clustalo'
+// params.aligner = 'clustalo'
 
 params.bootstrap = '100'
 params.table = 'Standard'
