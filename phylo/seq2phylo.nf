@@ -75,7 +75,7 @@ process translate{
 }
 
 
-process translate{
+process align{
   publishDir "${params.outdir}/ALN/", mode: 'copy'
   module params.aligner
 
