@@ -64,6 +64,7 @@ process translate{
 
   output:
   set filename, file("${filename}.faa") into FAAS
+  file 'sequence_names_map.txt'
 
   """
   ${params.bindir}/translate.py \
