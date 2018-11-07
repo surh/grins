@@ -52,6 +52,8 @@ if (params.aln_dir != ''){
   NUCS = Channel.
     fromPath("${params.indir}/*${params.nuc_extension}").
     map{file -> tuple(file.baseName, file)}
+
+  params.nuc_dir = params.indir
 }
 
 
@@ -66,6 +68,8 @@ process translate{
   set filename, file("${filename}.faa") into FAAS
   file 'sequence_names_map.txt'
 
+  when:
+  params.nuc_dir != ''
   """
   ${params.bindir}/translate.py \
     --infile $seqs \
