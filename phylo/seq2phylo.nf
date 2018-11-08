@@ -33,10 +33,14 @@ params.table = 'Standard'
 params.bindir = '~/micropopgen/src/grins/phylo/'
 
 // Process paramters
+nuc_dir = params.nuc_dir)
+faa_dir = params.faa_dir)
+aln_dir = params.aln_dir)
+
 // Determine which output is present
-if (params.nuc_dir != ''){
+if (nuc_dir != ''){
   NUCS = Channel.
-    fromPath("${params.nuc_dir}/*${params.nuc_extension}").
+    fromPath("${nuc_dir}/*${params.nuc_extension}").
     map{file -> tuple(file.baseName, file)}
 
   // Processes
@@ -60,13 +64,13 @@ if (params.nuc_dir != ''){
   }
 
   // Specify output directory
-  params.faa_dir = "${params.outdir}/FAA/"
+  faa_dir = "${params.outdir}/FAA/"
 }
 
-if (params.faa_dir != ''){
+if (faa_dir != ''){
   // Re-read output directory from translation
   FAAS = Channel.
-    fromPath("${params.faa_dir}/*${params.aa_extension}").
+    fromPath("${faa_dir}/*${params.aa_extension}").
     map{file -> tuple(file.baseName, file)}
 
   println "Hello"
@@ -104,7 +108,7 @@ if (params.faa_dir != ''){
   }
 
   // Specify output directory
-  params.aln_dir = "${params.outdir}/ALN/"
+  aln_dir = "${params.outdir}/ALN/"
 }
 
 // if (params.aln_dir != ''){
