@@ -16,7 +16,7 @@
 
 
 // Parameters
-params.nuc_dir = 'seqs/'
+params.nuc_dir = ''
 params.faa_dir = ''
 params.aln_dir = ''
 
