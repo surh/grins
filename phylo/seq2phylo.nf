@@ -145,8 +145,4 @@ if (aln_dir != ''){
       -n $filename
     """
   }
-
-
-
-
 }
