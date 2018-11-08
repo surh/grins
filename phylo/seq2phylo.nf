@@ -35,26 +35,26 @@ params.bindir = '~/micropopgen/src/grins/phylo/'
 
 // Process paramters
 // Determine which output is present
-if (params.aln_dir != ''){
-  ALNS = Channel.
-    fromPath("${params.aln_dir}/*${params.aln_extesion}").
-    map{file -> tuple(file.baseName, file)}
-}else if (params.faa_dir != ''){
-  FAAS = Channel.
-    fromPath("${params.faa_dir}/*${params.aa_extension}").
-    map{file -> tuple(file.baseName, file)}
-}else if (params.nuc_dir != ''){
-  NUCS = Channel.
-    fromPath("${params.nuc_dir}/*${params.nuc_extension}").
-    map{file -> tuple(file.baseName, file)}
-}else{
-  // Assume indir corresponds to nucleotide sequences
-  NUCS = Channel.
-    fromPath("${params.indir}/*${params.nuc_extension}").
-    map{file -> tuple(file.baseName, file)}
-
-  params.nuc_dir = params.indir
-}
+// if (params.aln_dir != ''){
+//   ALNS = Channel.
+//     fromPath("${params.aln_dir}/*${params.aln_extesion}").
+//     map{file -> tuple(file.baseName, file)}
+// }else if (params.faa_dir != ''){
+//   FAAS = Channel.
+//     fromPath("${params.faa_dir}/*${params.aa_extension}").
+//     map{file -> tuple(file.baseName, file)}
+// }else if (params.nuc_dir != ''){
+//   NUCS = Channel.
+//     fromPath("${params.nuc_dir}/*${params.nuc_extension}").
+//     map{file -> tuple(file.baseName, file)}
+// }else{
+//   // Assume indir corresponds to nucleotide sequences
+//   NUCS = Channel.
+//     fromPath("${params.indir}/*${params.nuc_extension}").
+//     map{file -> tuple(file.baseName, file)}
+//
+//   params.nuc_dir = params.indir
+// }
 
 
 // Processes
@@ -68,15 +68,21 @@ process translate{
   set filename, file("${filename}.faa") into FAAS
   file 'sequence_names_map.txt'
 
-  when:
-  params.nuc_dir != ''
-  """
-  ${params.bindir}/translate.py \
-    --infile $seqs \
-    --remove_stops \
-    --outfile ${filename}.faa \
-    --rename
-  """
+  script:
+  if (params.faa_dir != ''){
+    exec:
+    FAAS = Channel.
+      fromPath("${params.faa_dir}/*${params.aa_extension}").
+      map{file -> tuple(file.baseName, file)}
+  }else{
+    """
+    ${params.bindir}/translate.py \
+      --infile $seqs \
+      --remove_stops \
+      --outfile ${filename}.faa \
+      --rename
+    """
+  }
 }
 
 
