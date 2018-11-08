@@ -74,7 +74,7 @@ if (faa_dir != ''){
       fromPath("${params.faa_dir}/*${params.aa_extension}").
       map{file -> tuple(file.baseName, file)}
   }
-  
+
   process align{
     publishDir "${params.outdir}/ALN/", mode: 'copy'
     module params.aligner
@@ -111,8 +111,42 @@ if (faa_dir != ''){
   aln_dir = "${params.outdir}/ALN/"
 }
 
-// if (params.aln_dir != ''){
-//   ALNS = Channel.
-//     fromPath("${params.aln_dir}/*${params.aln_extesion}").
-//     map{file -> tuple(file.baseName, file)}
-// }
+if (aln_dir != ''){
+  if (params.faa_dir != ''){
+    // If we are starting from here, read files
+    ALNS = Channel.
+      fromPath("${params.aln_dir}/*${params.aln_extesion}").
+      map{file -> tuple(file.baseName, file)}
+  }
+
+  process raxml{
+    module 'raxml'
+    publishDir "${params.outdir}/TRE/", mode: 'copy'
+    cpus 3
+
+    input:
+    set filename, file(aln) from ALNS
+
+    output:
+    file "RAxML_bestTree.${filename}"
+    file "RAxML_bipartitionsBranchLabels.${filename}"
+    file "RAxML_bipartitions.${filename}"
+    file "RAxML_bootstrap.${filename}"
+
+    """
+    raxmlHPC-PTHREADS \
+      -s $aln \
+      -f a \
+      -x 12345 \
+      -p 12345 \
+      -# autoMRE \
+      -m PROTGAMMAAUTO \
+      -T 3 \
+      -n $filename
+    """
+  }
+
+
+
+
+}
