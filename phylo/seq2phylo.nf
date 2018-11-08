@@ -34,71 +34,79 @@ params.bindir = '~/micropopgen/src/grins/phylo/'
 
 // Process paramters
 // Determine which output is present
-if (params.aln_dir != ''){
-  ALNS = Channel.
-    fromPath("${params.aln_dir}/*${params.aln_extesion}").
-    map{file -> tuple(file.baseName, file)}
-}
-if (params.faa_dir != ''){
-  FAAS = Channel.
-    fromPath("${params.faa_dir}/*${params.aa_extension}").
-    map{file -> tuple(file.baseName, file)}
-}
 if (params.nuc_dir != ''){
   NUCS = Channel.
     fromPath("${params.nuc_dir}/*${params.nuc_extension}").
     map{file -> tuple(file.baseName, file)}
-}
 
+  // Processes
+  process translate{
+    publishDir "${params.outdir}/FAA/", mode: 'copy'
 
-// Processes
-process translate{
-  publishDir "${params.outdir}/FAA/", mode: 'copy'
+    input:
+    set filename, file(seqs) from NUCS
 
-  input:
-  set filename, file(seqs) from NUCS
+    output:
+    set filename, file("${filename}.faa") into FAAS
+    file 'sequence_names_map.txt'
 
-  output:
-  set filename, file("${filename}.faa") into FAAS
-  file 'sequence_names_map.txt'
-
-  """
-  ${params.bindir}/translate.py \
-    --infile $seqs \
-    --remove_stops \
-    --outfile ${filename}.faa \
-    --rename
-  """
-}
-
-process align{
-  publishDir "${params.outdir}/ALN/", mode: 'copy'
-  module params.aligner
-
-  input:
-  set filename, file(seqs) from FAAS
-
-  output:
-  set filename, file("${filename}.aln") into ALNS
-
-  script:
-  if(params.aligner == 'clustalo'){
     """
-    clustalo \
-      -i $seqs \
-      -o ${filename}.aln \
-      -t Protein \
-      -v
+    ${params.bindir}/translate.py \
+      --infile $seqs \
+      --remove_stops \
+      --outfile ${filename}.faa \
+      --rename
     """
-  }else if(params.aligner == 'mafft'){
-    """
-    mafft \
-      --auto \
-      --amino \
-      $seqs \
-      > ${filename}.aln
-    """
-  }else{
-    error "Invalid aligner"
   }
+
+  // Specify output directory
+  params.faa_dir = "${params.outdir}/FAA/"
+}
+
+if (params.faa_dir != ''){
+  // Re-read output directory from translation
+  FAAS = Channel.
+    fromPath("${params.faa_dir}/*${params.aa_extension}").
+    map{file -> tuple(file.baseName, file)}
+
+  process align{
+    publishDir "${params.outdir}/ALN/", mode: 'copy'
+    module params.aligner
+
+    input:
+    set filename, file(seqs) from FAAS
+
+    output:
+    set filename, file("${filename}.aln") into ALNS
+
+    script:
+    if(params.aligner == 'clustalo'){
+      """
+      clustalo \
+        -i $seqs \
+        -o ${filename}.aln \
+        -t Protein \
+        -v
+      """
+    }else if(params.aligner == 'mafft'){
+      """
+      mafft \
+        --auto \
+        --amino \
+        $seqs \
+        > ${filename}.aln
+      """
+    }else{
+      error "Invalid aligner"
+    }
+  }
+
+  // Specify output directory
+  params.aln_dir = "${params.outdir}/ALN/"
+}
+
+if (params.aln_dir != ''){
+  ALNS = Channel.
+    fromPath("${params.aln_dir}/*${params.aln_extesion}").
+    map{file -> tuple(file.baseName, file)}
 }
