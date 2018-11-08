@@ -33,28 +33,28 @@ params.bootstrap = '100'
 params.table = 'Standard'
 params.bindir = '~/micropopgen/src/grins/phylo/'
 
-// Process paramters
-// Determine which output is present
-// if (params.aln_dir != ''){
-//   ALNS = Channel.
-//     fromPath("${params.aln_dir}/*${params.aln_extesion}").
-//     map{file -> tuple(file.baseName, file)}
-// }else if (params.faa_dir != ''){
-//   FAAS = Channel.
-//     fromPath("${params.faa_dir}/*${params.aa_extension}").
-//     map{file -> tuple(file.baseName, file)}
-// }else if (params.nuc_dir != ''){
-//   NUCS = Channel.
-//     fromPath("${params.nuc_dir}/*${params.nuc_extension}").
-//     map{file -> tuple(file.baseName, file)}
-// }else{
-//   // Assume indir corresponds to nucleotide sequences
-//   NUCS = Channel.
-//     fromPath("${params.indir}/*${params.nuc_extension}").
-//     map{file -> tuple(file.baseName, file)}
-//
-//   params.nuc_dir = params.indir
-// }
+Process paramters
+Determine which output is present
+if (params.aln_dir != ''){
+  ALNS = Channel.
+    fromPath("${params.aln_dir}/*${params.aln_extesion}").
+    map{file -> tuple(file.baseName, file)}
+}else if (params.faa_dir != ''){
+  FAAS = Channel.
+    fromPath("${params.faa_dir}/*${params.aa_extension}").
+    map{file -> tuple(file.baseName, file)}
+}else if (params.nuc_dir != ''){
+  NUCS = Channel.
+    fromPath("${params.nuc_dir}/*${params.nuc_extension}").
+    map{file -> tuple(file.baseName, file)}
+}else{
+  // Assume indir corresponds to nucleotide sequences
+  NUCS = Channel.
+    fromPath("${params.indir}/*${params.nuc_extension}").
+    map{file -> tuple(file.baseName, file)}
+
+  params.nuc_dir = params.indir
+}
 
 
 // Processes
