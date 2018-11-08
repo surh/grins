@@ -69,6 +69,8 @@ if (params.faa_dir != ''){
     fromPath("${params.faa_dir}/*${params.aa_extension}").
     map{file -> tuple(file.baseName, file)}
 
+  println "Hello"
+
   process align{
     publishDir "${params.outdir}/ALN/", mode: 'copy'
     module params.aligner
