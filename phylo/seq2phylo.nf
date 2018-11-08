@@ -68,13 +68,13 @@ if (nuc_dir != ''){
 }
 
 if (faa_dir != ''){
-  // Re-read output directory from translation
-  // FAAS = Channel.
-  //   fromPath("${faa_dir}/*${params.aa_extension}").
-  //   map{file -> tuple(file.baseName, file)}
-
-  println "Hello"
-
+  if (params.faa_dir != ''){
+    // If we are starting from here, read files
+    FAAS = Channel.
+      fromPath("${params.faa_dir}/*${params.aa_extension}").
+      map{file -> tuple(file.baseName, file)}
+  }
+  
   process align{
     publishDir "${params.outdir}/ALN/", mode: 'copy'
     module params.aligner
