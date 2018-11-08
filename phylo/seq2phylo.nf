@@ -16,8 +16,7 @@
 
 
 // Parameters
-params.indir = 'seqs/'
-params.nuc_dir = ''
+params.nuc_dir = 'seqs/'
 params.faa_dir = ''
 params.aln_dir = ''
 
@@ -39,21 +38,16 @@ if (params.aln_dir != ''){
   ALNS = Channel.
     fromPath("${params.aln_dir}/*${params.aln_extesion}").
     map{file -> tuple(file.baseName, file)}
-}else if (params.faa_dir != ''){
+}
+if (params.faa_dir != ''){
   FAAS = Channel.
     fromPath("${params.faa_dir}/*${params.aa_extension}").
     map{file -> tuple(file.baseName, file)}
-}else if (params.nuc_dir != ''){
+}
+if (params.nuc_dir != ''){
   NUCS = Channel.
     fromPath("${params.nuc_dir}/*${params.nuc_extension}").
     map{file -> tuple(file.baseName, file)}
-}else{
-  // Assume indir corresponds to nucleotide sequences
-  NUCS = Channel.
-    fromPath("${params.indir}/*${params.nuc_extension}").
-    map{file -> tuple(file.baseName, file)}
-
-  params.nuc_dir = params.indir
 }
 
 
@@ -68,23 +62,14 @@ process translate{
   set filename, file("${filename}.faa") into FAAS
   file 'sequence_names_map.txt'
 
-  script:
-  if (params.faa_dir != ''){
-    exec:
-    FAAS = Channel.
-      fromPath("${params.faa_dir}/*${params.aa_extension}").
-      map{file -> tuple(file.baseName, file)}
-  }else{
-    """
-    ${params.bindir}/translate.py \
-      --infile $seqs \
-      --remove_stops \
-      --outfile ${filename}.faa \
-      --rename
-    """
-  }
+  """
+  ${params.bindir}/translate.py \
+    --infile $seqs \
+    --remove_stops \
+    --outfile ${filename}.faa \
+    --rename
+  """
 }
-
 
 process align{
   publishDir "${params.outdir}/ALN/", mode: 'copy'
