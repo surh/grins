@@ -69,9 +69,9 @@ if (nuc_dir != ''){
 
 if (faa_dir != ''){
   // Re-read output directory from translation
-  FAAS = Channel.
-    fromPath("${faa_dir}/*${params.aa_extension}").
-    map{file -> tuple(file.baseName, file)}
+  // FAAS = Channel.
+  //   fromPath("${faa_dir}/*${params.aa_extension}").
+  //   map{file -> tuple(file.baseName, file)}
 
   println "Hello"
 
