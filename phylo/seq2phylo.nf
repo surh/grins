@@ -107,8 +107,8 @@ if (params.faa_dir != ''){
   params.aln_dir = "${params.outdir}/ALN/"
 }
 
-if (params.aln_dir != ''){
-  ALNS = Channel.
-    fromPath("${params.aln_dir}/*${params.aln_extesion}").
-    map{file -> tuple(file.baseName, file)}
-}
+// if (params.aln_dir != ''){
+//   ALNS = Channel.
+//     fromPath("${params.aln_dir}/*${params.aln_extesion}").
+//     map{file -> tuple(file.baseName, file)}
+// }
