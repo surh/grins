@@ -33,9 +33,9 @@ params.table = 'Standard'
 params.bindir = '~/micropopgen/src/grins/phylo/'
 
 // Process paramters
-nuc_dir = params.nuc_dir)
-faa_dir = params.faa_dir)
-aln_dir = params.aln_dir)
+nuc_dir = params.nuc_dir
+faa_dir = params.faa_dir
+aln_dir = params.aln_dir
 
 // Determine which output is present
 if (nuc_dir != ''){
