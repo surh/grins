@@ -33,8 +33,8 @@ params.bootstrap = '100'
 params.table = 'Standard'
 params.bindir = '~/micropopgen/src/grins/phylo/'
 
-Process paramters
-Determine which output is present
+// Process paramters
+// Determine which output is present
 if (params.aln_dir != ''){
   ALNS = Channel.
     fromPath("${params.aln_dir}/*${params.aln_extesion}").
