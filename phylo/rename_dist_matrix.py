@@ -73,6 +73,7 @@ if __name__ == "__main__":
         # Read, process and write header
         print("Processing header")
         header = ih.readline()
+        header = header.rstrip("\n")
         col_names = header.split("\t")
         NEWIDS, new_header = create_col_names_dict(col_names)
         oh.write("\t".join(new_header) + "\n")
@@ -80,6 +81,7 @@ if __name__ == "__main__":
         # Process following lines
         print("Processing lines")
         for line in ih:
+            line = line.rstrip("\n")
             fields = line.split("\t")
             if fields[0] in NEWIDS:
                 fields[0] = NEWIDS[fields[0]]
