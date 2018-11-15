@@ -73,16 +73,16 @@ if __name__ == "__main__":
         # Read, process and write header
         print("Processing header")
         header = ih.readline()
-        header = header.rstrip("\r")
+        header = header.rstrip("\r\n")
         col_names = header.split("\t")
         NEWIDS, new_header = create_col_names_dict(col_names[1:])
-        new_header = 'Cluste' + new_header
+        new_header = ['Cluster'] + new_header
         oh.write("\t".join(new_header) + "\n")
 
         # Process following lines
         print("Processing lines")
         for line in ih:
-            line = line.rstrip("\r")
+            line = line.rstrip("\r\n")
             fields = line.split("\t")
             if fields[0] in NEWIDS:
                 fields[0] = NEWIDS[fields[0]]
@@ -98,6 +98,6 @@ if __name__ == "__main__":
     print("Writing map file")
     with open(args.mapfile, 'w') as oh:
         for k in NEWIDS:
-            line = "\t".join([k, NEWIDS[k]]) + "\n"
+            line = "\t".join([NEWIDS[k], k]) + "\n"
             oh.write(line)
     oh.close()
