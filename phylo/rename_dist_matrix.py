@@ -62,7 +62,7 @@ def create_col_names_dict(col_names):
         newids.append(new_name)
         i = i + 1
 
-    # print(NEWIDS)
+    print(newids)
     return NEWIDS, newids
 
 
