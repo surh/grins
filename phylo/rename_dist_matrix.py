@@ -62,7 +62,7 @@ def create_col_names_dict(col_names):
         newids.append(new_name)
         i = i + 1
 
-    print(NEWIDS)
+    # print(NEWIDS)
     return NEWIDS, newids
 
 
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         oh.write("\t".join(new_header) + "\n")
 
         for line in ih:
-            fields = line.split("\n")
+            fields = line.split("\t")
             if fields[0] in NEWIDS:
                 fields[0] = NEWIDS[fields[0]]
             else:
