@@ -75,7 +75,7 @@ if __name__ == "__main__":
         header = ih.readline()
         col_names = header.split("\t")
         NEWIDS, new_header = create_col_names_dict(col_names)
-        oh.write("\t".join(new_header) + "\n")
+        oh.write("\t".join([new_header]) + "\n")
 
         # Process following lines
         print("Processing lines")
@@ -86,7 +86,7 @@ if __name__ == "__main__":
             else:
                 raise ValueError("Row ID not found ({})".format(fields[0]))
 
-            new_line = "\t".join(fields) + "\n"
+            new_line = "\t".join([fields]) + "\n"
             oh.write(new_line)
     ih.close()
     oh.close()
