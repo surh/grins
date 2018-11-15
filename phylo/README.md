@@ -21,9 +21,15 @@ bootstrap replicates or specify a convervegence criteria with option
 nextflow run raxml_all_nuc.nf --bootstrap autoMRE --indir myalns/ --seed 12345
 ```
 
-## TO DO LIST
+* **seq2phylo.nf**: Nextflow pipeline that starts with DNA sequences and
+produces a phylogeny. It can also start from aminoacid fasta sequences or
+multiple sequence alignments. See the documentation on the top of the script
+itself for more details. It requires RAxML (phylogeny), clustalo or mafft
+(alignment) and python 3 Biopython (translation). For basic usage use one of
+the following options:
 
-1. Perform inference from aminoacide alignment
-2. Include alignment in pipeline (clustalo or mafft)
-3. Add alignment QC before inference
-4. Automatic model selection for phylogeny?
+```bash
+nextflow run seq2phylo.nf --nuc_dir <MY_NUC_DIR>
+nextflow run seq2phylo.nf --faa_dir <MY_FAA_DIR>
+nextflow run seq2phylo.nf --aln_dir <MY_ALN_DIR>\
+```
