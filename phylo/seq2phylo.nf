@@ -14,6 +14,54 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+// This Nextflow pipeline takes a directory that has a collection of
+// sequence files and, for each file in the directory, it performs
+// translation, alignment and phylogenetic reconstruction.
+
+// The simplest way to utilize it is by simply specifying the directory
+// with the sequence files (either, nucleotide fasta, aminoacid fasta or
+// aligmnent) with one of the following commands:
+
+// $ nextflow run seq2phylo.nf --nuc_dir <MY_NUC_DIR>
+// $ nextflow run seq2phylo.nf --faa_dir <MY_FAA_DIR>
+// $ nextflow run seq2phylo.nf --aln_dir <MY_ALN_DIR>
+
+// The script creates an output directory with the results of every step. A
+// full description of the paramters follows below:
+// --nuc_dir, --faa_dir, --aln_dir
+// One and only one of these must be specified. Directory containing nucleotide
+// fasta, aminoacid fasta or alignment files.
+//
+// --nuc_extension --aa_extension, --aln_extension
+// Extension for nucleotide fasta, aminoacid fasta or alignment files. Defaults
+// are '.fasta', '.faa' and '.aln' respectively.
+//
+// --outdir
+// Directory to create for results. Default 'out/'
+//
+// --aligner
+// Either 'mafft' or  'clustalo'. Program to make multiple sequence
+// alignments. Default 'mafft'.
+//
+// --bootstrap
+// Bootstrap replicates to perform during phylogenetic reconstruction. See
+// RAxML manual for more info. Typically an integer number or 'autoMRE'.
+// Default: 100.
+//
+// --table
+// Genetic code table for translation. Default 'Standard'.
+//
+// --bindir
+// Directory where seq2phylo.nf is located.
+// Default '~/micropopgen/src/grins/phylo/'
+//
+// --aln_mem, --aln_time, --aln_threads
+// --phylo_mem, --phylo_time, --phylo_threads
+// Parameters that control computational resource allocation for alignments
+// and phylogenetic reconstruction. Defaults are 24 hrs with 2GB of memory
+// single thread for alignment and three threads for phylogenetic
+// reconstruction.
+
 
 // Parameters
 params.nuc_dir = ''
@@ -31,6 +79,13 @@ params.aligner = 'mafft'
 params.bootstrap = '100'
 params.table = 'Standard'
 params.bindir = '~/micropopgen/src/grins/phylo/'
+
+params.aln_time = '24:00:00'
+params.aln_mem = '2GB'
+params.aln_threads = 1
+params.phylo_time = '24:00:00'
+params.phylo_mem = '2GB'
+params.phylo_cpus = 3
 
 // Process paramters
 nuc_dir = params.nuc_dir
@@ -78,6 +133,9 @@ if (faa_dir != ''){
   process align{
     publishDir "${params.outdir}/ALN/", mode: 'copy'
     module params.aligner
+    cpus params.aln_threads
+    memory params.aln_mem
+    time params.aln_time
 
     input:
     set filename, file(seqs) from FAAS
@@ -122,7 +180,9 @@ if (aln_dir != ''){
   process raxml{
     module 'raxml'
     publishDir "${params.outdir}/TRE/", mode: 'copy'
-    cpus 3
+    cpus params.phylo_threads
+    memory params.phylo_mem
+    time params.phylo_time
 
     input:
     set filename, file(aln) from ALNS
@@ -141,7 +201,7 @@ if (aln_dir != ''){
       -p 12345 \
       -# autoMRE \
       -m PROTGAMMAAUTO \
-      -T 3 \
+      -T ${params.phylo_threads} \
       -n $filename
     """
   }
