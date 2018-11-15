@@ -60,6 +60,7 @@ def create_col_names_dict(col_names):
             raise ValueError("Repeated ID")
         NEWIDS[name] = new_name
         newids.append(new_name)
+        i = i + 1
 
     return NEWIDS, newids
 
@@ -79,7 +80,7 @@ if __name__ == "__main__":
             if fields[0] in NEWIDS:
                 fields[0] = NEWIDS[fields[0]]
             else:
-                raise ValueError("Row ID not found")
+                raise ValueError("Row ID not found ({})".format(fields[0]))
 
             new_line = "\t".join(fields) + "\n"
             oh.write(new_line)
