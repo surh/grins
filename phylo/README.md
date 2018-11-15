@@ -31,5 +31,5 @@ the following options:
 ```bash
 nextflow run seq2phylo.nf --nuc_dir <MY_NUC_DIR>
 nextflow run seq2phylo.nf --faa_dir <MY_FAA_DIR>
-nextflow run seq2phylo.nf --aln_dir <MY_ALN_DIR>\
+nextflow run seq2phylo.nf --aln_dir <MY_ALN_DIR>
 ```
