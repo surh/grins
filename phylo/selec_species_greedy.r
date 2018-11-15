@@ -5,7 +5,7 @@ library(ape)
 mat_file <- "outfile.txt"
 
 dd.mat <- read.table(mat_file, header = TRUE, row.names = 1, sep = "\t")
-dd.mat %>% head
+#dd.mat %>% head
 
 dd.mat <- as.matrix(dd.mat)
 
