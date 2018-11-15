@@ -26,5 +26,6 @@ dd.gg <- as.treedata(dd.nj)
 
 p1 <- ggtree(groupOTU(dd.gg, .node = leaves),
              aes(color=group, size = group)) +
+  scale_size_manual(values = c(0.2,1)) +
   geom_tiplab()
 p1
