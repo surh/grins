@@ -8,7 +8,8 @@ appropriate modules installed it should be quite contained,
 
 # Files
 
-* **raxml_all_nuc.nf**: Nextflow pipeline to run phylogeny in all alingnments
+* **raxml_all_nuc.nf**: *DEPRECATED: Has become redundant with seq2phylo.nf
+and won't be maintained*. Nextflow pipeline to run phylogeny in all alingnments
 in a directory. For every file in the input directory (`--indir`) with
 extension `.aln`. By default, it will call `raxmlHPC` (`--bin`). It assumes that
 RAxML v8.2.X can be loaded with `module load raxml`. For each allignment,
