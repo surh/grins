@@ -31,7 +31,7 @@ curr_leaves <- sample(length(all_leaves), size = N, replace = FALSE)
 curr_remain_leaves <- all_leaves[-curr_leaves]
 curr_leaves <- all_leaves[curr_leaves]
 curr_leaves
-curr_tree <- keep.tip(dd.nj, tip = leaves)
+curr_tree <- keep.tip(dd.nj, tip = curr_leaves)
 curr_dist <- sum(curr_tree$edge.length)
 
 max_leaves <- curr_leaves
