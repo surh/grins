@@ -73,15 +73,16 @@ if __name__ == "__main__":
         # Read, process and write header
         print("Processing header")
         header = ih.readline()
-        header = header.rstrip("\n")
+        header = header.rstrip("\r")
         col_names = header.split("\t")
-        NEWIDS, new_header = create_col_names_dict(col_names)
+        NEWIDS, new_header = create_col_names_dict(col_names[1:])
+        new_header = 'Cluste' + new_header
         oh.write("\t".join(new_header) + "\n")
 
         # Process following lines
         print("Processing lines")
         for line in ih:
-            line = line.rstrip("\n")
+            line = line.rstrip("\r")
             fields = line.split("\t")
             if fields[0] in NEWIDS:
                 fields[0] = NEWIDS[fields[0]]
