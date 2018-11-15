@@ -90,5 +90,5 @@ p1 <- ggtree(groupOTU(dd.gg, .node = max_leaves),
   scale_size_manual(values = c(0.2,1)) +
   geom_tiplab()
 p1
-ggsave("max_tree.png", width = 6, height = 18)
+ggsave("max_tree_mcmc.png", width = 6, height = 18)
 
