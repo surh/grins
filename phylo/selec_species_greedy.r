@@ -10,7 +10,7 @@ dd.mat <- read.table(mat_file, header = TRUE, row.names = 1, sep = "\t")
 
 # Convert matrix to nj tree
 dd.mat <- as.matrix(dd.mat)
-dd.nj <- nj(dd)
+dd.nj <- nj(as.dist(dd.mat))
 plot(dd.nj)
 
 # Greedy
