@@ -71,11 +71,14 @@ if __name__ == "__main__":
 
     with open(args.infile, 'r') as ih, open(args.outfile, 'w') as oh:
         # Read, process and write header
+        print("Processing header")
         header = ih.readline()
         col_names = header.split("\t")
         NEWIDS, new_header = create_col_names_dict(col_names)
         oh.write("\t".join(new_header) + "\n")
 
+        # Process following lines
+        print("Processing lines")
         for line in ih:
             fields = line.split("\t")
             if fields[0] in NEWIDS:
@@ -85,9 +88,13 @@ if __name__ == "__main__":
 
             new_line = "\t".join(fields) + "\n"
             oh.write(new_line)
+    ih.close()
+    oh.close()
 
+    # Write map file
+    print("Writing map file")
     with open(args.mapfile, 'w') as oh:
         for k in NEWIDS:
             line = "\t".join([k, NEWIDS[k]]) + "\n"
             oh.write(line)
-    oh.close
+    oh.close()
