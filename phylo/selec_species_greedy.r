@@ -1,16 +1,19 @@
 library(tidyverse)
 library(ape)
-
+library(ggtree)
+library(treeio)
 # setwd("/godot/users/sur/exp/fraserv/2018/today3/")
+
+# Read data
 mat_file <- "outfile.txt"
-
 dd.mat <- read.table(mat_file, header = TRUE, row.names = 1, sep = "\t")
-#dd.mat %>% head
 
+# Convert matrix to nj tree
 dd.mat <- as.matrix(dd.mat)
+dd.nj <- nj(dd)
+plot(dd.nj)
 
 # Greedy
-
 N <- 100
 leaves <- NULL
 
@@ -28,7 +31,7 @@ cat(leaves, "\n")
 remaining_leaves <- setdiff(colnames(dd.mat), leaves)
 
 # Update tree
-curr_tree <- as.phylo(hclust(as.dist(dd.mat[leaves, leaves])))
+curr_tree <-  keep.tip(dd.nj, tip = leaves)
 cat(sum(curr_tree$edge.length), "\n")
 
 while(length(leaves) < N){
@@ -37,7 +40,7 @@ while(length(leaves) < N){
   chosen_leave <- NULL
   for(l in remaining_leaves){
     temp_leaves <- c(leaves, l)
-    temp_tree <- as.phylo(hclust(as.dist(dd.mat[temp_leaves, temp_leaves])))
+    temp_tree <- keep.tip(dd.nj, tip = temp_leaves)
     temp_dist <- sum(temp_tree$edge.length)
     
     if(temp_dist > prev_dist){
@@ -55,7 +58,7 @@ while(length(leaves) < N){
   remaining_leaves <- setdiff(colnames(dd.mat), leaves)
   
   # Update tree
-  curr_tree <- as.phylo(hclust(as.dist(dd.mat[leaves, leaves])))
+  curr_tree <- keep.tip(dd.nj, tip = leaves)
   cat(sum(curr_tree$edge.length), "\n")
   
   cat("-------------\n")
@@ -63,6 +66,12 @@ while(length(leaves) < N){
 
 write_tsv(as.tibble(leaves), "selected_leaves_greedy.txt")
 
-dd.phylo <- ape::as.phylo.hclust(dd.clus)
-plot(dd.phylo)
-plot(curr_tree)
+# plot(curr_tree)
+
+dd.gg <- as.treedata(curr_tree)
+p1 <- ggtree(groupOTU(dd.gg, .node = leaves),
+             aes(color=group, size = group)) +
+  scale_size_manual(values = c(0.2,1)) +
+  geom_tiplab()
+p1
+ggsave("max_tree_greedy.png", width = 6, height = 18)
