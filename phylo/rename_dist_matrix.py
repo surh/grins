@@ -81,7 +81,7 @@ if __name__ == "__main__":
             else:
                 raise ValueError("Row ID not found")
 
-            new_line = "\t".join(new_line) + "\n"
+            new_line = "\t".join(fields) + "\n"
             oh.write(new_line)
 
     with open(args.mapfile, 'w') as oh:
