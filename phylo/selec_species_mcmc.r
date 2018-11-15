@@ -84,11 +84,16 @@ png("mcmc_dist.png", width = 1000, height = 800)
 plot(1:iter, Dist)
 dev.off()
 
-dd.gg <- as.treedata(dd.nj)
-p1 <- ggtree(groupOTU(dd.gg, .node = max_leaves),
+dd.gg <- as.treedata(dd.nj) %>% 
+  full_join(tibble(label=dd.nj$tip.label) %>%
+              mutate(Selected = label %in% max_leaves),
+            by = "label")
+dd.gg <- groupOTU(dd.gg, .node = max_leaves)
+
+p1 <- ggtree(dd.gg,
              aes(color=group, size = group)) +
   scale_size_manual(values = c(0.2,1)) +
   geom_tiplab()
 p1
-ggsave("max_tree_mcmc.png", width = 6, height = 18)
+ggsave("max_tree_mcmc.png", p1, width = 6, height = 18)
 

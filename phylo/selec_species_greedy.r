@@ -68,10 +68,15 @@ write_tsv(as.tibble(leaves), "selected_leaves_greedy.txt")
 
 # plot(curr_tree)
 
-dd.gg <- as.treedata(curr_tree)
-p1 <- ggtree(groupOTU(dd.gg, .node = leaves),
+dd.gg <- as.treedata(dd.nj) %>% 
+  full_join(tibble(label=dd.nj$tip.label) %>%
+              mutate(Selected = label %in% leaves),
+            by = "label")
+dd.gg <- groupOTU(dd.gg, .node = leaves)
+
+p1 <- ggtree(dd.gg,
              aes(color=group, size = group)) +
   scale_size_manual(values = c(0.2,1)) +
   geom_tiplab()
 p1
-ggsave("max_tree_greedy.png", width = 6, height = 18)
+ggsave("max_tree_greedy.png", p1, width = 6, height = 18)
