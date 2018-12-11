@@ -189,7 +189,7 @@ if (aln_dir != ''){
   if (params.faa_dir != ''){
     // If we are starting from here, read files
     ALNS = Channel.
-      fromPath("${params.aln_dir}/*${params.aln_extesion}").
+      fromPath("${params.aln_dir}/*${params.aln_extension}").
       map{file -> tuple(file.baseName, file)}
   }
 
