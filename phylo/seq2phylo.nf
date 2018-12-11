@@ -108,11 +108,8 @@ if(n_dirs != 1){
     aln_dir) must be passed."""
 }
 
-// Check that passed directory contains files
+// Check that passed directory is a directory and contains files
 myfiles = file(mydir).listFiles()
-println "================"
-println myfiles
-println "================"
 if (myfiles == null){
   error """ERROR: The passed doesn't look like a directory."""
 } else if(myfiles == []){
