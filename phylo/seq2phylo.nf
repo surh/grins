@@ -80,7 +80,7 @@ params.aln_mem = '2GB'
 params.aln_threads = 1
 params.phylo_time = '24:00:00'
 params.phylo_mem = '2GB'
-params.phylo_cpus = 3
+params.phylo_threads = 3
 
 // Process paramters
 nuc_dir = params.nuc_dir
