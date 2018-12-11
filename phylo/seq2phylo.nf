@@ -111,9 +111,9 @@ if(n_dirs != 1){
 // Check that passed directory is a directory and contains files
 myfiles = file(mydir).listFiles()
 if (myfiles == null){
-  error """ERROR: The passed doesn't look like a directory."""
+  error """ERROR: The provided directory doesn't look like a directory."""
 } else if(myfiles == []){
-  error """ERROR: The passed directory is empty"""
+  error """ERROR: The provided directory is empty"""
 }
 
 // Determine which output is present
