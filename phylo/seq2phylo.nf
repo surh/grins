@@ -87,6 +87,27 @@ nuc_dir = params.nuc_dir
 faa_dir = params.faa_dir
 aln_dir = params.aln_dir
 
+// Check that only one dir is passed
+n_dirs = 0
+mydir = ''
+if (nuc_dir == ''){
+  n_dirs = n_dirs + 1
+  mydir = nuc_dir
+}
+if (faa_dir == ''){
+  n_dirs = n_dirs + 1
+  mydir = faa_dir
+}
+if (aln_dir == ''){
+  n_dirs = n_dirs + 1
+  mydir = aln_dir
+}
+
+if(n_dirs != 1){
+  error """One and only one input directory (nuc_dir, faa_dir, aln_dir)
+  must be passed."""
+}
+
 // Determine which output is present
 if (nuc_dir != ''){
   NUCS = Channel.
