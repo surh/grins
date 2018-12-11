@@ -14,50 +14,51 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// This Nextflow pipeline takes a directory that has a collection of
-// sequence files and, for each file in the directory, it performs
-// translation, alignment and phylogenetic reconstruction.
+/* ############## DOCUMENTATION #################
+This Nextflow pipeline takes a directory that has a collection of
+sequence files and, for each file in the directory, it performs
+translation, alignment and phylogenetic reconstruction.
 
-// The simplest way to utilize it is by simply specifying the directory
-// with the sequence files (either, nucleotide fasta, aminoacid fasta or
-// aligmnent) with one of the following commands:
+The simplest way to utilize it is by simply specifying the directory
+with the sequence files (either, nucleotide fasta, aminoacid fasta or
+aligmnent) with one of the following commands:
 
-// $ nextflow run seq2phylo.nf --nuc_dir <MY_NUC_DIR>
-// $ nextflow run seq2phylo.nf --faa_dir <MY_FAA_DIR>
-// $ nextflow run seq2phylo.nf --aln_dir <MY_ALN_DIR>
+$ nextflow run seq2phylo.nf --nuc_dir <MY_NUC_DIR>
+$ nextflow run seq2phylo.nf --faa_dir <MY_FAA_DIR>
+$ nextflow run seq2phylo.nf --aln_dir <MY_ALN_DIR>
 
-// The script creates an output directory with the results of every step. A
-// full description of the paramters follows below:
-// --nuc_dir, --faa_dir, --aln_dir
-// One and only one of these must be specified. Directory containing nucleotide
-// fasta, aminoacid fasta or alignment files.
-//
-// --nuc_extension --aa_extension, --aln_extension
-// Extension for nucleotide fasta, aminoacid fasta or alignment files. Defaults
-// are '.fasta', '.faa' and '.aln' respectively.
-//
-// --outdir
-// Directory to create for results. Default 'out/'
-//
-// --aligner
-// Either 'mafft' or  'clustalo'. Program to make multiple sequence
-// alignments. Default 'mafft'.
-//
-// --bootstrap
-// Bootstrap replicates to perform during phylogenetic reconstruction. See
-// RAxML manual for more info. Typically an integer number or 'autoMRE'.
-// Default: 100.
-//
-// --table
-// Genetic code table for translation. Default 'Standard'.
-//
-// --aln_mem, --aln_time, --aln_threads
-// --phylo_mem, --phylo_time, --phylo_threads
-// Parameters that control computational resource allocation for alignments
-// and phylogenetic reconstruction. Defaults are 24 hrs with 2GB of memory
-// single thread for alignment and three threads for phylogenetic
-// reconstruction.
+The script creates an output directory with the results of every step. A
+full description of the paramters follows below:
+--nuc_dir, --faa_dir, --aln_dir
+One and only one of these must be specified. Directory containing nucleotide
+fasta, aminoacid fasta or alignment files.
 
+--nuc_extension --aa_extension, --aln_extension
+Extension for nucleotide fasta, aminoacid fasta or alignment files. Defaults
+are '.fasta', '.faa' and '.aln' respectively.
+
+--outdir
+Directory to create for results. Default 'out/'
+
+--aligner
+Either 'mafft' or  'clustalo'. Program to make multiple sequence
+alignments. Default 'mafft'.
+
+--bootstrap
+Bootstrap replicates to perform during phylogenetic reconstruction. See
+RAxML manual for more info. Typically an integer number or 'autoMRE'.
+Default: 100.
+
+--table
+Genetic code table for translation. Default 'Standard'.
+
+--aln_mem, --aln_time, --aln_threads
+--phylo_mem, --phylo_time, --phylo_threads
+Parameters that control computational resource allocation for alignments
+and phylogenetic reconstruction. Defaults are 24 hrs with 2GB of memory
+single thread for alignment and three threads for phylogenetic
+reconstruction.
+################################################# */
 
 // Parameters
 params.nuc_dir = ''
@@ -82,11 +83,12 @@ params.phylo_time = '24:00:00'
 params.phylo_mem = '2GB'
 params.phylo_threads = 3
 
-// Process paramters
+// ############## Process paramters #############
 nuc_dir = params.nuc_dir
 faa_dir = params.faa_dir
 aln_dir = params.aln_dir
 
+// ################# Run checks #################
 // Check that only one dir is passed
 n_dirs = 0
 mydir = ''
@@ -102,7 +104,6 @@ if (aln_dir != ''){
   n_dirs = n_dirs + 1
   mydir = aln_dir
 }
-
 if(n_dirs != 1){
   error """ERROR: One and only one input directory (nuc_dir, faa_dir, \
     aln_dir) must be passed."""
@@ -115,6 +116,10 @@ if (myfiles == null){
 } else if(myfiles == []){
   error """ERROR: The provided directory is empty"""
 }
+
+// MISSING: check modules are installed
+
+// ################ Run pipeline ################
 
 // Determine which output is present
 if (nuc_dir != ''){
