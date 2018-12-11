@@ -110,6 +110,9 @@ if(n_dirs != 1){
 
 // Check that passed directory contains files
 myfiles = file(mydir).listFiles()
+println "================"
+println myfiles
+println "================"
 if (myfiles == null){
   error """ERROR: The passed directory is empty."""
 }
