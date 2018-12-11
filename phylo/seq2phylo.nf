@@ -51,10 +51,6 @@
 // --table
 // Genetic code table for translation. Default 'Standard'.
 //
-// --bindir
-// Directory where seq2phylo.nf is located.
-// Default '~/micropopgen/src/grins/phylo/'
-//
 // --aln_mem, --aln_time, --aln_threads
 // --phylo_mem, --phylo_time, --phylo_threads
 // Parameters that control computational resource allocation for alignments
@@ -78,7 +74,6 @@ params.aligner = 'mafft'
 
 params.bootstrap = '100'
 params.table = 'Standard'
-params.bindir = '~/micropopgen/src/grins/phylo/'
 
 params.aln_time = '24:00:00'
 params.aln_mem = '2GB'
@@ -110,7 +105,7 @@ if (nuc_dir != ''){
     file 'sequence_names_map.txt'
 
     """
-    ${params.bindir}/translate.py \
+    ${workflow.projectDir}/translate.py \
       --infile $seqs \
       --remove_stops \
       --outfile ${filename}.faa \
