@@ -111,8 +111,7 @@ if(n_dirs != 1){
 // Check that passed directory contains files
 myfiles = file(mydir).listFiles()
 if (myfiles == null){
-  error """ERROR: The passed directory ($mydir) doesn't have any files or \
-    is not a directory."""
+  error """ERROR: The passed directory is empty."""
 }
 
 // Determine which output is present
