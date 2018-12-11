@@ -114,7 +114,9 @@ println "================"
 println myfiles
 println "================"
 if (myfiles == null){
-  error """ERROR: The passed directory is empty."""
+  error """ERROR: The passed doesn't look like a directory."""
+} else if(myfiles == []){
+  error """ERROR: The passed directory is empty"""
 }
 
 // Determine which output is present
