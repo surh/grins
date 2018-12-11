@@ -104,8 +104,8 @@ if (aln_dir != ''){
 }
 
 if(n_dirs != 1){
-  error """ERROR: One and only one input directory (nuc_dir, faa_dir, \
-  aln_dir) must be passed."""
+  error """ERROR: One and only one input directory (nuc_dir, faa_dir,\
+    aln_dir) must be passed."""
 }
 
 // Determine which output is present
