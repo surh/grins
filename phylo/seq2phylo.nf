@@ -104,8 +104,15 @@ if (aln_dir != ''){
 }
 
 if(n_dirs != 1){
-  error """ERROR: One and only one input directory (nuc_dir, faa_dir,\
+  error """ERROR: One and only one input directory (nuc_dir, faa_dir, \
     aln_dir) must be passed."""
+}
+
+// Check that passed directory contains files
+myfiles = file(mydir).listFiles()
+if (myfiles == null){
+  error """ERROR: The passed directory ($mydir) doesn't have any files or \
+    is not a directory."""
 }
 
 // Determine which output is present
