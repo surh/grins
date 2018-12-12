@@ -119,20 +119,12 @@ if (myfiles == null){
 
 // Check modules are installed
 // Check RAxML
-// shell:
-// """
-// module () {
-//   eval \$(\$LMOD_CMD bash "\$@") && eval \$(\${LMOD_SETTARG_CMD:-:} -s sh)
-// }
-// module is-avail raxml
-// """.execute()
+"""
+module () {
+  eval \$(\$LMOD_CMD bash "\$@") && eval \$(\${LMOD_SETTARG_CMD:-:} -s sh)
+} && module is-avail raxml
+""".execute()
 
-
-println "================"
-out = """eval \$(\$LMOD_CMD bash "raxml") && eval \$(\${LMOD_SETTARG_CMD:-:} -s sh)""".execute()
-print out
-print out.exitValue()
-println "================"
 // if (out.exitValue() != 0){
 //   error """ERROR: there is no 'raxml' module"""
 // }else {
