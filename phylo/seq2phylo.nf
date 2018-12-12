@@ -117,7 +117,20 @@ if (myfiles == null){
   error """ERROR: The provided directory is empty"""
 }
 
-// MISSING: check modules are installed
+// Check modules are installed
+// Check RAxML
+cmd = 'module is-avail raxml'
+cmd.execute()
+if (cmd.exitValue() != ){
+  error """ERROR: there is no 'raxml' module"""
+}
+
+// Check aligner
+cmd = "module is-avail ${params.aligner}"
+cmd.execute()
+if (cmd.exitValue() != ){
+  error """ERROR: there is no ${params.aligner} module"""
+}
 
 // ################ Run pipeline ################
 
