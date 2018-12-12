@@ -120,15 +120,15 @@ if (myfiles == null){
 // Check modules are installed
 // Check RAxML
 cmd = 'module is-avail raxml'
-cmd.execute()
-if (cmd.exitValue() != 0){
+out = cmd.execute()
+if (out.exitValue() != 0){
   error """ERROR: there is no 'raxml' module"""
 }
 
 // Check aligner
 cmd = "module is-avail ${params.aligner}"
-cmd.execute()
-if (cmd.exitValue() != 0){
+out = cmd.execute()
+if (out.exitValue() != 0){
   error """ERROR: there is no ${params.aligner} module"""
 }
 
