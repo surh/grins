@@ -120,7 +120,7 @@ if (myfiles == null){
 // Check modules are installed
 // Check RAxML
 out = """
-module(){
+module () {
   eval \$(\$LMOD_CMD bash "\$@") && eval \$(\${LMOD_SETTARG_CMD:-:} -s sh)
 }""".execute()
 out = """module is-avail raxml""".execute()
