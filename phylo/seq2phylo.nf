@@ -122,7 +122,7 @@ if (myfiles == null){
 out = """
 module () {
   eval \$(\$LMOD_CMD bash "\$@") && eval \$(\${LMOD_SETTARG_CMD:-:} -s sh)
-}
+};
 module is-avail raxml""".execute()
 
 if (out.exitValue() != 0){
