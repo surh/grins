@@ -135,11 +135,11 @@ module is-avail raxml
 
 
 // Check aligner
-cmd = "module is-avail ${params.aligner}"
-out = cmd.execute()
-if (out.exitValue() != 0){
-  error """ERROR: there is no ${params.aligner} module"""
-}
+// cmd = "module is-avail ${params.aligner}"
+// out = cmd.execute()
+// if (out.exitValue() != 0){
+//   error """ERROR: there is no ${params.aligner} module"""
+// }
 // ################ Run pipeline ################
 
 // Determine which output is present
