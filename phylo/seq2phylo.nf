@@ -27,11 +27,22 @@ $ nextflow run seq2phylo.nf --nuc_dir <MY_NUC_DIR>
 $ nextflow run seq2phylo.nf --faa_dir <MY_FAA_DIR>
 $ nextflow run seq2phylo.nf --aln_dir <MY_ALN_DIR>
 
-The script creates an output directory with the results of every step. A
-full description of the paramters follows below:
+OUTPUT: The script creates an output directory with the results of every step.
+
+DEPENDENCIES: The pipeline requires nextflow (tested on v0.31.0.4885), which
+in turn requires Java 8. Python 3 with biopython is required for translation
+and must already be in your PATH. Finally, lmod modules for Clustal Omega,
+MAFFT, and RAxML may be used at different steps. These modules must be named
+`clustalo`, `mafft` and `raxml` respectiveley. For RAxML, the PTHREADS version
+is invoked, therefore the `raxmlHPC-PTHREADS` executable must be placed in
+the user PATH when the raxml module is loaded.
+
+OPTIONS: A full description of the available paramters follows below:
+
 --nuc_dir, --faa_dir, --aln_dir
 One and only one of these must be specified. Directory containing nucleotide
-fasta, aminoacid fasta or alignment files.
+fasta, aminoacid fasta or alignment files. Failure to provide any of them
+will produce an error.
 
 --nuc_extension --aa_extension, --aln_extension
 Extension for nucleotide fasta, aminoacid fasta or alignment files. Defaults
