@@ -239,7 +239,7 @@ if (aln_dir != ''){
       -f a \
       -x 12345 \
       -p 12345 \
-      -# autoMRE \
+      -# ${params.bootstrap} \
       -m PROTGAMMAAUTO \
       -T ${params.phylo_threads} \
       -n $filename
