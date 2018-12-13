@@ -16,7 +16,7 @@ produces a phylogeny. It can also start from aminoacid fasta sequences or
 multiple sequence alignments. It is highly recommended to read the
 documentation at the top of the script itself for more details.
 The pipelines depends on lmod modules for RAxML (called `raxml`), and
-either Clustal Omega (called `clustalo`) or MAFFT (called (`mafft`)).
+either Clustal Omega (called `clustalo`) or MAFFT (called `mafft`).
 Python 3 with Biopython must also be on the user PATH. For basic usage choose
 one of the following options:
 
@@ -38,4 +38,12 @@ For full details and documentation use:
 
 ```bash
 translate.py --help
+```
+
+* **rename_dist_matrix.py**: Script that reads tab-delimited file where the
+first column ar row are coloumn and row IDs. It copies the file while renaming
+both columns and rows. For usage details use:
+
+```bash
+rename_dist_matrix.py
 ```
