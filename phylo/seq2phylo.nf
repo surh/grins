@@ -87,10 +87,10 @@ params.aligner = 'mafft'
 params.bootstrap = '100'
 params.table = 'Standard'
 
-params.aln_time = '24:00:00'
+params.aln_time = '24h'
 params.aln_mem = '2GB'
 params.aln_threads = 1
-params.phylo_time = '24:00:00'
+params.phylo_time = '24h'
 params.phylo_mem = '2GB'
 params.phylo_threads = 3
 
@@ -100,21 +100,40 @@ faa_dir = params.faa_dir
 aln_dir = params.aln_dir
 
 // ################# Run checks #################
-// Check that only one dir is passed
+// Create channels and check that only one input is passed
 n_dirs = 0
 mydir = ''
 if (nuc_dir != ''){
   n_dirs = n_dirs + 1
   mydir = nuc_dir
+  NUCS = Channel.
+    fromPath("${nuc_dir}/*${params.nuc_extension}").
+    map{file -> tuple(file.baseName, file)
+}else{
+  NUCS = Channel.empty()
 }
+
 if (faa_dir != ''){
   n_dirs = n_dirs + 1
   mydir = faa_dir
+  FAAS = Channel.
+    fromPath("${params.faa_dir}/*${params.aa_extension}").
+    map{file -> tuple(file.baseName, file)
+}else{
+  FAAS = Channel.empty()
 }
+
 if (aln_dir != ''){
   n_dirs = n_dirs + 1
   mydir = aln_dir
+  ALNS = Channel.
+    fromPath("${params.aln_dir}/*${params.aln_extension}").
+    map{file -> tuple(file.baseName, file)}
+}else{
+  ALNS = Channel.empty()
 }
+
+// Fail if not exactly one dir was passed
 if(n_dirs != 1){
   error """ERROR: One and only one input directory (nuc_dir, faa_dir, \
     aln_dir) must be passed."""
@@ -132,117 +151,123 @@ if (myfiles == null){
 
 // ################ Run pipeline ################
 
-// Determine which output is present
-if (nuc_dir != ''){
-  NUCS = Channel.
-    fromPath("${nuc_dir}/*${params.nuc_extension}").
-    map{file -> tuple(file.baseName, file)}
 
-  // Processes
-  process translate{
-    publishDir "${params.outdir}/FAA/", mode: 'copy'
+// Processes
+process translate{
+  publishDir "${params.outdir}/FAA/", mode: 'copy'
 
-    input:
-    set filename, file(seqs) from NUCS
+  input:
+  set filename, file(seqs) from NUCS
 
-    output:
-    set filename, file("${filename}.faa") into FAAS
-    file 'sequence_names_map.txt'
+  output:
+  set filename, file("${filename}.faa") into FAAS2
+  file 'sequence_names_map.txt'
 
-    """
-    ${workflow.projectDir}/translate.py \
-      --infile $seqs \
-      --remove_stops \
-      --outfile ${filename}.faa \
-      --rename
-    """
-  }
-
-  // Specify output directory
-  faa_dir = "${params.outdir}/FAA/"
+  """
+  ${workflow.projectDir}/translate.py \
+    --infile $seqs \
+    --remove_stops \
+    --outfile ${filename}.faa \
+    --rename
+  """
 }
 
-if (faa_dir != ''){
-  if (params.faa_dir != ''){
-    // If we are starting from here, read files
-    FAAS = Channel.
-      fromPath("${params.faa_dir}/*${params.aa_extension}").
-      map{file -> tuple(file.baseName, file)}
+process align{
+  publishDir "${params.outdir}/ALN/", mode: 'copy'
+  module params.aligner
+  cpus params.aln_threads
+  memory params.aln_mem
+  time params.aln_time
+
+  input:
+  set filename, file(seqs) from FAAS.mix(FAAS2)
+
+  output:
+  set filename, file("${filename}.aln") into ALNS2
+
+  script:
+  if(params.aligner == 'clustalo'){
+    """
+    clustalo \
+      -i $seqs \
+      -o ${filename}.aln \
+      -t Protein \
+      -v
+    """
+  }else if(params.aligner == 'mafft'){
+    """
+    mafft \
+      --auto \
+      --amino \
+      $seqs \
+      > ${filename}.aln
+    """
+  }else{
+    error "Invalid aligner"
   }
-
-  process align{
-    publishDir "${params.outdir}/ALN/", mode: 'copy'
-    module params.aligner
-    cpus params.aln_threads
-    memory params.aln_mem
-    time params.aln_time
-
-    input:
-    set filename, file(seqs) from FAAS
-
-    output:
-    set filename, file("${filename}.aln") into ALNS
-
-    script:
-    if(params.aligner == 'clustalo'){
-      """
-      clustalo \
-        -i $seqs \
-        -o ${filename}.aln \
-        -t Protein \
-        -v
-      """
-    }else if(params.aligner == 'mafft'){
-      """
-      mafft \
-        --auto \
-        --amino \
-        $seqs \
-        > ${filename}.aln
-      """
-    }else{
-      error "Invalid aligner"
-    }
-  }
-
-  // Specify output directory
-  aln_dir = "${params.outdir}/ALN/"
 }
 
-if (aln_dir != ''){
-  if (params.faa_dir != ''){
-    // If we are starting from here, read files
-    ALNS = Channel.
-      fromPath("${params.aln_dir}/*${params.aln_extension}").
-      map{file -> tuple(file.baseName, file)}
-  }
 
-  process raxml{
-    module 'raxml'
-    publishDir "${params.outdir}/TRE/", mode: 'copy'
-    cpus params.phylo_threads
-    memory params.phylo_mem
-    time params.phylo_time
 
-    input:
-    set filename, file(aln) from ALNS
 
-    output:
-    file "RAxML_bestTree.${filename}"
-    file "RAxML_bipartitionsBranchLabels.${filename}"
-    file "RAxML_bipartitions.${filename}"
-    file "RAxML_bootstrap.${filename}"
-
-    """
-    raxmlHPC-PTHREADS \
-      -s $aln \
-      -f a \
-      -x 12345 \
-      -p 12345 \
-      -# ${params.bootstrap} \
-      -m PROTGAMMAAUTO \
-      -T ${params.phylo_threads} \
-      -n $filename
-    """
-  }
-}
+// // Determine which output is present
+// if (nuc_dir != ''){
+//   NUCS = Channel.
+//     fromPath("${nuc_dir}/*${params.nuc_extension}").
+//     map{file -> tuple(file.baseName, file)}
+//
+//
+//
+//   // Specify output directory
+//   faa_dir = "${params.outdir}/FAA/"
+// }
+//
+// if (faa_dir != ''){
+//   if (params.faa_dir != ''){
+//     // If we are starting from here, read files
+//     FAAS = Channel.
+//       fromPath("${params.faa_dir}/*${params.aa_extension}").
+//       map{file -> tuple(file.baseName, file)}
+//   }
+//
+//   // Specify output directory
+//   aln_dir = "${params.outdir}/ALN/"
+// }
+//
+// if (aln_dir != ''){
+//   if (params.faa_dir != ''){
+//     // If we are starting from here, read files
+//     ALNS = Channel.
+//       fromPath("${params.aln_dir}/*${params.aln_extension}").
+//       map{file -> tuple(file.baseName, file)}
+//   }
+//
+//   process raxml{
+//     module 'raxml'
+//     publishDir "${params.outdir}/TRE/", mode: 'copy'
+//     cpus params.phylo_threads
+//     memory params.phylo_mem
+//     time params.phylo_time
+//
+//     input:
+//     set filename, file(aln) from ALNS
+//
+//     output:
+//     file "RAxML_bestTree.${filename}"
+//     file "RAxML_bipartitionsBranchLabels.${filename}"
+//     file "RAxML_bipartitions.${filename}"
+//     file "RAxML_bootstrap.${filename}"
+//
+//     """
+//     raxmlHPC-PTHREADS \
+//       -s $aln \
+//       -f a \
+//       -x 12345 \
+//       -p 12345 \
+//       -# ${params.bootstrap} \
+//       -m PROTGAMMAAUTO \
+//       -T ${params.phylo_threads} \
+//       -n $filename
+//     """
+//   }
+// }
