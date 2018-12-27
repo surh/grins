@@ -103,13 +103,14 @@ aln_dir = params.aln_dir
 // Create channels and check that only one input is passed
 n_dirs = 0
 mydir = ''
-if (nuc_dir != ''){
+if(nuc_dir != ''){
   n_dirs = n_dirs + 1
   mydir = nuc_dir
   NUCS = Channel.
     fromPath("${nuc_dir}/*${params.nuc_extension}").
     map{file -> tuple(file.baseName, file)
-} else{
+}
+else{
   NUCS = Channel.empty()
 }
 
@@ -119,7 +120,8 @@ if (faa_dir != ''){
   FAAS = Channel.
     fromPath("${params.faa_dir}/*${params.aa_extension}").
     map{file -> tuple(file.baseName, file)
-} else{
+}
+else{
   FAAS = Channel.empty()
 }
 
