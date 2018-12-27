@@ -128,7 +128,7 @@ if (aln_dir != ''){
   mydir = aln_dir
   ALNS = Channel.
     fromPath("${params.aln_dir}/*${params.aln_extension}").
-    map{file -> tuple(file.baseName, file)}}
+    map{file -> tuple(file.baseName, file)}
 } else{
   ALNS = Channel.empty()
 }
