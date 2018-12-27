@@ -109,7 +109,7 @@ if (nuc_dir != ''){
   NUCS = Channel.
     fromPath("${nuc_dir}/*${params.nuc_extension}").
     map{file -> tuple(file.baseName, file)
-}else{
+} else{
   NUCS = Channel.empty()
 }
 
@@ -119,7 +119,7 @@ if (faa_dir != ''){
   FAAS = Channel.
     fromPath("${params.faa_dir}/*${params.aa_extension}").
     map{file -> tuple(file.baseName, file)
-}else{
+} else{
   FAAS = Channel.empty()
 }
 
@@ -129,7 +129,7 @@ if (aln_dir != ''){
   ALNS = Channel.
     fromPath("${params.aln_dir}/*${params.aln_extension}").
     map{file -> tuple(file.baseName, file)}
-}else{
+} else{
   ALNS = Channel.empty()
 }
 
