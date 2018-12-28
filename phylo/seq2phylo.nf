@@ -68,7 +68,8 @@ Genetic code table for translation. Default 'Standard'.
 Parameters that control computational resource allocation for alignments
 and phylogenetic reconstruction. Defaults are 24 hrs with 2GB of memory
 single thread for alignment and three threads for phylogenetic
-reconstruction.
+reconstruction. Specify time and format using the following format:
+`--aln_mem 2GB --aln_time 24h`
 ################################################# */
 
 // Parameters
