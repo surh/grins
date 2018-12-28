@@ -96,7 +96,7 @@ params.phylo_mem = '2GB'
 params.phylo_threads = 3
 
 // Sherlock specific params
-params.sherlock_norm = false
+params.sherlock_normal = false
 
 // ############## Process parameters #############
 nuc_dir = params.nuc_dir
@@ -104,7 +104,7 @@ faa_dir = params.faa_dir
 aln_dir = params.aln_dir
 
 // Decide if QOS is needed  (sherlock normal queue)
-qos_options = params.sherlock_norm ? '--qos=long' : ''
+qos_options = params.sherlock_normal ? '--qos=long' : ''
 
 // Create channels and check that only one input is passed.
 // Empty channels are created for directories not provided,
