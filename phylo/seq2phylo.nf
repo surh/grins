@@ -178,7 +178,6 @@ process align{
   cpus params.aln_threads
   memory params.aln_mem
   time params.aln_time
-  clusterOptions ''
 
   input:
   set filename, file(seqs) from FAAS.mix(FAAS2)
@@ -214,6 +213,7 @@ process raxml{
   cpus params.phylo_threads
   memory params.phylo_mem
   time params.phylo_time
+  clusterOptions '--qos=long'
 
   input:
   set filename, file(aln) from ALNS.mix(ALNS2)
