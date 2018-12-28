@@ -178,6 +178,7 @@ process align{
   cpus params.aln_threads
   memory params.aln_mem
   time params.aln_time
+  clusterOptions ''
 
   input:
   set filename, file(seqs) from FAAS.mix(FAAS2)
