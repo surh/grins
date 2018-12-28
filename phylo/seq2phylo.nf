@@ -111,9 +111,6 @@ aln_dir = params.aln_dir
 
 // Decide if QOS is needed  (sherlock normal queue)
 qos_options = params.sherlock_normal ? '--qos=long' : ''
-println "======"
-println qos_options
-println "======"
 
 // Create channels and check that only one input is passed.
 // Empty channels are created for directories not provided,
