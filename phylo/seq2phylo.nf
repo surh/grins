@@ -70,6 +70,12 @@ and phylogenetic reconstruction. Defaults are 24 hrs with 2GB of memory
 single thread for alignment and three threads for phylogenetic
 reconstruction. Specify time and format using the following format:
 `--aln_mem 2GB --aln_time 24h`
+
+--sherlock_normal
+This is a custom flag specifically made for users of the 'normal' partition
+in sherlock. Passing this flag will ensure that the --qos=long option is
+used. It must be used only when running the pipeline in the normal partition
+of sherlock.
 ################################################# */
 
 // Parameters
