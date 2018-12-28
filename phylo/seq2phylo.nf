@@ -95,10 +95,16 @@ params.phylo_time = '24h'
 params.phylo_mem = '2GB'
 params.phylo_threads = 3
 
+// Sherlock specific params
+params.sherlock_norm = false
+
 // ############## Process parameters #############
 nuc_dir = params.nuc_dir
 faa_dir = params.faa_dir
 aln_dir = params.aln_dir
+
+// Decide if QOS is needed  (sherlock normal queue)
+qos_options = params.sherlock_norm ? '--qos=long' : ''
 
 // Create channels and check that only one input is passed.
 // Empty channels are created for directories not provided,
@@ -155,6 +161,7 @@ if (myfiles == null){
 // ################ PROCESSES ################
 process translate{
   publishDir "${params.outdir}/FAA/", mode: 'copy'
+  clusterOptions qos_options
 
   input:
   set filename, file(seqs) from NUCS
@@ -178,6 +185,7 @@ process align{
   cpus params.aln_threads
   memory params.aln_mem
   time params.aln_time
+  clusterOptions qos_options
 
   input:
   set filename, file(seqs) from FAAS.mix(FAAS2)
@@ -213,7 +221,7 @@ process raxml{
   cpus params.phylo_threads
   memory params.phylo_mem
   time params.phylo_time
-  clusterOptions '--qos=long'
+  clusterOptions qos_options
 
   input:
   set filename, file(aln) from ALNS.mix(ALNS2)
