@@ -94,13 +94,14 @@ params.phylo_time = '24h'
 params.phylo_mem = '2GB'
 params.phylo_threads = 3
 
-// ############## Process paramters #############
+// ############## Process parameters #############
 nuc_dir = params.nuc_dir
 faa_dir = params.faa_dir
 aln_dir = params.aln_dir
 
-// ################# Run checks #################
-// Create channels and check that only one input is passed
+// Create channels and check that only one input is passed.
+// Empty channels are created for directories not provided,
+// which allows for the corresponding processes to be skipped.
 n_dirs = 0
 mydir = ''
 if(nuc_dir != ''){
@@ -147,12 +148,10 @@ if (myfiles == null){
   error """ERROR: The provided directory is empty"""
 }
 
-// Check modules are installed. ALL ATTEMPTS FAILED
+// Check modules are installed. ALL ATTEMPTS FAILED. Checks will be
+// performed on each process.
 
-// ################ Run pipeline ################
-
-
-// Processes
+// ################ PROCESSES ################
 process translate{
   publishDir "${params.outdir}/FAA/", mode: 'copy'
 
@@ -207,67 +206,31 @@ process align{
   }
 }
 
+process raxml{
+  module 'raxml'
+  publishDir "${params.outdir}/TRE/", mode: 'copy'
+  cpus params.phylo_threads
+  memory params.phylo_mem
+  time params.phylo_time
 
+  input:
+  set filename, file(aln) from ALNS.mix(ALNS2)
 
+  output:
+  file "RAxML_bestTree.${filename}"
+  file "RAxML_bipartitionsBranchLabels.${filename}"
+  file "RAxML_bipartitions.${filename}"
+  file "RAxML_bootstrap.${filename}"
 
-// // Determine which output is present
-// if (nuc_dir != ''){
-//   NUCS = Channel.
-//     fromPath("${nuc_dir}/*${params.nuc_extension}").
-//     map{file -> tuple(file.baseName, file)}
-//
-//
-//
-//   // Specify output directory
-//   faa_dir = "${params.outdir}/FAA/"
-// }
-//
-// if (faa_dir != ''){
-//   if (params.faa_dir != ''){
-//     // If we are starting from here, read files
-//     FAAS = Channel.
-//       fromPath("${params.faa_dir}/*${params.aa_extension}").
-//       map{file -> tuple(file.baseName, file)}
-//   }
-//
-//   // Specify output directory
-//   aln_dir = "${params.outdir}/ALN/"
-// }
-//
-// if (aln_dir != ''){
-//   if (params.faa_dir != ''){
-//     // If we are starting from here, read files
-//     ALNS = Channel.
-//       fromPath("${params.aln_dir}/*${params.aln_extension}").
-//       map{file -> tuple(file.baseName, file)}
-//   }
-//
-//   process raxml{
-//     module 'raxml'
-//     publishDir "${params.outdir}/TRE/", mode: 'copy'
-//     cpus params.phylo_threads
-//     memory params.phylo_mem
-//     time params.phylo_time
-//
-//     input:
-//     set filename, file(aln) from ALNS
-//
-//     output:
-//     file "RAxML_bestTree.${filename}"
-//     file "RAxML_bipartitionsBranchLabels.${filename}"
-//     file "RAxML_bipartitions.${filename}"
-//     file "RAxML_bootstrap.${filename}"
-//
-//     """
-//     raxmlHPC-PTHREADS \
-//       -s $aln \
-//       -f a \
-//       -x 12345 \
-//       -p 12345 \
-//       -# ${params.bootstrap} \
-//       -m PROTGAMMAAUTO \
-//       -T ${params.phylo_threads} \
-//       -n $filename
-//     """
-//   }
-// }
+  """
+  raxmlHPC-PTHREADS \
+    -s $aln \
+    -f a \
+    -x 12345 \
+    -p 12345 \
+    -# ${params.bootstrap} \
+    -m PROTGAMMAAUTO \
+    -T ${params.phylo_threads} \
+    -n $filename
+  """
+}
