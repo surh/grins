@@ -19,8 +19,13 @@ import numpy as np
 
 
 def calculate_compression_ratio(seq):
+    """Compresses a string using zlib and returns the compression
+    ratio, as the ratio of number of characters in the compressed
+    string over the number of characters in the original screen"""
+
     seq_c = zlib.compress(seq.encode('utf-8'), level=9)
 
+    # The minus 8 is the decompression key string length.
     return (len(seq_c) - 8) / len(seq)
 
 
