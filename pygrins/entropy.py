@@ -44,7 +44,7 @@ def sw_compression_ratio(seq, start=0, step=1, window=1):
 
     :param seq: A sequence represented as a string
     :type seq: str
-    :param start: Position to start the slidinw windows (0-indexed).
+    :param start: Position to start the sliding windows (0-indexed).
     :type start: int, optional
     :param step: Step size of the sliding window.
     :type step: int, optional
@@ -112,7 +112,7 @@ def sw_kmer_shannon(seq, start=0, step=5, window=20, k=3):
 
     :param seq: A sequence represented as a string.
     :type seq: str
-    :param start: Position to start the slidinw windows (0-indexed).
+    :param start: Position to start the sliding windows (0-indexed).
     :type start: int, optional
     :param step: Step size of the sliding window.
     :type step: int, optional
@@ -182,7 +182,7 @@ def process_arguments():
                           "k values. It prints the results into a file. "
                           "The functions in the file, can also be imported "
                           "and used in another script. It requires numpy and "
-                          "zlib. All cordinates are 0-indexed.")
+                          "zlib. All coordinates are 0-indexed.")
 
     # Define required arguments
     required.add_argument("fasta", help=("FASTA file with sequences."),
@@ -192,13 +192,13 @@ def process_arguments():
     parser.add_argument("--outfile", help=("Name of the outfile for results. "
                                            "The results will be in a "
                                            "tab-delimited table that has "
-                                           "columns id (corresponding to the "
+                                           "columns: id (the "
                                            "FASTA record id), start (first "
-                                           "position of the window), end (the "
+                                           "position of the window), end ("
                                            "first position NOT inside the "
-                                           "window), compratio (for the "
+                                           "window), compratio ("
                                            "compression ratio), and columns "
-                                           "Hk_<k>mer (for k-mer entropy "
+                                           "Hk_<k>mer (k-mer entropy "
                                            "for each k value given). All "
                                            "coordinates are 0-INDEXED."),
                         type=str,
