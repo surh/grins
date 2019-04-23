@@ -278,10 +278,10 @@ if __name__ == "__main__":
                                                window=args.window,
                                                k=k))
 
-            # Write output
+            # Write output (should be function?)
             print("\tWriting output.")
             for i in range(len(compratio)):
-                # ID start and edn
+                # ID start and end
                 newline = [id, str(compratio[i][0]), str(compratio[i][1])]
 
                 # Compratio
