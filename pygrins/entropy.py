@@ -21,7 +21,14 @@ import numpy as np
 def calculate_compression_ratio(seq):
     """Compresses a string using zlib and returns the compression
     ratio, as the ratio of number of characters in the compressed
-    string over the number of characters in the original screen"""
+    string over the number of characters in the original screen
+
+    :param seq: A sequence represented as a string.
+    :type seq: str
+
+    :return: The compression ratio of the sequence by zlib
+    :rtype: float"""
+
 
     seq_c = zlib.compress(seq.encode('utf-8'), level=9)
 
@@ -30,6 +37,24 @@ def calculate_compression_ratio(seq):
 
 
 def sw_compression_ratio(seq, start=0, step=1, window=1):
+    """Takes a sequence, splits it in a series of sliding windows,
+    and applies calculate_compression_ratio to each window.
+
+    :param seq: A sequence represented as a string
+    :type seq: str
+    :param start: Position to start the slidinw windows (0-indexed).
+    :type start: int, optional
+    :param step: Step size of the sliding window.
+    :type step: int, optional
+    :param window: Window size of each sliding window.
+    :type window: int, optional
+
+    :return: A list of lists where each element gives the start and
+    end positions (0-indexed, open interval on the right) of each window,
+    and the compression ratio of each window.
+    :rtype: list
+    """
+
     H_seq = []
     for w_start in range(start, len(seq) - window + 1, step):
         w_end = min(w_start + window, len(seq))
@@ -40,6 +65,17 @@ def sw_compression_ratio(seq, start=0, step=1, window=1):
 
 
 def kmer_shannon(seq, k=3):
+    """Calculates the k-mer based Shannon entropy of a given sequence,
+    and k-mer length k.
+
+    :param seq: A sequence represented as a string.
+    :type seq: str
+    :param k: Length for the k-mers.
+    :type k: int, optional
+
+    :return: The k-mer based Shannon entropy of the sequence.
+    :rtype: float"""
+
     Kmers = dict()
     for start in range(len(seq) - k + 1):
         kmer = seq[start:start+k]
@@ -56,8 +92,28 @@ def kmer_shannon(seq, k=3):
 
 
 def sw_kmer_shannon(seq, start=0, step=5, window=20, k=3):
-    """Sliding window k-mer based Shannon entropy. Avoids re-calculating
-    shared sections between windows"""
+    """ Takes a sequence, splits it in a series of sliding windows,
+    and calculates the k-mer based Shannon entropy. It is more
+    efficient than independently applying kmer_shannon to each window,
+    because it avoids re-calculating the kmer abundances for shared portions
+    of consecutive sliding windows.
+
+    :param seq: A sequence represented as a string.
+    :type seq: str
+    :param start: Position to start the slidinw windows (0-indexed).
+    :type start: int, optional
+    :param step: Step size of the sliding window.
+    :type step: int, optional
+    :param window: Window size of each sliding window.
+    :type window: int, optional
+    :param k: Length for the k-mers.
+    :type k: int, optional
+
+    :return: A list of lists where each element gives the start and
+    end positions (0-indexed, open interval on the right) of each window,
+    and the compression ratio of each window.
+    :rtype: list
+    """
 
     prev_kmers = []
     Hk_seq = []
