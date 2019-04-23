@@ -29,6 +29,8 @@ def calculate_compression_ratio(seq):
     :return: The compression ratio of the sequence by zlib
     :rtype: float"""
 
+    if type(seq) is not str:
+        raise ValueError("seq must be of type 'str'.")
 
     seq_c = zlib.compress(seq.encode('utf-8'), level=9)
 
@@ -55,6 +57,11 @@ def sw_compression_ratio(seq, start=0, step=1, window=1):
     :rtype: list
     """
 
+    if start < 0:
+        raise ValueError("start must be a non-negative integer.")
+    if step < 1 or window < 1:
+        raise ValueError("step and window must be positive integers.")
+
     H_seq = []
     for w_start in range(start, len(seq) - window + 1, step):
         w_end = min(w_start + window, len(seq))
@@ -75,6 +82,11 @@ def kmer_shannon(seq, k=3):
 
     :return: The k-mer based Shannon entropy of the sequence.
     :rtype: float"""
+
+    if type(seq) is not str:
+        raise ValueError("seq must be of type 'str'.")
+    if k < 1:
+        raise ValueError("k must be a be positive integer.")
 
     Kmers = dict()
     for start in range(len(seq) - k + 1):
@@ -114,6 +126,11 @@ def sw_kmer_shannon(seq, start=0, step=5, window=20, k=3):
     and the compression ratio of each window.
     :rtype: list
     """
+
+    if type(seq) is not str:
+        raise ValueError("seq must be of type 'str'.")
+    if step < 1 or window < 1 or k < 1:
+        raise ValueError("step, window and k must be positive integers.")
 
     prev_kmers = []
     Hk_seq = []
