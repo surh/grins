@@ -16,6 +16,7 @@
 
 import zlib
 import numpy as np
+import argparse
 
 
 def calculate_compression_ratio(seq):
@@ -165,3 +166,55 @@ def sw_kmer_shannon(seq, start=0, step=5, window=20, k=3):
         Hk_seq.append([w_start, w_end, -np.sum(w_pi * np.log2(w_pi))])
 
     return Hk_seq
+
+
+def process_arguments():
+    # Read arguments
+    parser_format = argparse.ArgumentDefaultsHelpFormatter
+    parser = argparse.ArgumentParser(formatter_class=parser_format)
+    required = parser.add_argument_group("Required arguments")
+
+    # Define description
+    parser.description = ("Script that takes a fasta file and, for each "
+                          "record in the file, it calculates its compression "
+                          "ratio, and k-mer based Shannon entropy for various "
+                          "k values. It prints the results into a file. "
+                          "The functions in the file, can also be imported "
+                          "and used in another script. It requires numpy and "
+                          "zlib. All cordinates are 0-indexed.")
+
+    # Define required arguments
+    required.add_argument("fasta", help=("FASTA file with sequences."),
+                          required=True, type=str)
+
+    # Define other arguments
+    parser.add_argument("--outfile", help=("Name of the outfile for results"),
+                        type=str,
+                        default="results.txt")
+    parser.add_argument("--step", help=("Step size."),
+                        default=30,
+                        type=int)
+    parser.add_argument("--window", help=("Window size."),
+                        type=int,
+                        default=150)
+    parser.add_argument("-k", help=("Sizes for k-mers to calculate entropy."),
+                        type=int,
+                        default=[3, 4])
+    parser.add_argument("--format", help=("Format of output table."),
+                        type=str,
+                        default="bed",
+                        choices=["bed", "gff", "tab"])
+
+    # Read arguments
+    print("Reading arguments")
+    args = parser.parse_args()
+
+    # Processing goes here if needed
+
+    return args
+
+
+if __name__ == "__main__":
+    args = process_arguments()
+
+    print(args.k)
