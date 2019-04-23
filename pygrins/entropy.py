@@ -185,7 +185,7 @@ def process_arguments():
 
     # Define required arguments
     required.add_argument("fasta", help=("FASTA file with sequences."),
-                          required=True, type=str)
+                          type=str)
 
     # Define other arguments
     parser.add_argument("--outfile", help=("Name of the outfile for results"),
@@ -197,8 +197,11 @@ def process_arguments():
     parser.add_argument("--window", help=("Window size."),
                         type=int,
                         default=150)
-    parser.add_argument("-k", help=("Sizes for k-mers to calculate entropy."),
+    parser.add_argument("--k", help=("Sizes for k-mers to calculate entropy. "
+                                     "Use space-separated values for multiple "
+                                     "values. ie. '--k 4 5'"),
                         type=int,
+                        nargs="+",
                         default=[3, 4])
     parser.add_argument("--format", help=("Format of output table."),
                         type=str,
