@@ -191,7 +191,16 @@ def process_arguments():
     # Define other arguments
     parser.add_argument("--outfile", help=("Name of the outfile for results. "
                                            "The results will be in a "
-                                           "tab-delimited table that has "),
+                                           "tab-delimited table that has "
+                                           "columns id (corresponding to the "
+                                           "FASTA record id), start (the first "
+                                           "position of the window), end (the "
+                                           "first position NOT inside the "
+                                           "window), compratio (for the "
+                                           "compression ratio), and columns "
+                                           "Hk_<k>mer (for k-mer entropy "
+                                           "for each k value given). All "
+                                           "coordinates are 0-INDEXED."),
                         type=str,
                         default="results.txt")
     parser.add_argument("--step", help=("Step size."),
