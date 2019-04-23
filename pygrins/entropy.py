@@ -193,7 +193,7 @@ def process_arguments():
                                            "The results will be in a "
                                            "tab-delimited table that has "
                                            "columns id (corresponding to the "
-                                           "FASTA record id), start (the first "
+                                           "FASTA record id), start (first "
                                            "position of the window), end (the "
                                            "first position NOT inside the "
                                            "window), compratio (for the "
