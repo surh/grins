@@ -16,7 +16,6 @@
 
 import zlib
 import numpy as np
-import argparse
 
 
 def calculate_compression_ratio(seq):
@@ -169,6 +168,8 @@ def sw_kmer_shannon(seq, start=0, step=5, window=20, k=3):
 
 
 def process_arguments():
+    import argparse
+
     # Read arguments
     parser_format = argparse.ArgumentDefaultsHelpFormatter
     parser = argparse.ArgumentParser(formatter_class=parser_format)
@@ -203,10 +204,12 @@ def process_arguments():
                         type=int,
                         nargs="+",
                         default=[3, 4])
-    parser.add_argument("--format", help=("Format of output table."),
-                        type=str,
-                        default="bed",
-                        choices=["bed", "gff", "tab"])
+    # In order to include format, only one of the stats can be included,
+    # unless I use the annotation field of GFF3.
+    # parser.add_argument("--format", help=("Format of output table."),
+    #                     type=str,
+    #                     default="bed",
+    #                     choices=["bed", "gff", "tab"])
 
     # Read arguments
     print("Reading arguments")
@@ -216,8 +219,38 @@ def process_arguments():
 
     return args
 
+def create_header(k=[]):
+    """Creates header for output file.
+
+    :param k: List of k values that were submitted.
+    :type k: list
+
+    :return: A string.
+    :rtype: str"""
+
+    header = ['id', 'start', 'end', 'compratio']
+
+    for x in k:
+        header.append(''.join(['Hk_', str(x), 'mer']))
+
+    header = "\t".join(header)
+    return header
+
 
 if __name__ == "__main__":
+    from Bio import SeqIO
+
+    # Process arguments
     args = process_arguments()
 
-    print(args.k)
+    with open(args.fasta, 'r') as input, open(args.outfile, 'w') as output:
+        output.write(create_header(k=args.k) + "\n")
+        for record in SeqIO.parse(input, 'fasta'):
+            id = record.id
+            print(id)
+
+            # Calculate compression ratio
+            # compratio = sw_compression_ratio(record.seq,
+            #                                  start=0,
+            #                                  step=args.step,
+            #                                  window=args.window)
