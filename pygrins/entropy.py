@@ -189,7 +189,9 @@ def process_arguments():
                           type=str)
 
     # Define other arguments
-    parser.add_argument("--outfile", help=("Name of the outfile for results"),
+    parser.add_argument("--outfile", help=("Name of the outfile for results. "
+                                           "The results will be in a "
+                                           "tab-delimited table that has "),
                         type=str,
                         default="results.txt")
     parser.add_argument("--step", help=("Step size."),
@@ -205,7 +207,8 @@ def process_arguments():
                         nargs="+",
                         default=[3, 4])
     # In order to include format, only one of the stats can be included,
-    # unless I use the annotation field of GFF3.
+    # unless I use the annotation field of GFF3.I could eventually choose
+    # to give the option of only calculate one stat.
     # parser.add_argument("--format", help=("Format of output table."),
     #                     type=str,
     #                     default="bed",
@@ -216,8 +219,10 @@ def process_arguments():
     args = parser.parse_args()
 
     # Processing goes here if needed
+    args.k = np.sort(args.k)
 
     return args
+
 
 def create_header(k=[]):
     """Creates header for output file.
@@ -247,10 +252,36 @@ if __name__ == "__main__":
         output.write(create_header(k=args.k) + "\n")
         for record in SeqIO.parse(input, 'fasta'):
             id = record.id
-            print(id)
+            print("Processing {}".format(id))
 
             # Calculate compression ratio
-            # compratio = sw_compression_ratio(record.seq,
-            #                                  start=0,
-            #                                  step=args.step,
-            #                                  window=args.window)
+            compratio = sw_compression_ratio(str(record.seq),
+                                             start=0,
+                                             step=args.step,
+                                             window=args.window)
+
+            # Calculate entropy
+            Entropy = []
+            for k in args.k:
+                Entropy.append(sw_kmer_shannon(str(record.seq),
+                                               start=0,
+                                               step=args.step,
+                                               window=args.window,
+                                               k=k))
+
+            # Write output
+            print("\tWriting output.")
+            for i in range(len(compratio)):
+                # ID start and edn
+                newline = [id, str(compratio[i][0]), str(compratio[i][1])]
+
+                # Compratio
+                newline.append(str(compratio[i][2]))
+
+                # Hk entropies
+                newline.extend([str(e[i][2]) for e in Entropy])
+
+                # Write
+                output.write("\t".join(newline) + "\n")
+    input.close()
+    output.close()
