@@ -11,6 +11,20 @@ contents of this directory to a given location.
 
 # Files
 
+* **annotate\_tree\_example.r** Example R code to annotate a phylogenetic
+tree. Requires ggtree (and ape and ggplot2 which should be installed when
+ggtree installs).
+
+* **RAxML_bipartitionsBranchLabels.example** Example RAxML output file
+using _correct_ branch labeling with bootstrap support values. However,
+R functions that read newick format do not recognize this labels as support
+values.
+
+* **RAxML_bipartitions.example** The same tree as above, but using internal
+node labels as support labels. This is a common, if incorrect practice. R
+functions from a variety of packages (ape, phyloseq, phytools, etc) use
+this format to read support values.
+
 * **seq2phylo.nf**: Nextflow pipeline that starts with DNA sequences and
 produces a phylogeny. It can also start from aminoacid fasta sequences or
 multiple sequence alignments. It is highly recommended to read the

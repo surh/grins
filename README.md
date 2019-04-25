@@ -29,3 +29,4 @@ section whenever a new directory is added to the root.
 | --------- | ----------------------------------------------- |
 | detection | Code an scripts to test methods to detect grins |
 | phylo     | Code an scripts for phylogenetic analysis       |
+| pygrins   | Pythin code for GRINS analysis.                 |
