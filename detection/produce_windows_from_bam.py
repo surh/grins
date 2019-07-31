@@ -182,5 +182,5 @@ if __name__ == "__main__":
     bam_windows = find_bam_windows(args.input)
     res_windows = merge_bam_windows(bam_windows=bam_windows,
                                     w_size=args.w_size)
-    print("Found:", res_windows.n_windows, "windows")
+    print("Found:", res_windows.n_windows(), "windows")
     write_gff3(windows=res_windows, output=args.output)
