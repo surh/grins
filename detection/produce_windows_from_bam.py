@@ -141,6 +141,45 @@ def find_bam_windows(file):
     return multi_windows
 
 
+def merge_bam_windows(bam_windows, w_size=150):
+    """Needs improvement. Takes output from find_bam_windows and produces
+    windows object with merged overlapping windows.
+    NOTE: No support for multiple references (i.e. contig/chromosome)
+    """
+
+    res = windows()
+    for w in bam_windows:
+        # Add query window
+        new_w = window(start=w[1], end=w[2])
+        res.add_window(w=new_w)
+        # add target
+        new_w = window(start=w[3], end=w[3]+w_size)
+        res.add_window(w=new_w)
+
+    return res
+
+
+def write_gff3(windows, output):
+    with open(output, 'w') as oh:
+        oh.write("##gff-version 3\n")
+        i = 1
+        for w in windows.windows:
+            id = ''.join(['ID=pGRINS_', str(i)])
+            # Create row, switch to 1-indexed with closed interval
+            row = ['seq', 'grinspred', 'pGRINS', w.start+1, w.end,
+                   '.', '+', ',', id]
+            row = "\t".join(row)
+            oh.write(row, "\n")
+            i = i + 1
+    oh.close()
+
+    return output
+
+
 if __name__ == "__main__":
     args = process_arguments()
     bam_windows = find_bam_windows(args.input)
+    res_windows = merge_bam_windows(bam_windows=bam_windows,
+                                    w_size=args.w_size)
+    print("Found:", res_windows.n_windows, "windows")
+    write_gff3(windows=res_windows, output=args.output)
