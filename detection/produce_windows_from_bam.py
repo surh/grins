@@ -168,7 +168,7 @@ def write_gff3(windows, output):
             # Create row, switch to 1-indexed with closed interval
             row = ['seq', 'grinspred', 'pGRINS',
                    str(w.start+1), str(w.end),
-                   '.', '+', ',', id]
+                   '.', '+', '.', id]
             row = "\t".join(row)
             oh.write(row + "\n")
             i = i + 1
