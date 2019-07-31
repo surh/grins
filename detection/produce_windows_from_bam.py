@@ -1,0 +1,146 @@
+#!/usr/bin/env python
+# Copyright (C) 2019 Sur Herrera Paredes
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+import pysam
+import argparse
+# from Bio import SeqIO
+
+
+class windows:
+    """A list of window elements with methods to ensure that new overlapping
+    windows are merged into existing ones."""
+
+    def __init__(self):
+        self.windows = []
+
+    def find_overlaps(self, w):
+        """Finds if any existing window overlaps with window w, and
+        returns list of indexes of overlapping windows"""
+
+        overlaps = []
+        for i in range(len(self.windows)):
+            check1 = w.start < self.windows[i].end
+            check2 = self.windows[i].start < w.end
+            if check1 and check2:
+                overlaps.append(i)
+
+        return overlaps
+
+    def update_window(self, i, start, end):
+        """Update existing window.
+        Probably should be a method of class window"""
+        self.windows[i].start = start
+        self.windows[i].end = end
+
+    def remove_windows(self, index):
+        """Remove a list of windows by index"""
+
+        # Important to reverse to ensure the correct windows are removed
+        for i in sorted(index, reverse=True):
+            del self.windows[i]
+
+    def add_window(self, w):
+        """Adds a new window. If no overlaps are found, just add the window.
+        If overlaps. Define new window by merging all overlaps, and then
+        replace old windows with the new merged one."""
+
+        overlaps = self.find_overlaps(w=w)
+        if len(overlaps) == 0:
+            self.windows.append(w)
+        elif len(overlaps) > 0:
+            start = w.start
+            end = w.end
+            for i in overlaps:
+                start = min(start, self.windows[i].start)
+                end = max(end, self.windows[i].end)
+
+            new_w = window(start, end)
+            self.remove_windows(overlaps)
+            self.add_window(w=new_w)
+        else:
+            raise ValueError("Incorrect number of overlaps")
+
+    def n_windows(self):
+        """Returns number of windows in the list"""
+
+        return len(self.windows)
+
+
+class window:
+    """A simple window class"""
+
+    def __init__(self, start, end):
+        if start < 0 or end < 0:
+            raise ValueError("start and end must be non negative.")
+        if type(start) is not int or type(end) is not int:
+            raise ValueError("start and end must be integers.")
+        if start > end:
+            raise ValueError("start cannot be greater than end.")
+        self.start = start
+        self.end = end
+
+
+def process_arguments():
+    # Read arguments
+    parser_format = argparse.ArgumentDefaultsHelpFormatter
+    parser = argparse.ArgumentParser(formatter_class=parser_format)
+    required = parser.add_argument_group("Required arguments")
+
+    # Define description
+    parser.description = ("Find windows of repeated elements from bam file")
+
+    # Define required arguments
+    required.add_argument("--input", help=("A bam file as produced from "
+                                           "converting bowtie2 output. "
+                                           "Query names must be START_END."),
+                          required=True, type=str)
+
+    # Define other arguments
+    parser.add_argument("--output", help=("Name for output GFF3 file"),
+                        type=str,
+                        default="grins.gff3")
+    parser.add_argument("--w_size", help=("Window size (needed?)"),
+                        type=int,
+                        default=150)
+
+    # Read arguments
+    print("Reading arguments")
+    args = parser.parse_args()
+
+    # Processing goes here if needed
+
+    return args
+
+
+def find_bam_windows(file):
+    """Reads bam file and finds alignment windows"""
+    # Read samfile and produce list of alignment windows
+    samfile = pysam.AlignmentFile(file, "rb")
+    reads = samfile.fetch(until_eof=True)
+    multi_windows = []
+    for r in reads:
+        start, end = [int(i) for i in r.query_name.split('_')]
+        if r.pos != start:
+            my_read = [r.query_name, start, end, r.pos, r.mapping_quality]
+            multi_windows.append(my_read)
+
+    return multi_windows
+
+
+if __name__ == "__main__":
+    args = process_arguments()
+    bam_windows = find_bam_windows(args.input)
