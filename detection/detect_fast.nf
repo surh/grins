@@ -79,13 +79,14 @@ process split_in_windows{
 process bowtie2{
   label 'bowtie2'
   label 'samtools'
+  publishDir "${params.outdir}/bam/", mode: 'rellink'
 
   input:
   file ref from FORINDEX
   file windows from WINDOWS
 
   output:
-  file 'mapping.bam' into BAMS
+  file '*.bam' into BAMS
 
   """
   bowtie2-build $ref
