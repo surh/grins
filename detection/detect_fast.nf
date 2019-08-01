@@ -98,7 +98,7 @@ process bowtie2{
     --threads 1 \
     -x $ref \
     -U windows | \
-    samtools view -b - > mapping.bam
+    samtools view -b - > ${ref}.bam
 
   """
 }
