@@ -43,6 +43,7 @@ if(params.format == 'genbank'){
 
 process gbk2fasta{
   label 'py3'
+  publishDir "${params.outdir}/fasta/", mode: 'rellink'
 
   input:
   file gbk_file from GBKS
