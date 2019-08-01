@@ -100,7 +100,7 @@ process bowtie2{
     --time \
     --threads 1 \
     -x $ref \
-    -U windows | \
+    -U $windows | \
     samtools view -b - > ${ref}.bam
 
   """
