@@ -18,6 +18,7 @@
 from Bio import SeqIO
 from Bio import SeqRecord
 import argparse
+import os
 
 
 def process_arguments():
@@ -34,9 +35,11 @@ def process_arguments():
                           required=True, type=str)
 
     # Define other arguments
-    parser.add_argument("--output", help=("Output filename"),
+    parser.add_argument("--output", help=("Output filename. If empty, the "
+                                          "output will be "
+                                          "<basename>_windows.fasta"),
                         type=str,
-                        default="outfile.fasta")
+                        default="")
     parser.add_argument("--w_size", help=("Window size"),
                         type=int,
                         default=150)
@@ -81,6 +84,12 @@ if __name__ == "__main__":
                              "Only the first record was processed.")
         print(record.id)
         windows = create_window_records(record, args.w_size, args.s_size)
+
+        # Create output name if needed
+        if args.output == '':
+            name = os.path.basename(os.path.splitext('/home/sur/test.txt')[0])
+            args.output = name + '_windows.fasta'
+
         with open(args.output, 'w') as oh:
             SeqIO.write(windows, oh, "fasta")
         oh.close()
