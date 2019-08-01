@@ -91,7 +91,7 @@ process bowtie2{
   file '*.bam' into BAMS
 
   """
-  bowtie2-build $ref
+  bowtie2-build $ref $ref
   bowtie2 \
     -f \
     --end-to-end \
