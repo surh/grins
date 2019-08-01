@@ -62,7 +62,7 @@ process split_in_windows{
   label 'py3'
 
   input:
-  file seq from FORWINDWS
+  file seq from FORWINDOWS
   val w_size from params.w_size
   val s_size from params.s_size
 
