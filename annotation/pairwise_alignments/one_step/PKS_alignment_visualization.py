@@ -24,6 +24,7 @@ record_name=record.name
 homology_matrix=[]
 for i in range(0,len(sequence)):
 	homology_matrix.append([])
+	print("Current window:", i)
 	for j in range(0,len(sequence)):
 		subseq1=sequence[i:i+150]
 		subseq2=sequence[j:j+150]
@@ -36,4 +37,3 @@ with open(args.output_folder+record_name+"_window150_step30.txt",'w') as output_
         for j in range(0,len(homology_matrix[i])):
             output_file.write(str(homology_matrix[i][j])+",")
         output_file.write("\n")
-     
