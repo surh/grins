@@ -33,9 +33,9 @@ if(params.format == 'genbank'){
 
 SEQS = Channel.fromPath("${params.indir}/*.${suffix}")
 if(params.format == 'genbank'){
-  SEQS.set{GBKS}
+  SEQS.into{GBKS}
 }else if(params.format == 'fasta'){
-  SEQS.set{FASTAS}
+  SEQS.into{FASTAS}
   GBKS = Channel.empty()
 }else{
   error "Wrong format\n"
