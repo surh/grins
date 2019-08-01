@@ -93,7 +93,7 @@ process bowtie2{
   """
   bowtie2-build $ref
   bowtie2 \
-    \-f \
+    -f \
     --end-to-end \
     --sensitive \
     -a \
