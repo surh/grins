@@ -58,6 +58,12 @@ if __name__ == "__main__":
             raise ValueError("There should be only one record in your input. "
                              "Only the first record was processed.")
         print(record.id)
+
+        # Create output name if needed
+        if args.output == '':
+            name = os.path.basename(os.path.splitext('/home/sur/test.txt')[0])
+            args.output = name + '.fasta'
+
         with open(args.output, 'w') as oh:
             SeqIO.write(record, oh, "fasta")
         oh.close()
