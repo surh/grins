@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
         # Create output name if needed
         if args.output == '':
-            name = os.path.basename(os.path.splitext('/home/sur/test.txt')[0])
+            name = os.path.basename(os.path.splitext(args.input)[0])
             args.output = name + '_windows.fasta'
 
         with open(args.output, 'w') as oh:

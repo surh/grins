@@ -16,7 +16,6 @@
 
 
 from Bio import SeqIO
-from Bio import SeqRecord
 import argparse
 import os
 
@@ -53,7 +52,7 @@ def process_arguments():
 if __name__ == "__main__":
     args = process_arguments()
     i = 0
-    for record in SeqIO.parse(args.input, args.format):
+    for record in SeqIO.parse(args.input, 'genbank'):
         if i > 0:
             raise ValueError("There should be only one record in your input. "
                              "Only the first record was processed.")
