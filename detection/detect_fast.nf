@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-
 // Params
 params.indir = ''
 params.outdir = 'output/'
@@ -107,5 +106,4 @@ process bowtie2{
   """
 }
 
-// ~/micropopgen/src/SeqTools/gbk2fasta.pl -i AB469193.gbk -o AB469193.fasta
 // ~/micropopgen/src/grins/detection/produce_windows_from_bam.py --input mapping.bam --output mapping_grins.gff3
