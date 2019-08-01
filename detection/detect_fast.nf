@@ -33,9 +33,9 @@ if(params.format == 'genbank'){
 
 SEQS = Channel.fromPath("${params.indir}/*.${suffix}")
 if(params.format == 'genbank'){
-  SEQS.into(GBKS)
+  SEQS.into{GBKS}
 }else if(params.format == 'fasta'){
-  SEQS.into(FASTAS)
+  SEQS.into{FASTAS}
   GBKS = Channel.empty()
 }else{
   error "Wrong format\n"
@@ -56,7 +56,7 @@ process gbk2fasta{
 }
 
 // Split fasta squences
-FASTAS.into(FORWINDOWS; FORINDEX)
+FASTAS.into{FORWINDOWS; FORINDEX}
 
 process split_in_windows{
   label 'py3'
