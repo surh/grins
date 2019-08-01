@@ -49,7 +49,7 @@ process gbk2fasta{
   file gbk_file from GBKS
 
   output:
-  file '*.fasta' into FASTAS
+  file '*.fasta' into FASTASFROMGBK
 
   """
   ${workflow.projectDir}/gbk2fasta.py --input $gbk_file
@@ -57,7 +57,7 @@ process gbk2fasta{
 }
 
 // Split fasta squences
-FASTAS.into{FORWINDOWS; FORINDEX}
+FASTASFROMGBK.mix(FASTAS).into{FORWINDOWS; FORINDEX}
 
 process split_in_windows{
   label 'py3'
