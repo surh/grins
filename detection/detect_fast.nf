@@ -65,12 +65,11 @@ process split_in_windows{
   val s_size from params.s_size
 
   output:
-  file 'windows.fasta' into WINDOWS
+  file '*_windows.fasta' into WINDOWS
 
   """
   ${workflow.projectDir}/split_seq_into_windows.py \
     --input $seq \
-    --output windows.fasta \
     --format fasta \
     --w_size $w_size \
     --s_size $s_size
