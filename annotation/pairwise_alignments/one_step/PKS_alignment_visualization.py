@@ -21,6 +21,7 @@ sequence=record.seq
 record_name=record.name
 
 # performing pairwise alignments for a sliding window of 150nt and a step of 30nt
+print("Starting homology matrix")
 homology_matrix=[]
 for i in range(0,len(sequence)):
 	homology_matrix.append([])
