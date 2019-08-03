@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+# Load libraries
 from Bio import SeqIO
 from Bio import SeqRecord
 import argparse
