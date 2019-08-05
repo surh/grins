@@ -54,8 +54,7 @@ if __name__ == "__main__":
     sequence = record.seq
     record_name = record.name
 
-    # performing pairwise alignments for a sliding window of
-    # 150nt and a step of 30nt
+    # performing pairwise alignments for a sliding window
     print("Initializing homology matrix")
     homology_matrix = []
 
