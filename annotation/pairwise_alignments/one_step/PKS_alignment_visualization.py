@@ -30,6 +30,12 @@ def process_arguments():
     parser.add_argument('-outfolder ', "--output_folder", type=str,
                         help="location of the output folder",
                         default='./')
+    parser.add_argument("--w_size", help=("Window size in nucleotides"),
+                        type=int,
+                        default=150)
+    parser.add_argument("--s_size", help=("Step size in nucleotides."),
+                        type=int,
+                        default=30)
 
     # Read arguments
     print("Reading arguments")
