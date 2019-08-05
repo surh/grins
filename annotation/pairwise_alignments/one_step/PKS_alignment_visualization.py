@@ -56,15 +56,15 @@ if __name__ == "__main__":
 
     # performing pairwise alignments for a sliding window of
     # 150nt and a step of 30nt
-    print("Starting homology matrix")
+    print("Initializing homology matrix")
     homology_matrix = []
 
     for i in range(0, len(sequence)):
         homology_matrix.append([])
         print("Current window:", i)
-        for j in range(0, len(sequence)):
-            subseq1 = sequence[i:i + 150]
-            subseq2 = sequence[j:j + 150]
+        for j in range(0, len(sequence), args.s_size):
+            subseq1 = sequence[i:i + args.w_size]
+            subseq2 = sequence[j:j + args.w_size]
             alignment = pairwise2.align.localxx(subseq1, subseq2,
                                                 score_only=True)
             homology_matrix[len(homology_matrix)-1].append(alignment)
