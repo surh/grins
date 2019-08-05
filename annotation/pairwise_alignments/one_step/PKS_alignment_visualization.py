@@ -58,7 +58,7 @@ if __name__ == "__main__":
     print("Initializing homology matrix")
     homology_matrix = []
 
-    for i in range(0, len(sequence)):
+    for i in range(0, len(sequence), args.s_size):
         homology_matrix.append([])
         print("Current window:", i)
         subseq1 = sequence[i:i + args.w_size]
