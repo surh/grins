@@ -62,15 +62,19 @@ if __name__ == "__main__":
     for i in range(0, len(sequence)):
         homology_matrix.append([])
         print("Current window:", i)
+        subseq1 = sequence[i:i + args.w_size]
         for j in range(0, len(sequence), args.s_size):
-            subseq1 = sequence[i:i + args.w_size]
             subseq2 = sequence[j:j + args.w_size]
             alignment = pairwise2.align.localxx(subseq1, subseq2,
                                                 score_only=True)
             homology_matrix[len(homology_matrix)-1].append(alignment)
 
     # saving the results
-    with open(args.output_folder+record_name+"_window150_step30.txt", 'w') as output_file:
+    output_name = "_window" + str(args.w_size) \
+                  + "_step" + str(args.s_size) + ".txt"
+    output_name = args.output_folder + '/' + record_name + output_name
+    print("Writing output file")
+    with open(output_name, 'w') as output_file:
         for i in range(0, len(homology_matrix)):
             for j in range(0, len(homology_matrix[i])):
                 output_file.write(str(homology_matrix[i][j])+",")
