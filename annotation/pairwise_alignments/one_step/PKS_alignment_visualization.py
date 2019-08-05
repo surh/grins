@@ -22,12 +22,12 @@ def process_arguments():
     parser.description = ("User-specified parameters for GRINS detection")
 
     # Define required arguments
-    required.add_argument('-infile ', "--input_file", type=str,
+    required.add_argument("--input_file", type=str,
                           help="name and location of the input GenBank file",
                           required=True)
 
     # Define other arguments
-    parser.add_argument('-outfolder ', "--output_folder", type=str,
+    parser.add_argument("--output_folder", type=str,
                         help="location of the output folder",
                         default='./')
     parser.add_argument("--w_size", help=("Window size in nucleotides"),
