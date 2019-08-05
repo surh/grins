@@ -22,10 +22,14 @@ def process_arguments():
     parser.description = ("User-specified parameters for GRINS detection")
 
     # Define required arguments
-    required.add_argument('-infile ', "--input_file", type=str, help="name and location of the input GenBank file", required=True)
+    required.add_argument('-infile ', "--input_file", type=str,
+                          help="name and location of the input GenBank file",
+                          required=True)
 
     # Define other arguments
-    parser.add_argument('-outfolder ', "--output_folder", type=str, help="location of the output folder")
+    parser.add_argument('-outfolder ', "--output_folder", type=str,
+                        help="location of the output folder",
+                        default='./')
 
     # Read arguments
     print("Reading arguments")
@@ -55,7 +59,8 @@ if __name__ == "__main__":
         for j in range(0, len(sequence)):
             subseq1 = sequence[i:i + 150]
             subseq2 = sequence[j:j + 150]
-            alignment = pairwise2.align.localxx(subseq1, subseq2, score_only=True)
+            alignment = pairwise2.align.localxx(subseq1, subseq2,
+                                                score_only=True)
             homology_matrix[len(homology_matrix)-1].append(alignment)
 
     # saving the results
