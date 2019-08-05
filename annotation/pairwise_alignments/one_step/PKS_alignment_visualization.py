@@ -11,10 +11,10 @@ import argparse
 
 
 def process_arguments():
-	"""Read and process command line arguments"""
+    """ Read and process"""
 
-	# Read arguments
-	parser_format = argparse.ArgumentDefaultsHelpFormatter
+    # Read arguments
+    parser_format = argparse.ArgumentDefaultsHelpFormatter
     parser = argparse.ArgumentParser(formatter_class=parser_format)
     required = parser.add_argument_group("Required arguments")
 
@@ -22,7 +22,7 @@ def process_arguments():
     parser.description = ("User-specified parameters for GRINS detection")
 
     # Define required arguments
-	required.add_argument('-infile ', "--input_file", type=str, help="name and location of the input GenBank file")
+    required.add_argument('-infile ', "--input_file", type=str, help="name and location of the input GenBank file")
 
     # Define other arguments
     parser.add_argument('-outfolder ',"--output_folder",type=str, help="location of the output folder")
