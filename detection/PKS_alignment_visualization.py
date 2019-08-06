@@ -1,12 +1,8 @@
 #!/usr/bin/env python
 # Copyright (C) 2019 Aleksandra Nivina, Sur Herrera Paredes
 
-# import Bio
-# from Bio.Seq import Seq
 from Bio import SeqIO
-# from Bio.Alphabet import IUPAC
 from Bio import pairwise2
-# import numpy as np
 import argparse
 
 
