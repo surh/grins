@@ -50,7 +50,7 @@ process{
   maxForks = 300
   queue = 'hbfraser,hns'
   memory = '5G'
-  time = 2d
+  time = '2d'
   withLabel: 'py3'{
     module = 'conda'
     conda = '/home/groups/hbfraser/modules/packages/conda/4.6.14/envs/fraserconda'
