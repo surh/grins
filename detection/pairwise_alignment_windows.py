@@ -32,7 +32,10 @@ def process_arguments():
     parser.add_argument("--s_size", help=("Step size in nucleotides."),
                         type=int,
                         default=30)
-    parser.add_argument()
+    parser.add_argument("--format", help=("Input format"),
+                        type=str,
+                        default='genbank',
+                        choices=['genbank', 'fasta'])
 
     # Read arguments
     print("Reading arguments")
@@ -47,7 +50,7 @@ if __name__ == "__main__":
     args = process_arguments()
 
     # Read sequence. NOTE: it only handles one record per file.
-    record = SeqIO.read(args.input, "gb")
+    record = SeqIO.read(args.input, args.format)
     sequence = record.seq
     record_name = record.name
 
