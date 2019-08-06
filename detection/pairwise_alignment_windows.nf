@@ -22,7 +22,7 @@ params.w_size = 150
 params.s_size = 30
 
 
-INPUTS = Channle.fromPath("${params.indir}/*")
+INPUTS = Channel.fromPath("${params.indir}/*")
 
 process pairwise{
   label 'py3'
