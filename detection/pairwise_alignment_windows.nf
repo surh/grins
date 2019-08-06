@@ -35,7 +35,7 @@ process pairwise{
   file "*.txt"
 
   """
-  ${workflow.projectDir}.pairwise_alignment_windows.py \
+  ${workflow.projectDir}/pairwise_alignment_windows.py \
     --input $sequence \
     --output ./ \
     --w_size ${params.w_size} \
