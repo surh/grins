@@ -1,12 +1,8 @@
 #!/usr/bin/env python
 # Copyright (C) 2019 Aleksandra Nivina, Sur Herrera Paredes
 
-# import Bio
-# from Bio.Seq import Seq
 from Bio import SeqIO
-# from Bio.Alphabet import IUPAC
 from Bio import pairwise2
-# import numpy as np
 import argparse
 
 
@@ -22,12 +18,12 @@ def process_arguments():
     parser.description = ("User-specified parameters for GRINS detection")
 
     # Define required arguments
-    required.add_argument("--input_file", type=str,
+    required.add_argument("--input", type=str,
                           help="name and location of the input GenBank file",
                           required=True)
 
     # Define other arguments
-    parser.add_argument("--output_folder", type=str,
+    parser.add_argument("--output", type=str,
                         help="location of the output folder",
                         default='./')
     parser.add_argument("--w_size", help=("Window size in nucleotides"),
@@ -36,6 +32,10 @@ def process_arguments():
     parser.add_argument("--s_size", help=("Step size in nucleotides."),
                         type=int,
                         default=30)
+    parser.add_argument("--format", help=("Input format"),
+                        type=str,
+                        default='genbank',
+                        choices=['genbank', 'fasta'])
 
     # Read arguments
     print("Reading arguments")
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     args = process_arguments()
 
     # Read sequence. NOTE: it only handles one record per file.
-    record = SeqIO.read(args.input_file, "gb")
+    record = SeqIO.read(args.input, args.format)
     sequence = record.seq
     record_name = record.name
 
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     # saving the results
     output_name = "_window" + str(args.w_size) \
                   + "_step" + str(args.s_size) + ".txt"
-    output_name = args.output_folder + '/' + record_name + output_name
+    output_name = args.output + '/' + record_name + output_name
     print("Writing output file")
     with open(output_name, 'w') as output_file:
         for i in range(0, len(homology_matrix)):

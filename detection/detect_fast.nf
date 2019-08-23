@@ -20,6 +20,7 @@ params.outdir = 'output/'
 params.format = 'genbank'
 params.w_size = 150
 params.s_size = 30
+params.vsearch_id = 0.9
 
 // Process params
 if(params.format == 'genbank'){
@@ -33,6 +34,7 @@ if(params.format == 'genbank'){
 SEQS = Channel.fromPath("${params.indir}/*.${suffix}")
 if(params.format == 'genbank'){
   SEQS.into{GBKS}
+  FASTAS = Channel.empty()
 }else if(params.format == 'fasta'){
   SEQS.into{FASTAS}
   GBKS = Channel.empty()
@@ -56,7 +58,7 @@ process gbk2fasta{
 }
 
 // Split fasta squences
-FASTASFROMGBK.mix(FASTAS).into{FORWINDOWS; FORINDEX}
+FASTASFROMGBK.mix(FASTAS).into{FORWINDOWS; FORINDEX; FORGFFFASTA; FORPLOTS}
 
 process split_in_windows{
   label 'py3'
@@ -88,7 +90,8 @@ process bowtie2{
   file windows from WINDOWS
 
   output:
-  file '*.bam' into BAMS
+  file '*.bam' into BAMS, BAMS_FOR_PLOT
+  val "$ref" into REFNAMES_FROM_BOWTIE2
 
   """
   bowtie2-build $ref $ref
@@ -102,8 +105,128 @@ process bowtie2{
     -x $ref \
     -U $windows | \
     samtools view -b - > ${ref}.bam
-
   """
 }
 
-// ~/micropopgen/src/grins/detection/produce_windows_from_bam.py --input mapping.bam --output mapping_grins.gff3
+process merge_bam_windows{
+  label 'py3'
+  publishDir "${params.outdir}/pGRINS.gff3/", mode: 'rellink'
+
+  input:
+  file bam from BAMS
+  val ref from REFNAMES_FROM_BOWTIE2
+
+  output:
+  file "${ref}.pgrins.gff3" into GFF3, GFF3_FOR_PLOT
+  val ref into REFNAMES_FROM_MERGEBAM
+
+  """
+  ${workflow.projectDir}/produce_windows_from_bam.py \
+    --input $bam \
+    --output ${ref}.pgrins.gff3 \
+    --w_size ${params.w_size}
+  """
+}
+
+process gff_to_fasta{
+  label 'py3'
+  publishDir "${params.outdir}/pGRINS.fasta", mode: 'rellink'
+
+  input:
+  file gff from GFF3
+  file fasta from FORGFFFASTA
+  val ref from REFNAMES_FROM_MERGEBAM
+
+  output:
+  file "${ref}.pgrins.fasta" into PGRINS_FASTA
+  val ref into REFNAMES_FROM_GFFFASTA
+
+  """
+  ${workflow.projectDir}/gff_to_fasta.py \
+    --input $fasta \
+    --gff3 $gff \
+    --output ${ref}.pgrins.fasta \
+    --format fasta
+  """
+}
+
+process vsearch_pgrins{
+  label 'vsearch'
+  publishDir "${params.outdir}/vsearch.pgrins/", mode: 'rellink'
+
+  input:
+  file fasta from PGRINS_FASTA
+  val ref from REFNAMES_FROM_GFFFASTA
+
+  output:
+  file "${ref}.pgrins.centroids.fasta" into CENTROIDS
+  file "${ref}.clusters.uc" into PGRINS_UC
+  val ref into REFNAMES_FROM_VSEARCH
+
+  """
+  vsearch \
+    --threads 1 \
+    --sizeout \
+    --cluster_fast $fasta \
+    --strand both \
+    --centroids ${ref}.pgrins.centroids.fasta \
+    --relabel centroid_ \
+    --sizeorder \
+    --uc ${ref}.clusters.uc \
+    --id $params.vsearch_id
+  """
+
+}
+
+process plot_fast_grins{
+  label 'py3'
+  publishDir "${params.outdir}/plots/", mode: 'rellink'
+
+  input:
+  file sequence from FORPLOTS
+  file grins_gff3 from GFF3_FOR_PLOT
+  file grins_clusters from PGRINS_UC
+  file windows_bam from BAMS_FOR_PLOT
+  val ref from REFNAMES_FROM_VSEARCH
+
+  output:
+  file "${ref}.png" into PLOTS
+
+  """
+  ${workflow.projectDir}/plot_fast_grins.py \
+    --input $sequence \
+    --grins_gff3 $grins_gff3 \
+    --grins_clusters $grins_clusters \
+    --windows_bam $windows_bam \
+    --format fasta \
+    --w_size $params.w_size \
+    --s_size $params.s_size \
+    --output ${ref}.png
+  """
+}
+
+// Example nextflow.config
+/*
+process{
+  queue = 'hbfraser,hns'
+  maxFors = 300
+  errorStrategy = 'finish'
+  withLabel: 'py3'{
+    module = 'conda/4.6.14'
+    conda = '/home/groups/hbfraser/modules/packages/conda/4.6.14/envs/fraserconda'
+  }
+  withLabel: 'bowtie2'{
+    module = 'bowtie2'
+  }
+  withLabel: 'samtools'{
+    module = 'samtools'
+  }
+  withLabel: 'vsearch'{
+    module = 'vsearch'
+  }
+}
+executor{
+  name = 'slurm'
+  queueSize = 500
+  submitRateLitmit = '1 sec'
+}
