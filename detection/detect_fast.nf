@@ -33,6 +33,7 @@ if(params.format == 'genbank'){
 SEQS = Channel.fromPath("${params.indir}/*.${suffix}")
 if(params.format == 'genbank'){
   SEQS.into{GBKS}
+  FASTAS = Channel.empty()
 }else if(params.format == 'fasta'){
   SEQS.into{FASTAS}
   GBKS = Channel.empty()
