@@ -127,7 +127,6 @@ process merge_bam_windows{
   """
 }
 
-
 process gff_to_fasta{
   label 'py3'
   publishDir "${params.outdir}/pGRINS.fasta", mode: 'rellink'
