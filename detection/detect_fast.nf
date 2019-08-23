@@ -56,7 +56,7 @@ process gbk2fasta{
 }
 
 // Split fasta squences
-FASTASFROMGBK.mix(FASTAS).into{FORWINDOWS; FORINDEX}
+FASTASFROMGBK.mix(FASTAS).into{FORWINDOWS; FORINDEX; FORGFFFASTA}
 
 process split_in_windows{
   label 'py3'
@@ -109,15 +109,15 @@ process bowtie2{
 
 process merge_bam_windows{
   label 'py3'
-  publishDir "${params.outdir}/pGRINS/", mode: 'rellink'
+  publishDir "${params.outdir}/pGRINS.gff3/", mode: 'rellink'
 
   input:
   file bam from BAMS
-  val ref from REFNAMES_FROM_MERGE_BAMS
+  val ref from REFNAMES_FROM_BOWTIE2
 
   output:
   file "${ref}.pgrins.gff3" into GFF3
-  val ref into
+  val ref into REFNAMES_FROM_MERGEBAM
 
   """
   ${workflow.projectDir}/produce_windows_from_bam.py \
@@ -127,4 +127,25 @@ process merge_bam_windows{
   """
 }
 
-// ~/micropopgen/src/grins/detection/produce_windows_from_bam.py --input mapping.bam --output mapping_grins.gff3
+
+process gff_to_fasta{
+  label 'py3'
+  publishDir "${params.outdir}/pGRINS.fasta", mode: 'rellink'
+
+  input:
+  file gff from GFF3
+  file fasta from FORGFFFASTA
+  val ref from REFNAMES_FROM_MERGEBAM
+
+  output:
+  file "${ref}.pgrins.fasta" into PGRINS_FASTA
+  val ref into REFNAMES_FROM_GFFFASTA
+
+  """
+  ${workflow.projectDir}/gff_to_fasta.py \
+    --input $fasta \
+    --gff3 $gff \
+    --output ${ref}.pgrins.fasta \
+    --format fasta
+  """
+}
