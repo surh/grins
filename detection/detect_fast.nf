@@ -58,7 +58,7 @@ process gbk2fasta{
 }
 
 // Split fasta squences
-FASTASFROMGBK.mix(FASTAS).into{FORWINDOWS; FORINDEX; FORGFFFASTA}
+FASTASFROMGBK.mix(FASTAS).into{FORWINDOWS; FORINDEX; FORGFFFASTA; FORPLOTS}
 
 process split_in_windows{
   label 'py3'
@@ -90,7 +90,7 @@ process bowtie2{
   file windows from WINDOWS
 
   output:
-  file '*.bam' into BAMS
+  file '*.bam' into BAMS, BAMS_FOR_PLOT
   val "$ref" into REFNAMES_FROM_BOWTIE2
 
   """
@@ -117,7 +117,7 @@ process merge_bam_windows{
   val ref from REFNAMES_FROM_BOWTIE2
 
   output:
-  file "${ref}.pgrins.gff3" into GFF3
+  file "${ref}.pgrins.gff3" into GFF3, GFF3_FOR_PLOT
   val ref into REFNAMES_FROM_MERGEBAM
 
   """
@@ -159,7 +159,7 @@ process vsearch_pgrins{
   val ref from REFNAMES_FROM_GFFFASTA
 
   output:
-  file "${ref}.pgrins.centroids.fasta" into centroids
+  file "${ref}.pgrins.centroids.fasta" into CENTROIDS
   file "${ref}.clusters.uc" into PGRINS_UC
   val ref into REFNAMES_FROM_VSEARCH
 
@@ -178,4 +178,29 @@ process vsearch_pgrins{
 
 }
 
-// Next plot
+process plot_fast_grins{
+  label 'py3'
+  publishDir "${params.outdir}/plots/", mode: 'rellink'
+
+  input:
+  file sequence from FORPLOTS
+  file grins_gff3 from GFF3_FOR_PLOT
+  file grins_clusters from PGRINS_UC
+  file windows_bam from BAMS_FOR_PLOT
+  val ref from REFNAMES_FROM_VSEARCH
+
+  output:
+  file "${ref}.png" into PLOTS
+
+  """
+  ${workflow.projectDir}/plot_fast_grins.py \
+    --input $sequence \
+    --grins_gff3 $grins_gff3 \
+    --grins_clusters $grins_clusters \
+    --windows_bam $windows_bam \
+    --format fasta \
+    --w_size $params.w_size \
+    --s_size $params.s_size \
+    --output ${ref}.png
+  """
+}
