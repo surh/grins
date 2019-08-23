@@ -58,7 +58,7 @@ def process_arguments():
 
     # Processing goes here if needed
     if args.output == '':
-        args.output = os.path.basename('/home/sur/test.txt')
+        args.output = os.path.basename(args.input)
         args.output = os.path.splitext(args.output)[0]
         args.output = args.output + '.gff3.fasta'
         if os.path.isfile(args.output):
