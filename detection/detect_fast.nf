@@ -20,6 +20,7 @@ params.outdir = 'output/'
 params.format = 'genbank'
 params.w_size = 150
 params.s_size = 30
+params.vsearch_id = 0.9
 
 // Process params
 if(params.format == 'genbank'){
@@ -148,3 +149,33 @@ process gff_to_fasta{
     --format fasta
   """
 }
+
+process vsearch_pgrins{
+  label 'vsearch'
+  publishDir "${params.outdir}/vsearch.pgrins/", mode: 'rellink'
+
+  input:
+  file fasta from PGRINS_FASTA
+  val ref from REFNAMES_FROM_GFFFASTA
+
+  output:
+  file "${ref}.pgrins.centroids.fasta" into centroids
+  file "${ref}.clusters.uc" into PGRINS_UC
+  val ref into REFNAMES_FROM_VSEARCH
+
+  """
+  vsearch \
+    --threads 1 \
+    --sizeout \
+    --cluster_fast $fasta \
+    --strand both \
+    --centroids ${ref}.pgrins.centroids.fasta \
+    --relabel centroid_ \
+    --sizeorder \
+    --uc ${ref}.clusters.uc \
+    --id $params.vsearch_id
+  """
+
+}
+
+// Next plot
