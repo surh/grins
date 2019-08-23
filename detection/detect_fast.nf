@@ -204,3 +204,29 @@ process plot_fast_grins{
     --output ${ref}.png
   """
 }
+
+// Example nextflow.config
+/*
+process{
+  queue = 'hbfraser,hns'
+  maxFors = 300
+  errorStrategy = 'finish'
+  withLabel: 'py3'{
+    module = 'conda/4.6.14'
+    conda = '/home/groups/hbfraser/modules/packages/conda/4.6.14/envs/fraserconda'
+  }
+  withLabel: 'bowtie2'{
+    module = 'bowtie2'
+  }
+  withLabel: 'samtools'{
+    module = 'samtools'
+  }
+  withLabel: 'vsearch'{
+    module = 'vsearch'
+  }
+}
+executor{
+  name = 'slurm'
+  queueSize = 500
+  submitRateLitmit = '1 sec'
+}
