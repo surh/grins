@@ -136,8 +136,8 @@ def process_arguments():
                           required=True,
                           type=str)
     required.add_argument("--windows_bam",
-                          help=("A BAM file produced by bowtie2 with the ",
-                                "result of mapping every window in a sequnces "
+                          help=("A BAM file produced by bowtie2 with the "
+                                "result of mapping every window in a sequence "
                                 "to the rest of the sequence"),
                           required=True,
                           type=str)
@@ -165,9 +165,9 @@ def process_arguments():
 
     # Processing goes here if needed
     if args.output == '':
-        args.output = os.path.basename('/home/sur/test.txt')
+        args.output = os.path.basename(args.input)
         args.output = os.path.splitext(args.output)[0]
-        args.output = args.output + '.gff3.fasta'
+        args.output = args.output + '.png'
         if os.path.isfile(args.output):
             raise ValueError("{} file already exists.".format(args.output))
 
