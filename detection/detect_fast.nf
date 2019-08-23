@@ -90,7 +90,7 @@ process bowtie2{
 
   output:
   file '*.bam' into BAMS
-  val ref into REFNAMES_FROM_BOWTIE2
+  val "$ref" into REFNAMES_FROM_BOWTIE2
 
   """
   bowtie2-build $ref $ref
@@ -104,7 +104,6 @@ process bowtie2{
     -x $ref \
     -U $windows | \
     samtools view -b - > ${ref}.bam
-
   """
 }
 
