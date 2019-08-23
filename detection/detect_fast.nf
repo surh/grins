@@ -89,6 +89,7 @@ process bowtie2{
 
   output:
   file '*.bam' into BAMS
+  val ref into REFNAMES_FROM_BOWTIE2
 
   """
   bowtie2-build $ref $ref
@@ -103,6 +104,26 @@ process bowtie2{
     -U $windows | \
     samtools view -b - > ${ref}.bam
 
+  """
+}
+
+process merge_bam_windows{
+  label 'py3'
+  publishDir "${params.outdir}/pGRINS/", mode: 'rellink'
+
+  input:
+  file bam from BAMS
+  val ref from REFNAMES_FROM_MERGE_BAMS
+
+  output:
+  file "${ref}.pgrins.gff3" into GFF3
+  val ref into
+
+  """
+  ${workflow.projectDir}/produce_windows_from_bam.py \
+    --input $bam \
+    --output ${ref}.pgrins.gff3 \
+    --w_size ${params.w_size}
   """
 }
 
