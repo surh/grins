@@ -17,7 +17,6 @@
 
 import pysam
 import argparse
-# from Bio import SeqIO
 
 
 class windows:
