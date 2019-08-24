@@ -36,7 +36,7 @@ if(params.format == 'genbank'){
   SEQS.into{GBKS}
   FASTAS = Channel.empty()
 }else if(params.format == 'fasta'){
-  SEQS.into{FORWINDOWS; FORGFFFASTA; FORPLOTS}
+  SEQS.into{FORWINDOWS}
   GBKS = Channel.empty()
 }else{
   error "Wrong format\n"
@@ -50,7 +50,7 @@ process gbk2fasta{
   file gbk_file from GBKS
 
   output:
-  file '*.fasta' into FORWINDOWS, FORGFFFASTA
+  file '*.fasta' into FORWINDOWS
 
   """
   ${workflow.projectDir}/gbk2fasta.py --input $gbk_file
@@ -110,7 +110,7 @@ process merge_bam_windows{
   set ref, file(bam), file(fasta) from BOWTIE2_RES
 
   output:
-  set val("$ref"), file("${ref}.pgrins.gff3") into GFF3, GFF3_FOR_PLOT
+  set val("$ref"), file("${ref}.pgrins.gff3"), file(fasta) into GFF3, GFF3_FOR_PLOT
 
   """
   ${workflow.projectDir}/produce_windows_from_bam.py \
@@ -125,8 +125,7 @@ process gff_to_fasta{
   publishDir "${params.outdir}/pGRINS.fasta", mode: 'rellink'
 
   input:
-  set ref, file("${ref}.pgrins.gff3") from GFF3
-  file fasta from FORGFFFASTA
+  set ref, file("${ref}.pgrins.gff3"), file(fasta) from GFF3
 
   output:
   set ref, file("${ref}.pgrins.fasta") into PGRINS_FASTA
@@ -178,7 +177,7 @@ process plot_fast_grins{
 
   input:
   // file ref from FORPLOTS
-  set ref2, file("${ref2}.pgrins.gff3") from GFF3_FOR_PLOT
+  set ref2, file("${ref2}.pgrins.gff3"), file(fasta2) from GFF3_FOR_PLOT
   set ref3, file("${ref3}.pgrins.centroids.fasta"), file("${ref3}.clusters.uc") from PGRINS_UC
   set ref4, file("${ref4}.bam"), file(ref) from BOWTIE_RES_FOR_PLOT
 
