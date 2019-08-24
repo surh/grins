@@ -82,7 +82,6 @@ process split_in_windows{
 
 process bowtie2{
   label 'bowtie2'
-  label 'samtools'
   publishDir "${params.outdir}/bam/", mode: 'rellink'
 
   input:
@@ -216,10 +215,7 @@ process{
     conda = '/home/groups/hbfraser/modules/packages/conda/4.6.14/envs/fraserconda'
   }
   withLabel: 'bowtie2'{
-    module = 'bowtie2'
-  }
-  withLabel: 'samtools'{
-    module = 'samtools'
+    module = 'bowtie2:samtools'
   }
   withLabel: 'vsearch'{
     module = 'vsearch'
