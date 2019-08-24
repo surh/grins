@@ -186,12 +186,12 @@ process plot_fast_grins{
   // file windows_bam from BAMS_FOR_PLOT
   // val ref from REFNAMES_FROM_VSEARCH
   set ref, file("$ref") from FORPLOTS
-  set ref2, file("${ref}.pgrins.gff3") from GFF3_FOR_PLOT
+  set ref2, file("${ref2}.pgrins.gff3") from GFF3_FOR_PLOT
   set ref3, file("${ref3}.pgrins.centroids.fasta"), file("${ref3}.clusters.uc") from PGRINS_UC
   set ref4, file("${ref4}.bam") from BOWTIE_RES_FOR_PLOT
 
   output:
-  file "${ref}.png" into PLOTS
+  file "${ref2}.png" into PLOTS
 
   """
   ${workflow.projectDir}/plot_fast_grins.py \
@@ -202,7 +202,7 @@ process plot_fast_grins{
     --format fasta \
     --w_size $params.w_size \
     --s_size $params.s_size \
-    --output ${ref}.png
+    --output ${ref2}.png
   """
 }
 
