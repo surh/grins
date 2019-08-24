@@ -82,14 +82,10 @@ process bowtie2{
   publishDir "${params.outdir}/bam/", mode: 'rellink'
 
   input:
-  // file ref from FORINDEX
-  // file windows from WINDOWS
   set file(ref), file(windows) from WINDOWS
 
   output:
-  // file '*.bam' into BAMS, BAMS_FOR_PLOT
-  // val "$ref" into REFNAMES_FROM_BOWTIE2
-  set "$ref", file("${ref}.bam") into BOWTIE2_RES, BOWTIE_RES_FOR_PLOT
+  set val("$ref"), file("${ref}.bam") into BOWTIE2_RES, BOWTIE_RES_FOR_PLOT
 
   """
   bowtie2-build $ref $ref
@@ -111,18 +107,14 @@ process merge_bam_windows{
   publishDir "${params.outdir}/pGRINS.gff3/", mode: 'rellink'
 
   input:
-  // file bam from BAMS
-  // val ref from REFNAMES_FROM_BOWTIE2
-  set ref, file("${ref}.bam") from BOWTIE2_RES
+  set ref, file(bam) from BOWTIE2_RES
 
   output:
-  // file "${ref}.pgrins.gff3" into GFF3, GFF3_FOR_PLOT
-  // val ref into REFNAMES_FROM_MERGEBAM
   set ref, file("${ref}.pgrins.gff3") into GFF3, GFF3_FOR_PLOT
 
   """
   ${workflow.projectDir}/produce_windows_from_bam.py \
-    --input ${ref}.bam \
+    --input $bam \
     --output ${ref}.pgrins.gff3 \
     --w_size ${params.w_size}
   """
