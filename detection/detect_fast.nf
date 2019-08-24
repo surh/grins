@@ -126,7 +126,7 @@ process gff_to_fasta{
 
   input:
   set ref, file("${ref}.pgrins.gff3") from GFF3
-  set fasta from FORGFFFASTA
+  file fasta from FORGFFFASTA
 
   output:
   set ref, file("${ref}.pgrins.fasta") into PGRINS_FASTA
