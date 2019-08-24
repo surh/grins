@@ -36,7 +36,7 @@ if(params.format == 'genbank'){
   SEQS.into{GBKS}
   FASTAS = Channel.empty()
 }else if(params.format == 'fasta'){
-  SEQS.into{FASTAS}
+  SEQS.into{FORWINDOWS}
   GBKS = Channel.empty()
 }else{
   error "Wrong format\n"
@@ -50,30 +50,27 @@ process gbk2fasta{
   file gbk_file from GBKS
 
   output:
-  file '*.fasta' into FASTASFROMGBK
+  file '*.fasta' into FORWINDOWS
 
   """
   ${workflow.projectDir}/gbk2fasta.py --input $gbk_file
   """
 }
 
-// Split fasta squences
-FASTASFROMGBK.mix(FASTAS).into{FORWINDOWS; FORINDEX; FORGFFFASTA; FORPLOTS}
-
 process split_in_windows{
   label 'py3'
 
   input:
-  file seq from FORWINDOWS
+  file ref from FORWINDOWS
   val w_size from params.w_size
   val s_size from params.s_size
 
   output:
-  file '*_windows.fasta' into WINDOWS
+  set val("$ref"), file("$ref"), file("*_windows.fasta") into WINDOWS
 
   """
   ${workflow.projectDir}/split_seq_into_windows.py \
-    --input $seq \
+    --input $ref \
     --format fasta \
     --w_size $w_size \
     --s_size $s_size
@@ -85,15 +82,13 @@ process bowtie2{
   publishDir "${params.outdir}/bam/", mode: 'rellink'
 
   input:
-  file ref from FORINDEX
-  file windows from WINDOWS
+  set ref, file(fasta), file(windows) from WINDOWS
 
   output:
-  file '*.bam' into BAMS, BAMS_FOR_PLOT
-  val "$ref" into REFNAMES_FROM_BOWTIE2
+  set val("$ref"), file("${ref}.bam"), file(fasta) into BOWTIE2_RES, BOWTIE_RES_FOR_PLOT
 
   """
-  bowtie2-build $ref $ref
+  bowtie2-build $fasta $fasta
   bowtie2 \
     -f \
     --end-to-end \
@@ -112,12 +107,10 @@ process merge_bam_windows{
   publishDir "${params.outdir}/pGRINS.gff3/", mode: 'rellink'
 
   input:
-  file bam from BAMS
-  val ref from REFNAMES_FROM_BOWTIE2
+  set ref, file(bam), file(fasta) from BOWTIE2_RES
 
   output:
-  file "${ref}.pgrins.gff3" into GFF3, GFF3_FOR_PLOT
-  val ref into REFNAMES_FROM_MERGEBAM
+  set val("$ref"), file("${ref}.pgrins.gff3"), file(fasta) into GFF3, GFF3_FOR_PLOT
 
   """
   ${workflow.projectDir}/produce_windows_from_bam.py \
@@ -132,18 +125,15 @@ process gff_to_fasta{
   publishDir "${params.outdir}/pGRINS.fasta", mode: 'rellink'
 
   input:
-  file gff from GFF3
-  file fasta from FORGFFFASTA
-  val ref from REFNAMES_FROM_MERGEBAM
+  set ref, file("${ref}.pgrins.gff3"), file(fasta) from GFF3
 
   output:
-  file "${ref}.pgrins.fasta" into PGRINS_FASTA
-  val ref into REFNAMES_FROM_GFFFASTA
+  set ref, file("${ref}.pgrins.fasta") into PGRINS_FASTA
 
   """
   ${workflow.projectDir}/gff_to_fasta.py \
     --input $fasta \
-    --gff3 $gff \
+    --gff3 ${ref}.pgrins.gff3 \
     --output ${ref}.pgrins.fasta \
     --format fasta
   """
@@ -154,19 +144,16 @@ process vsearch_pgrins{
   publishDir "${params.outdir}/vsearch.pgrins/", mode: 'rellink'
 
   input:
-  file fasta from PGRINS_FASTA
-  val ref from REFNAMES_FROM_GFFFASTA
+  set ref, file("${ref}.pgrins.fasta") from PGRINS_FASTA
 
   output:
-  file "${ref}.pgrins.centroids.fasta" into CENTROIDS
-  file "${ref}.clusters.uc" into PGRINS_UC
-  val ref into REFNAMES_FROM_VSEARCH
+  set ref, file("${ref}.pgrins.centroids.fasta"), file("${ref}.clusters.uc") into PGRINS_UC
 
   """
   vsearch \
     --threads 1 \
     --sizeout \
-    --cluster_fast $fasta \
+    --cluster_fast ${ref}.pgrins.fasta \
     --strand both \
     --centroids ${ref}.pgrins.centroids.fasta \
     --relabel centroid_ \
@@ -177,24 +164,28 @@ process vsearch_pgrins{
 
 }
 
+// println "==========================="
+// GFF3_FOR_PLOT.join(PGRINS_UC).join(BOWTIE_RES_FOR_PLOT).subscribe{println it}
+
+// FORPLOTS.cross(GFF3_FOR_PLOT).cross(PGRINS_UC).cross(BOWTIE_RES_FOR_PLOT).subscribe{println it}
+
 process plot_fast_grins{
   label 'py3'
   publishDir "${params.outdir}/plots/", mode: 'rellink'
 
   input:
-  file sequence from FORPLOTS
-  file grins_gff3 from GFF3_FOR_PLOT
-  file grins_clusters from PGRINS_UC
-  file windows_bam from BAMS_FOR_PLOT
-  val ref from REFNAMES_FROM_VSEARCH
+  set ref, file(grins_gff), file(fasta_ref1), file(grins_centroids), file(grins_clusters), file(windows_bam), file('temp') from GFF3_FOR_PLOT.join(PGRINS_UC).join(BOWTIE_RES_FOR_PLOT)
+  // set ref2, file("${ref2}.pgrins.gff3"), file(fasta2) from GFF3_FOR_PLOT
+  // set ref3, file("${ref3}.pgrins.centroids.fasta"), file("${ref3}.clusters.uc") from PGRINS_UC
+  // set ref4, file("${ref4}.bam"), file(ref) from BOWTIE_RES_FOR_PLOT
 
   output:
   file "${ref}.png" into PLOTS
 
   """
   ${workflow.projectDir}/plot_fast_grins.py \
-    --input $sequence \
-    --grins_gff3 $grins_gff3 \
+    --input $fasta_ref1 \
+    --grins_gff3 $grins_gff \
     --grins_clusters $grins_clusters \
     --windows_bam $windows_bam \
     --format fasta \

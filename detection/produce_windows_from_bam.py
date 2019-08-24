@@ -125,7 +125,7 @@ def process_arguments():
     return args
 
 
-def find_bam_windows(file):
+def find_bam_windows(file,min_size=150):
     """Reads bam file and finds alignment windows"""
     # Read samfile and produce list of alignment windows
     samfile = pysam.AlignmentFile(file, "rb")
@@ -133,7 +133,7 @@ def find_bam_windows(file):
     multi_windows = []
     for r in reads:
         start, end = [int(i) for i in r.query_name.split('_')]
-        if r.pos != start:
+        if r.pos != start and (end - start) >= min_size:
             my_read = [r.query_name, start, end, r.pos, r.mapping_quality]
             multi_windows.append(my_read)
 
@@ -178,7 +178,8 @@ def write_gff3(windows, output):
 
 if __name__ == "__main__":
     args = process_arguments()
-    bam_windows = find_bam_windows(args.input)
+    bam_windows = find_bam_windows(args.input, min_size=args.w_size)
+    # print(bam_windows)
     res_windows = merge_bam_windows(bam_windows=bam_windows,
                                     w_size=args.w_size)
     print("Found:", res_windows.n_windows(), "windows")
