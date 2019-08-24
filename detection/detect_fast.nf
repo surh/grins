@@ -174,7 +174,7 @@ process plot_fast_grins{
   publishDir "${params.outdir}/plots/", mode: 'rellink'
 
   input:
-  set ref, file(grins_gff), file(fasta_ref1), file(grins_centroids), file(grins_clusters), file(windows_bam), file(fasta_ref2) from GFF3_FOR_PLOT.join(PGRINS_UC).join(BOWTIE_RES_FOR_PLOT)
+  set ref, file(grins_gff), file(fasta_ref1), file(grins_centroids), file(grins_clusters), file(windows_bam), file('temp') from GFF3_FOR_PLOT.join(PGRINS_UC).join(BOWTIE_RES_FOR_PLOT)
   // set ref2, file("${ref2}.pgrins.gff3"), file(fasta2) from GFF3_FOR_PLOT
   // set ref3, file("${ref3}.pgrins.centroids.fasta"), file("${ref3}.clusters.uc") from PGRINS_UC
   // set ref4, file("${ref4}.bam"), file(ref) from BOWTIE_RES_FOR_PLOT
