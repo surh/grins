@@ -164,11 +164,9 @@ process vsearch_pgrins{
 
 }
 
-// println "==========================="
-// FORPLOTS.subscribe{println it}
-// println "==========================="
-// GFF3_FOR_PLOT.subscribe{println it}
-// FORPLOTS.cross(GFF3_FOR_PLOT).cross(PGRINS_UC).cross(BOWTIE_RES_FOR_PLOT).subscribe{println it}
+println "==========================="
+GFF3_FOR_PLOT.join(PGRINS_UC).join(BOWTIE_RES_FOR_PLOT).subscribe{println it}
+
 // FORPLOTS.cross(GFF3_FOR_PLOT).cross(PGRINS_UC).cross(BOWTIE_RES_FOR_PLOT).subscribe{println it}
 
 // process plot_fast_grins{
@@ -176,7 +174,6 @@ process vsearch_pgrins{
 //   publishDir "${params.outdir}/plots/", mode: 'rellink'
 //
 //   input:
-//   // file ref from FORPLOTS
 //   set ref2, file("${ref2}.pgrins.gff3"), file(fasta2) from GFF3_FOR_PLOT
 //   set ref3, file("${ref3}.pgrins.centroids.fasta"), file("${ref3}.clusters.uc") from PGRINS_UC
 //   set ref4, file("${ref4}.bam"), file(ref) from BOWTIE_RES_FOR_PLOT
