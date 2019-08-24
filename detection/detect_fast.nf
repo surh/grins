@@ -165,38 +165,38 @@ process vsearch_pgrins{
 
 }
 
-println "==========================="
-FORPLOTS.subscribe{println it}
-println "==========================="
-GFF3_FOR_PLOT.subscribe{println it}
+// println "==========================="
+// FORPLOTS.subscribe{println it}
+// println "==========================="
+// GFF3_FOR_PLOT.subscribe{println it}
 // FORPLOTS.cross(GFF3_FOR_PLOT).cross(PGRINS_UC).cross(BOWTIE_RES_FOR_PLOT).subscribe{println it}
 // FORPLOTS.cross(GFF3_FOR_PLOT).cross(PGRINS_UC).cross(BOWTIE_RES_FOR_PLOT).subscribe{println it}
 
-// process plot_fast_grins{
-//   label 'py3'
-//   publishDir "${params.outdir}/plots/", mode: 'rellink'
-//
-//   input:
-//   file ref from FORPLOTS
-//   set ref2, file("${ref2}.pgrins.gff3") from GFF3_FOR_PLOT
-//   set ref3, file("${ref3}.pgrins.centroids.fasta"), file("${ref3}.clusters.uc") from PGRINS_UC
-//   set ref4, file("${ref4}.bam") from BOWTIE_RES_FOR_PLOT
-//
-//   output:
-//   file "${ref2}.png" into PLOTS
-//
-//   """
-//   ${workflow.projectDir}/plot_fast_grins.py \
-//     --input $ref \
-//     --grins_gff3 ${ref2}.pgrins.gff3 \
-//     --grins_clusters ${ref3}.clusters.uc \
-//     --windows_bam ${ref4}.bam \
-//     --format fasta \
-//     --w_size $params.w_size \
-//     --s_size $params.s_size \
-//     --output ${ref2}.png
-//   """
-// }
+process plot_fast_grins{
+  label 'py3'
+  publishDir "${params.outdir}/plots/", mode: 'rellink'
+
+  input:
+  file ref from FORPLOTS
+  set ref2, file("${ref2}.pgrins.gff3") from GFF3_FOR_PLOT
+  set ref3, file("${ref3}.pgrins.centroids.fasta"), file("${ref3}.clusters.uc") from PGRINS_UC
+  set ref4, file("${ref4}.bam") from BOWTIE_RES_FOR_PLOT
+
+  output:
+  file "${ref2}.png" into PLOTS
+
+  """
+  ${workflow.projectDir}/plot_fast_grins.py \
+    --input $ref \
+    --grins_gff3 ${ref2}.pgrins.gff3 \
+    --grins_clusters ${ref3}.clusters.uc \
+    --windows_bam ${ref4}.bam \
+    --format fasta \
+    --w_size $params.w_size \
+    --s_size $params.s_size \
+    --output ${ref2}.png
+  """
+}
 
 // Example nextflow.config
 /*
