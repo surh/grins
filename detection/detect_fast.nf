@@ -50,7 +50,7 @@ process gbk2fasta{
   file gbk_file from GBKS
 
   output:
-  file '*.fasta' into FORWINDOWS, FORGFFFASTA, FORPLOTS
+  file '*.fasta' into FORWINDOWS, FORGFFFASTA
 
   """
   ${workflow.projectDir}/gbk2fasta.py --input $gbk_file
