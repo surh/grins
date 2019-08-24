@@ -125,15 +125,10 @@ process gff_to_fasta{
   publishDir "${params.outdir}/pGRINS.fasta", mode: 'rellink'
 
   input:
-  // file gff from GFF3
-  // file fasta from FORGFFFASTA
-  // val ref from REFNAMES_FROM_MERGEBAM
   set ref, file("${ref}.pgrins.gff3") from GFF3
   set ref2, file("${ref2}") from FORGFFFASTA
 
   output:
-  // file "${ref}.pgrins.fasta" into PGRINS_FASTA
-  // val ref into REFNAMES_FROM_GFFFASTA
   set ref, file("${ref}.pgrins.fasta") into PGRINS_FASTA
 
   """
@@ -150,14 +145,9 @@ process vsearch_pgrins{
   publishDir "${params.outdir}/vsearch.pgrins/", mode: 'rellink'
 
   input:
-  // file fasta from PGRINS_FASTA
-  // val ref from REFNAMES_FROM_GFFFASTA
   set ref, file("${ref}.pgrins.fasta") from PGRINS_FASTA
 
   output:
-  // file "${ref}.pgrins.centroids.fasta" into CENTROIDS
-  // file "${ref}.clusters.uc" into PGRINS_UC
-  // val ref into REFNAMES_FROM_VSEARCH
   set ref, file("${ref}.pgrins.centroids.fasta"), file("${ref}.clusters.uc") into PGRINS_UC
 
   """
@@ -180,11 +170,6 @@ process plot_fast_grins{
   publishDir "${params.outdir}/plots/", mode: 'rellink'
 
   input:
-  // file sequence from FORPLOTS
-  // file grins_gff3 from GFF3_FOR_PLOT
-  // file grins_clusters from PGRINS_UC
-  // file windows_bam from BAMS_FOR_PLOT
-  // val ref from REFNAMES_FROM_VSEARCH
   set ref, file("$ref") from FORPLOTS
   set ref2, file("${ref2}.pgrins.gff3") from GFF3_FOR_PLOT
   set ref3, file("${ref3}.pgrins.centroids.fasta"), file("${ref3}.clusters.uc") from PGRINS_UC
