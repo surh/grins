@@ -85,7 +85,7 @@ process bowtie2{
   set ref, file(fasta), file(windows) from WINDOWS
 
   output:
-  set val("$ref"), file("${ref}.bam") into BOWTIE2_RES, BOWTIE_RES_FOR_PLOT
+  set val("$ref"), file("${ref}.bam"), file(fasta) into BOWTIE2_RES, BOWTIE_RES_FOR_PLOT
 
   """
   bowtie2-build $fasta $fasta
@@ -107,7 +107,7 @@ process merge_bam_windows{
   publishDir "${params.outdir}/pGRINS.gff3/", mode: 'rellink'
 
   input:
-  set ref, file(bam) from BOWTIE2_RES
+  set ref, file(bam), file(fasta) from BOWTIE2_RES
 
   output:
   set val("$ref"), file("${ref}.pgrins.gff3") into GFF3, GFF3_FOR_PLOT
@@ -177,10 +177,10 @@ process plot_fast_grins{
   publishDir "${params.outdir}/plots/", mode: 'rellink'
 
   input:
-  file ref from FORPLOTS
+  // file ref from FORPLOTS
   set ref2, file("${ref2}.pgrins.gff3") from GFF3_FOR_PLOT
   set ref3, file("${ref3}.pgrins.centroids.fasta"), file("${ref3}.clusters.uc") from PGRINS_UC
-  set ref4, file("${ref4}.bam") from BOWTIE_RES_FOR_PLOT
+  set ref4, file("${ref4}.bam"), file(ref) from BOWTIE_RES_FOR_PLOT
 
   output:
   file "${ref2}.png" into PLOTS
