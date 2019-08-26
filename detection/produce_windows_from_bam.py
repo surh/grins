@@ -133,7 +133,7 @@ def find_bam_windows(file,min_size=150):
     multi_windows = []
     for r in reads:
         start, end = [int(i) for i in r.query_name.split('_')]
-        if r.pos != start and (end - start) >= min_size:
+        if r.pos != start and (end - start) >= min_size and r.pos != 0:
             my_read = [r.query_name, start, end, r.pos, r.mapping_quality]
             multi_windows.append(my_read)
 
@@ -170,7 +170,7 @@ def write_gff3(windows, output):
                    '.', '+', '.', id]
             row = "\t".join(row)
             oh.write(row + "\n")
-            i = i + 1
+            i = i + 1a
     oh.close()
 
     return output
