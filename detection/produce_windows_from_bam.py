@@ -170,7 +170,7 @@ def write_gff3(windows, output):
                    '.', '+', '.', id]
             row = "\t".join(row)
             oh.write(row + "\n")
-            i = i + 1a
+            i = i + 1
     oh.close()
 
     return output
