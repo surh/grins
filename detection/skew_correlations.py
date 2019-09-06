@@ -16,10 +16,8 @@
 
 import os
 import argparse
-# import plot_fast_grins as pfg
 import pybedtools as bed
 from Bio import SeqIO
-import pybedtools as bed
 import pandas as pd
 import scipy.stats as stats
 
