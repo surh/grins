@@ -116,6 +116,6 @@ if __name__ == "__main__":
 
     with open(args.output, 'w') as oh:
         for line in Res:
-            line = [str(i) for i in line]
+            line = "\t".join([str(i) for i in line])
             oh.write(line + "\n")
     oh.close()
