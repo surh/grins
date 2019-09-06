@@ -16,11 +16,6 @@
 
 
 from Bio import SeqIO
-# import matplotlib.pyplot as plt
-# import matplotlib.cm as cm
-# import matplotlib.patches as patches
-# import numpy as np
-# import produce_windows_from_bam as wfb
 import argparse
 import os
 
