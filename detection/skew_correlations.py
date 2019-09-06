@@ -83,7 +83,7 @@ def interval_correlations(intervals, Skews):
     Res = []
     i = 1
     for w in intervals:
-        print(w)
+        # print(w)
         ii = (Skews.pos >= w.start) & (Skews.pos <= w.end)
         cor = stats.pearsonr(Skews.GC[ii], Skews.AT[ii])
         if len(w.attrs) == 0:
