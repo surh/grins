@@ -116,4 +116,4 @@ if __name__ == "__main__":
                     str(gc_skew[i][2]),
                     str(at_skew[i][2])]
             line = "\t".join(line)
-            oh.write(line, "\n")
+            oh.write(line + "\n")
