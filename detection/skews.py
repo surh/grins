@@ -108,8 +108,8 @@ if __name__ == "__main__":
     outfile = args.prefix + "_skews.txt"
     with open(outfile, 'w') as oh:
         for i in range(len(gc_skew)):
-            pos_gc = (gc_skew[i][0] + gc_skew[i][1]) / 2
-            pos_at = (at_skew[i][0] + at_skew[i][1]) / 2
+            pos_gc = (gc_skew[i][0] + gc_skew[i][1] - 1) / 2
+            pos_at = (at_skew[i][0] + at_skew[i][1] - 1) / 2
             if pos_at != pos_gc:
                 raise ValueError("Skew positions don't match")
             line = [seq.id, str(pos_gc),
