@@ -16,9 +16,12 @@
 
 import os
 import argparse
-import plot_fast_grins as pfg
+# import plot_fast_grins as pfg
 import pybedtools as bed
 from Bio import SeqIO
+import pybedtools as bed
+import pandas as pd
+import scipy.stats as stats
 
 
 def process_arguments():
@@ -46,10 +49,10 @@ def process_arguments():
                                           "'_cors.txt'."),
                         type=str,
                         default='')
-    parser.add_argument("--format", help=("format of the input file"),
-                        default="gff3",
-                        type=str,
-                        choices=['gff3'])
+    # parser.add_argument("--format", help=("format of the input file"),
+    #                     default="gff3",
+    #                     type=str,
+    #                     choices=['gff3'])
     parser.add_argument("--include_complement",
                         help=("If passed the complement of the intervals "
                               "is calculated and correlations for the "
@@ -76,12 +79,41 @@ def process_arguments():
     return args
 
 
-def gff3_to_bed(gff3, outfile=False):
-    """Convert a GFF3 list into a BED file"""
+def interval_correlations(intervals, Skews):
+    """Calculate correlations per interval"""
+
+    Res = []
+    i = 1
+    for w in intervals:
+        print(w)
+        ii = (Skews.pos >= w.start) & (Skews.pos <= w.end)
+        cor = stats.pearsonr(Skews.GC[ii], Skews.AT[ii])
+        if len(w.attrs) == 0:
+            ID = "ND_" + str(i)
+        else:
+            ID = w.attrs['ID']
+        Res.append([w.chrom, w.start, w.end, ID, cor[0]])
+        i = i + 1
+
+    return(Res)
 
 
 if __name__ == "__main__":
     args = process_arguments()
 
-    if args.format == 'gff3':
-        gff3 = pfg.read_gff3(args.input)
+    pgrins = bed.BedTool(args.input) \
+        .filter(lambda x: len(x) >= args.min_size).sort()
+    Skews = pd.read_csv(args.skews,
+                        sep="\t",
+                        header=None,
+                        names=['ref', 'pos', 'GC', 'AT'])
+    Res = interval_correlations(intervals=pgrins, Skews=Skews)
+
+    if args.include_complement:
+        seqlen = len(SeqIO.read(args.sequence, 'fasta'))
+        pgrins.set_chromsizes({'seq': [0, seqlen]})
+        non_grins = pgrins.complement() \
+            .filter(lambda x: len(x) >= args.min_size).sort()
+        Res.extend(interval_correlations(intervals=non_grins, Skews=Skews))
+
+    print(Res)
