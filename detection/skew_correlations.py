@@ -44,7 +44,7 @@ def process_arguments():
     parser.add_argument("--output", help=("Outfile name. If '' is passed "
                                           "then the name of input with the "
                                           "extension changed for "
-                                          "'_cors.txt'."),
+                                          "'_cors.bed'."),
                         type=str,
                         default='')
     # parser.add_argument("--format", help=("format of the input file"),
@@ -70,7 +70,7 @@ def process_arguments():
     if args.output == '':
         args.output = os.path.basename(args.input)
         args.output = os.path.splitext(args.output)[0]
-        args.output = args.output + '_cors.txt'
+        args.output = args.output + '_cors.bed'
         if os.path.isfile(args.output):
             raise ValueError("{} file already exists.".format(args.output))
 
@@ -114,4 +114,8 @@ if __name__ == "__main__":
             .filter(lambda x: len(x) >= args.min_size).sort()
         Res.extend(interval_correlations(intervals=non_grins, Skews=Skews))
 
-    print(Res)
+    with open(args.output, 'w') as oh:
+        for line in Res:
+            line = [str(i) for i in line]
+            oh.write(line + "\n")
+    oh.close()
