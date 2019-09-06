@@ -112,6 +112,8 @@ if __name__ == "__main__":
             pos_at = (at_skew[i][0] + at_skew[i][1]) / 2
             if pos_at != pos_gc:
                 raise ValueError("Skew positions don't match")
-            line = [seq.id, pos_gc, gc_skew[i][2], at_skew[i][2]]
+            line = [seq.id, str(pos_gc),
+                    str(gc_skew[i][2]),
+                    str(at_skew[i][2])]
             line = "\t".join(line)
             oh.write(line, "\n")
