@@ -38,10 +38,10 @@ process skews{
   publishDir "${params.outdir}/skews", mode: 'rellink'
 
   input:
-  set name, fasta from NAMES
+  set name, file(fasta) from NAMES
 
   output:
-  set name, fasta, file("${name}_skews") into SKEWS
+  set name, file(fasta), file("${name}_skews.txt") into SKEWS
 
   """
   ${workflow.projectDir}/skews.py \
