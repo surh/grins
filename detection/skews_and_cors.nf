@@ -31,6 +31,7 @@ while(str = reader.readLine()){
   INTERVALS = INTERVALS + [tuple(str,
     file("${params.indir}/pGRINS.gff3/${str}.fasta.pgrins.gff3"))]
 }
+INTERVALS = Channel.from(INTERVALS)
 
 process skews{
   label 'py3'
