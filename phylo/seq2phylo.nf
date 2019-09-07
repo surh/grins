@@ -168,6 +168,8 @@ if (myfiles == null){
 process translate{
   publishDir "${params.outdir}/FAA/", mode: 'copy'
   clusterOptions qos_options
+  module 'anaconda'
+  conda '/opt/modules/pkgs/anaconda/3.6/envs/fraserconda/'
 
   input:
   set filename, file(seqs) from NUCS
