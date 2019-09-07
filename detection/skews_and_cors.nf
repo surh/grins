@@ -25,14 +25,45 @@ params.s_size = 30
 names = file(params.names)
 reader = names.newReader()
 NAMES = []
+INTERVALS = []
 while(str = reader.readLine()){
-  NAMES = NAMES + [str]
+  NAMES = NAMES + [tuple(str, file("${params.indir}/fasta/${str}.fasta"))]
+  INTERVALS = INTERVALS + [tuple(str,
+    file("${params.indir}/pGRINS.gff3/${str}.fasta.pgrins.gff3"))]
 }
 
 process skews{
-  input:
-  val x from NAMES
+  label 'py3'
+  publishDir "${params.outdir}/skews", mode: 'rellink'
 
-  exec:
-  println x
+  input:
+  set name, fasta from NAMES
+
+  output:
+  set name, fasta, file("${name}_skews") into SKEWS
+
+  """
+  ${workflow.projectDir}/skews.py \
+    --input $fasta \
+    --prefix $name
+  """
+}
+
+process cors{
+  label 'py3'
+  publishDir "${params.outdir}/cors", mode: 'rellink'
+
+  input:
+  set name, file(fasta), file(skews), file(gff3) from SKEWS.join(INTERVALS)
+
+  output:
+  file "${name}.fasta.pgrins_cors.bed"
+
+  """
+  ${workflow.projectDir}/skew_correlations.py \
+    --input $gff3 \
+    --skews $skews \
+    --sequence $fasta \
+    --include_complement
+  """
 }
