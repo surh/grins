@@ -126,7 +126,7 @@ def process_arguments():
     return args
 
 
-def find_bam_windows(file,min_size=150):
+def find_bam_windows(file, min_size=150):
     """Reads bam file and finds alignment windows"""
     # Read samfile and produce list of alignment windows
     samfile = pysam.AlignmentFile(file, "rb")

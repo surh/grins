@@ -89,19 +89,28 @@ def plot_fast_grins(p_grins, Skews, bam_windows,
     y_min = np.min([i[2] for i in Skews])
     new_max = y_max + (y_max - y_min) / 4
     plt.ylim(top=new_max, bottom=y_min)
+    breaks = np.linspace(0, 1, n_clusters)
     for g in p_grins:
         start = int(g[3])
         end = int(g[4])
         grins_id = g[8].split(';')[0].split('=')[1]
-        breaks = np.linspace(0, 1, n_clusters)
+        # print("plotting {}".format(grins_id))
+        if grins_id in Clusters:
+            face_color = cm.gist_rainbow(breaks)[Clusters[grins_id]]
+        else:
+            face_color = (1, 1, 1)
         plt.axvspan(start, end,
-                    facecolor=cm.gist_rainbow(breaks)[Clusters[grins_id]],
+                    facecolor=face_color,
                     alpha=0.8)
+    # print('Finished axvspan')
     midpoints = [(x[0] + x[1]) / 2 for x in Skews]
+    # print("Converting Skews")
     skews = [x[2] for x in Skews]
+    # print("plotting skews")
     plt.plot(midpoints, skews, color='black')
 
     conn_style = patches.ConnectionStyle.Arc3(rad=-0.5)
+    # print("printng bams")
     for w in bam_windows:
         w_pos = w[1] + (w_size / 2)
         m_pos = w[3] + (w_size / 2)
@@ -113,8 +122,10 @@ def plot_fast_grins(p_grins, Skews, bam_windows,
                                     color='grey',
                                     linewidth=1)
         plt.gca().add_patch(p)
+    # print("Finished bams")
 
     plt.savefig(outfile)
+    # print("Saved")
 
 
 def process_arguments():
