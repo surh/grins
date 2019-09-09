@@ -70,8 +70,11 @@ def gc_skew(seq, w_size=150, s_size=30):
     for pos in range(0, r_len - w_size + 1, s_size):
         end = min(pos+w_size, r_len)
         window = seq[pos:end]
+        denom = window.seq.count('G') + window.seq.count('C')
+        if denom == 0:
+            denom = 1
         gc_skew = ((window.seq.count('G') - window.seq.count('C'))
-                   / (window.seq.count('G') + window.seq.count('C')))
+                   / denom)
         Skews.append([pos, end, gc_skew])
 
     return Skews
@@ -85,8 +88,11 @@ def at_skew(seq, w_size=150, s_size=30):
     for pos in range(0, r_len - w_size + 1, s_size):
         end = min(pos + w_size, r_len)
         window = seq[pos:end]
+        denom = window.seq.count('A') + window.seq.count('T')
+        if denom == 0:
+            denom = 1
         at_skew = ((window.seq.count('A') - window.seq.count('T'))
-                   / (window.seq.count('A') + window.seq.count('T')))
+                   / denom)
         Skews.append([pos, end, at_skew])
 
     return Skews
