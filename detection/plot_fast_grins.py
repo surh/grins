@@ -102,11 +102,15 @@ def plot_fast_grins(p_grins, Skews, bam_windows,
         plt.axvspan(start, end,
                     facecolor=face_color,
                     alpha=0.8)
+    print('Finished axvspan')
     midpoints = [(x[0] + x[1]) / 2 for x in Skews]
+    print("Converting Skews")
     skews = [x[2] for x in Skews]
+    print("plotting skews")
     plt.plot(midpoints, skews, color='black')
 
     conn_style = patches.ConnectionStyle.Arc3(rad=-0.5)
+    print("printng bams")
     for w in bam_windows:
         w_pos = w[1] + (w_size / 2)
         m_pos = w[3] + (w_size / 2)
@@ -118,8 +122,10 @@ def plot_fast_grins(p_grins, Skews, bam_windows,
                                     color='grey',
                                     linewidth=1)
         plt.gca().add_patch(p)
+    print("Finished bams")
 
     plt.savefig(outfile)
+    print("Saved")
 
 
 def process_arguments():
