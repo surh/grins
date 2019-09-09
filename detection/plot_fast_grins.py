@@ -89,13 +89,18 @@ def plot_fast_grins(p_grins, Skews, bam_windows,
     y_min = np.min([i[2] for i in Skews])
     new_max = y_max + (y_max - y_min) / 4
     plt.ylim(top=new_max, bottom=y_min)
+    breaks = np.linspace(0, 1, n_clusters)
     for g in p_grins:
         start = int(g[3])
         end = int(g[4])
         grins_id = g[8].split(';')[0].split('=')[1]
-        breaks = np.linspace(0, 1, n_clusters)
+        print("plotting {}".format(grins_id))
+        if grins_id in Clusters:
+            face_color = cm.gist_rainbow(breaks)[Clusters[grins_id]]
+        else:
+            face_color = (1, 1, 1)
         plt.axvspan(start, end,
-                    facecolor=cm.gist_rainbow(breaks)[Clusters[grins_id]],
+                    facecolor=face_color,
                     alpha=0.8)
     midpoints = [(x[0] + x[1]) / 2 for x in Skews]
     skews = [x[2] for x in Skews]
