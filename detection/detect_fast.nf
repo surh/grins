@@ -159,7 +159,8 @@ process vsearch_pgrins{
     --relabel centroid_ \
     --sizeorder \
     --uc ${ref}.clusters.uc \
-    --id $params.vsearch_id
+    --id $params.vsearch_id \
+    --maxseqlength 100000
   """
 
 }

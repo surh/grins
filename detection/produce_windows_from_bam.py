@@ -84,6 +84,7 @@ class window:
 
     def __init__(self, start, end):
         if start < 0 or end < 0:
+            print("Start: ", start, "End: ", end)
             raise ValueError("start and end must be non negative.")
         if type(start) is not int or type(end) is not int:
             raise ValueError("start and end must be integers.")
@@ -125,7 +126,7 @@ def process_arguments():
     return args
 
 
-def find_bam_windows(file,min_size=150):
+def find_bam_windows(file, min_size=150):
     """Reads bam file and finds alignment windows"""
     # Read samfile and produce list of alignment windows
     samfile = pysam.AlignmentFile(file, "rb")
@@ -133,7 +134,7 @@ def find_bam_windows(file,min_size=150):
     multi_windows = []
     for r in reads:
         start, end = [int(i) for i in r.query_name.split('_')]
-        if r.pos != start and (end - start) >= min_size:
+        if r.pos != start and (end - start) >= min_size and r.pos > 0:
             my_read = [r.query_name, start, end, r.pos, r.mapping_quality]
             multi_windows.append(my_read)
 
