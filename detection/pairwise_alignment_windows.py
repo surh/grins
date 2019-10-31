@@ -68,21 +68,40 @@ if __name__ == "__main__":
             alignment1 = pairwise2.align.localxx(subseq1, subseq2,
                                                  score_only=True)
             alignment2 = pairwise2.align.localxx(subseq1,
-                                                 subseq2.reverse_complement(),
+                                                 subseq2.complement()[::-1],
                                                  score_only=True)
+            # print("#########")
+            # print(str(alignment1))
+            # print(str(alignment2))
+            # print(subseq1)
+            # print(subseq2)
+            # print(type(subseq2))
+            # print(subseq2.complement()[::-1])
             score = max(alignment1, alignment2)
+            # print("row:" + str(i) + " col:" + str(j) + " score:" + str(score))
+            # print("#########")
             homology_matrix[len(homology_matrix)-1].append(score)
 
     # saving the results
     output_name = "_window" + str(args.w_size) \
                   + "_step" + str(args.s_size) + ".txt"
     output_name = args.output + '/' + record_name + output_name
+    # print("====================")
+    # print(homology_matrix)
+    # print("====================")
     print("Writing output file")
     with open(output_name, 'w') as output_file:
         for i in range(0, len(homology_matrix)):
-            for j in range(0, len(homology_matrix[i])):
+            # print(i)
+            line = []
+            for j in range(0, len(homology_matrix)):
+                # print("\t" + str(j))
                 if i < j:
-                    output_file.write(str(homology_matrix[i][j])+",")
+                    line.append(str(homology_matrix[j][i]))
+                    # output_file.write(str(homology_matrix[j][i])+",")
                 else:
-                    output_file.write(str(homology_matrix[j][i])+",")
-            output_file.write("\n")
+                    line.append(str(homology_matrix[i][j]))
+                    # output_file.write(str(homology_matrix[i][j])+",")
+
+            output_file.write(','.join(line) + "\n")
+            # output_file.write("\n")
