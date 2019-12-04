@@ -23,15 +23,7 @@ params.s_size = 30
 params.vsearch_id = 0.9
 
 // Process params
-if(params.format == 'genbank'){
-  suffix = 'gbk'
-}else if(params.format == 'fasta'){
-  suffix = 'fasta'
-}else{
-  error "Wrong format\n"
-}
-
-SEQS = Channel.fromPath("${params.indir}/*.${suffix}")
+SEQS = Channel.fromPath("${params.indir}/*", type: 'file')
 if(params.format == 'genbank'){
   SEQS.into{GBKS}
   FASTAS = Channel.empty()
@@ -53,7 +45,8 @@ process gbk2fasta{
   file '*.fasta' into FORWINDOWS
 
   """
-  ${workflow.projectDir}/gbk2fasta.py --input $gbk_file
+  ${workflow.projectDir}/gbk2fasta.py \
+    --input $gbk_file
   """
 }
 
