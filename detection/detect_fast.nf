@@ -18,20 +18,13 @@
 params.indir = ''
 params.outdir = 'output/'
 params.format = 'genbank'
+params.sensitivity = 'sensitive'
 params.w_size = 150
 params.s_size = 30
 params.vsearch_id = 0.9
 
 // Process params
-if(params.format == 'genbank'){
-  suffix = 'gbk'
-}else if(params.format == 'fasta'){
-  suffix = 'fasta'
-}else{
-  error "Wrong format\n"
-}
-
-SEQS = Channel.fromPath("${params.indir}/*.${suffix}")
+SEQS = Channel.fromPath("${params.indir}/*", type: 'file')
 if(params.format == 'genbank'){
   SEQS.into{GBKS}
   FASTAS = Channel.empty()
@@ -53,7 +46,8 @@ process gbk2fasta{
   file '*.fasta' into FORWINDOWS
 
   """
-  ${workflow.projectDir}/gbk2fasta.py --input $gbk_file
+  ${workflow.projectDir}/gbk2fasta.py \
+    --input $gbk_file
   """
 }
 
@@ -87,19 +81,37 @@ process bowtie2{
   output:
   set val("$ref"), file("${ref}.bam"), file(fasta) into BOWTIE2_RES, BOWTIE_RES_FOR_PLOT
 
-  """
-  bowtie2-build $fasta $fasta
-  bowtie2 \
-    -f \
-    --end-to-end \
-    --sensitive \
-    -a \
-    --time \
-    --threads 1 \
-    -x $ref \
-    -U $windows | \
-    samtools view -b - > ${ref}.bam
-  """
+  script:
+  if( params.sensitivity == 'sensitive' )
+    """
+    bowtie2-build $fasta $fasta
+    bowtie2 \
+      -f \
+      --end-to-end \
+      --sensitive \
+      -a \
+      --time \
+      --threads 1 \
+      -x $ref \
+      -U $windows | \
+      samtools view -b - > ${ref}.bam
+    """
+  else if(params.sensitivity == 'very-sensitive')
+    """
+    bowtie2-build $fasta $fasta
+    bowtie2 \
+      -f \
+      --end-to-end \
+      --very-sensitive \
+      -a \
+      --time \
+      --threads 1 \
+      -x $ref \
+      -U $windows | \
+      samtools view -b - > ${ref}.bam
+    """
+    else
+      error "Invalid sensitivity argument ($params.sensitivity)"
 }
 
 process merge_bam_windows{
