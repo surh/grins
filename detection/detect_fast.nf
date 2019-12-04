@@ -82,7 +82,7 @@ process bowtie2{
   set val("$ref"), file("${ref}.bam"), file(fasta) into BOWTIE2_RES, BOWTIE_RES_FOR_PLOT
 
   script:
-  if( params.sensitivity == 'sensitive' ){
+  if( params.sensitivity == 'sensitive' )
     """
     bowtie2-build $fasta $fasta
     bowtie2 \
@@ -96,7 +96,7 @@ process bowtie2{
       -U $windows | \
       samtools view -b - > ${ref}.bam
     """
-  }else if(params.sensitivity == 'very-sensitive'){
+  else if(params.sensitivity == 'very-sensitive')
     """
     bowtie2-build $fasta $fasta
     bowtie2 \
