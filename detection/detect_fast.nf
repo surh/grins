@@ -112,8 +112,6 @@ process bowtie2{
     """
     else
       error "Invalid sensitivity argument ($params.sensitivity)"
-  }
-
 }
 
 process merge_bam_windows{
