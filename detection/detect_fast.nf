@@ -43,7 +43,7 @@ process gbk2fasta{
   file gbk_file from GBKS
 
   output:
-  file '*.fasta' into FORWINDOWS
+  file '*.fasta' into GBK2FASTA
 
   """
   ${workflow.projectDir}/gbk2fasta.py \
@@ -55,7 +55,7 @@ process split_in_windows{
   label 'py3'
 
   input:
-  file ref from FORWINDOWS
+  file ref from FORWINDOWS.mix(GBK2FASTA)
   val w_size from params.w_size
   val s_size from params.s_size
 
