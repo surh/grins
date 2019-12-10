@@ -75,9 +75,9 @@ if __name__ == "__main__":
             homology_matrix[len(homology_matrix)-1].append(score)
 
     # saving the results
-    output_name = "_window" + str(args.w_size) \
-                  + "_step" + str(args.s_size) + ".txt"
-    output_name = args.output + '/' + record_name + output_name
+    # output_name = "_window" + str(args.w_size) \
+    #               + "_step" + str(args.s_size) + ".txt"
+    # output_name = args.output + '/' + record_name + output_name
     output_name = args.output + '/' + os.path.basename(args.input) + '.txt'
     print("Writing output file")
     with open(output_name, 'w') as output_file:
