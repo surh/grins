@@ -142,28 +142,34 @@ def find_bam_windows(file, min_size=150):
         r_end = int(r_end)
 
         aln_len = min(q_end - q_start, r_end - r_start)
+        # print(">>>", q_ref, r_ref)
+        # print(">>>aln_len", str(aln_len))
+        # print(">>>min_size", str(min_size))
+        # print(">>>pos", str(r.pos))
 
         # Keep minimum aln length and depending on record
         # discard self maps.
         if aln_len >= min_size and r.pos > 0:
+            # print("hola")
             if q_ref != r_ref:
                 my_read = [q_ref, q_start, q_end,
                            r_ref, r_start, r_end,
                            r.mapping_quality]
                 multi_windows.append(my_read)
+                # print("===", q_ref, r_ref)
+
             else:
                 if r.pos != q_start:
                     my_read = [q_ref, q_start, q_end,
                                r_ref, r_start, r_end,
                                r.mapping_quality]
                     multi_windows.append(my_read)
-
-
+                    # print("###", q_ref, r_ref)
 
     return multi_windows
 
 
-def merge_bam_windows(bam_windows, w_size=150):
+def merge_bam_windows(bam_windows):
     """Needs improvement. Takes output from find_bam_windows and produces
     windows object with merged overlapping windows.
     NOTE: No support for multiple references (i.e. contig/chromosome)
@@ -210,7 +216,7 @@ if __name__ == "__main__":
     args = process_arguments()
     bam_windows = find_bam_windows(args.input, min_size=args.w_size)
     # print(bam_windows)
-    res_windows = merge_bam_windows(bam_windows=bam_windows,
-                                    w_size=args.w_size)
-    print("Found:", res_windows.n_windows(), "windows")
+    res_windows = merge_bam_windows(bam_windows=bam_windows)
+    # print("Found:", res_windows.n_windows(), "windows")
+    print("Writing results")
     write_gff3(windows=res_windows, output=args.output)
