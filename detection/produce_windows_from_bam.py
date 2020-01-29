@@ -189,15 +189,16 @@ def write_gff3(windows, output):
     with open(output, 'w') as oh:
         oh.write("##gff-version 3\n")
         i = 1
-        for w in windows.windows:
-            id = ''.join(['ID=pGRINS_', str(i)])
-            # Create row, switch to 1-indexed with closed interval
-            row = ['seq', 'grinspred', 'pGRINS',
-                   str(w.start+1), str(w.end),
-                   '.', '+', '.', id]
-            row = "\t".join(row)
-            oh.write(row + "\n")
-            i = i + 1
+        for k in windows:
+            for w in windows[k].windows:
+                id = ''.join(['ID=pGRINS_', str(i)])
+                # Create row, switch to 1-indexed with closed interval
+                row = [k, 'grinspred', 'pGRINS',
+                       str(w.start+1), str(w.end),
+                       '.', '+', '.', id]
+                row = "\t".join(row)
+                oh.write(row + "\n")
+                i = i + 1
     oh.close()
 
     return output
