@@ -133,10 +133,30 @@ def find_bam_windows(file, min_size=150):
     reads = samfile.fetch(until_eof=True)
     multi_windows = []
     for r in reads:
-        start, end = [int(i) for i in r.query_name.split('_')]
-        if r.pos != start and (end - start) >= min_size and r.pos > 0:
-            my_read = [r.query_name, start, end, r.pos, r.mapping_quality]
-            multi_windows.append(my_read)
+        q_ref, q_start, q_end = r.query_name.split('|')
+        q_start = int(q_start)
+        q_end = int(q_end)
+
+        r_ref, r_start, r_end = r.reference_name.split('|')
+        r_start = int(r_start)
+        r_end = int(r_end)
+
+        aln_len = min(q_end - q_start, r_end - r_start)
+
+        # Keep minimum aln length and depending on record
+        # discard self maps.
+        if aln_len >= min_size and r.pos > 0:
+            if q_ref != r_ref:
+                my_read = [q_ref, q_start, q_end,
+                           r_ref, r_start, r_end,
+                           r.mapping_quality]
+            else:
+                if r.pos != q_start:
+                    my_read = [q_ref, q_start, q_end,
+                               r_ref, r_start, r_end,
+                               r.mapping_quality]
+
+        multi_windows.append(my_read)
 
     return multi_windows
 
