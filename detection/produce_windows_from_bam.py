@@ -168,13 +168,19 @@ def merge_bam_windows(bam_windows, w_size=150):
     """
 
     res = windows()
+    res = dict()
     for w in bam_windows:
         # Add query window
+        if w[0] not in res:
+            res[w[0]] = windows()
         new_w = window(start=w[1], end=w[2])
-        res.add_window(w=new_w)
+        res[w[0]].add_window(w=new_w)
+
         # add target
-        new_w = window(start=w[3], end=w[3]+w_size)
-        res.add_window(w=new_w)
+        if w[3] not in res:
+            res[w[3]] = windows()
+        new_w = window(start=w[4], end=w[5])
+        res[w[3]].add_window(w=new_w)
 
     return res
 
