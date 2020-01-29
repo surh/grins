@@ -150,13 +150,15 @@ def find_bam_windows(file, min_size=150):
                 my_read = [q_ref, q_start, q_end,
                            r_ref, r_start, r_end,
                            r.mapping_quality]
+                multi_windows.append(my_read)
             else:
                 if r.pos != q_start:
                     my_read = [q_ref, q_start, q_end,
                                r_ref, r_start, r_end,
                                r.mapping_quality]
+                    multi_windows.append(my_read)
 
-        multi_windows.append(my_read)
+
 
     return multi_windows
 
