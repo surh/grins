@@ -137,11 +137,13 @@ def find_bam_windows(file, min_size=150):
         q_start = int(q_start)
         q_end = int(q_end)
 
-        r_ref, r_start, r_end = r.reference_name.split('|')
-        r_start = int(r_start)
-        r_end = int(r_end)
+        r_ref = r.reference_name
+        # r_ref, r_start, r_end = r.reference_name.split('|')
+        # r_start = int(r_start)
+        # r_end = int(r_end)
 
-        aln_len = min(q_end - q_start, r_end - r_start)
+        # aln_len = min(q_end - q_start, r_end - r_start)
+        aln_len = q_end - q_start
         # print(">>>", q_ref, r_ref)
         # print(">>>aln_len", str(aln_len))
         # print(">>>min_size", str(min_size))
@@ -153,7 +155,7 @@ def find_bam_windows(file, min_size=150):
             # print("hola")
             if q_ref != r_ref:
                 my_read = [q_ref, q_start, q_end,
-                           r_ref, r_start, r_end,
+                           r_ref, r.pos, r.pos + min_size,
                            r.mapping_quality]
                 multi_windows.append(my_read)
                 # print("===", q_ref, r_ref)
@@ -161,7 +163,7 @@ def find_bam_windows(file, min_size=150):
             else:
                 if r.pos != q_start:
                     my_read = [q_ref, q_start, q_end,
-                               r_ref, r_start, r_end,
+                               r_ref, r.pos, r.pos + min_size,
                                r.mapping_quality]
                     multi_windows.append(my_read)
                     # print("###", q_ref, r_ref)
