@@ -140,7 +140,7 @@ process bowtie2{
       -a \
       --time \
       --threads 1 \
-      -x $genome \
+      -x $fasta \
       -U $windows | \
       samtools view -b - > ${genome}.bam
     """
@@ -154,7 +154,7 @@ process bowtie2{
       -a \
       --time \
       --threads 1 \
-      -x $genome \
+      -x $fasta \
       -U $windows | \
       samtools view -b - > ${genome}.bam
     """
