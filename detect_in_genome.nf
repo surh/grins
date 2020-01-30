@@ -52,14 +52,14 @@ process intersect{
   tuple genome, file("${record}_bgc.fasta") into BGCFASTAS
 
   """
-  # Convert to BED
+   Convert to BED
   cut -f 4 $bgcpreds |  \
     grep -v BGC_range | \
     sed 's/;/\\t/' | \
     awk '{print "$record\\t" \$0}' > ${record}.bed
 
   # Intersect bed and get fasta2
-  bedtools getfasta -fi $genomefa -bed ${record.bed} > ${record}_bgcs.fasta
+  bedtools getfasta -fi $genomefa -bed ${record}.bed > ${record}_bgcs.fasta
 
   """
 
