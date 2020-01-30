@@ -67,6 +67,9 @@ process intersect{
         print ">\$id\\n" \
       }else{print "\$_\\n"}}' > versionless.fa
 
+  # Create index
+  samtools faidx versionless.fa
+
   # Intersect bed and get fasta2
   bedtools getfasta \
     -fi versionless.fa \
