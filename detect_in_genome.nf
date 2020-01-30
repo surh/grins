@@ -38,7 +38,8 @@ ANTISMASH = Channel.fromPath("${params.antismash}/*/txt/*_BGC.txt",
     file(bgcpreds))}
 
 
-ANTISMASH.join(GENOMEFA).subscribe{println it}
+// ANTISMASH.join(GENOMEFA).subscribe{println it}
+GENOMEFA.join(ANTISMASH).subscribe{println it}
 
 
 // process intersect{
