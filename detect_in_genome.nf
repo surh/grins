@@ -53,10 +53,10 @@ process intersect{
 
   """
   # Convert to BED
-  cut -f 4 $bgcpreds |  \
+  cut -f 1,4 $bgcpreds | \
     grep -v BGC_range | \
     sed 's/;/\\t/' | \
-    awk '{print "$record\\t" \$0}' > ${record}.bed
+    awk '{print "$record\\t" \$2 "\\t" \$3 "\\t" \$1}' > ${record}.bed
 
   # Intersect bed and get fasta2
   bedtools getfasta -fi $genomefa -bed ${record}.bed > ${record}_bgcs.fasta
