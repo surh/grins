@@ -38,4 +38,45 @@ ANTISMASH = Channel.fromPath("${params.antismash}/*/txt/*_BGC.txt",
     file(bgcpreds))}
 
 
-GENOMEFA.join(ANTISMASH).subscribe{println it}
+// GENOMEFA.join(ANTISMASH).subscribe{println it}
+process intersect{
+  label 'py3'
+
+
+  input:
+  tuple genome, file(genomefa), record, file(bgcpreds) from GENOMEFA.join(ANTISMASH)
+
+  """
+  # Convert to BED
+  cut -f 4 $bgcpreds |  \
+    grep -v BGC_range | \
+    sed 's/;/\\t/' | \
+    awk '{print "$record\\t" \$0}' > ${record}.bed
+
+  # Intersect bed and get fasta2
+  bedtools getfasta -fi $genomefa -bed ${record.bed} > ${record}_bgcs.fasta
+
+  """
+
+
+
+}
+
+
+// Example nextflow.config
+/*
+process{
+  queue = 'hbfraser,hns'
+  maxFors = 300
+  errorStrategy = 'finish'
+  withLabel: 'py3'{
+    module = 'fraserconda'
+    conda = '/opt/modules/pkgs/anaconda/3.6/envs/fraserconda'
+  }
+}
+executor{
+  name = 'slurm'
+  queueSize = 500
+  submitRateLitmit = '1 sec'
+}
+*/
