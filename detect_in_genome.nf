@@ -30,7 +30,7 @@ params.vsearch_id = 0.9
 // Process params
 GENOMEFA = Channel.fromPath("${params.indir}/*", type: 'file')
   .map{genomefa -> tuple(genomefa.name.replaceAll(/\.fa(sta)?$/, ""),
-    file(genome_file))}
+    file(genomefa))}
 ANTISMASH = Channel.fromPath("${params.antismash}/*/txt/*_BGC.txt",
   type: 'file')
   .map{bgcpreds -> tuple(bgcpreds.getParent().getParent().name,
