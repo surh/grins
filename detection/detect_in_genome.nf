@@ -107,7 +107,7 @@ process split_in_windows{
   val s_size from params.s_size
 
   output:
-  tuple genome, file(ref), file("*_windows.fasta") into WINDOWS
+  tuple genome, file("$ref"), file("*_windows.fasta") into WINDOWS
 
   """
   ${workflow.projectDir}/split_seq_into_windows.py \
