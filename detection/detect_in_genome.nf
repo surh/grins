@@ -102,7 +102,7 @@ process split_in_windows{
   tag "$genome"
 
   input:
-  tuple genome, ref from GENOMEBGCS
+  tuple genome, file(ref) from GENOMEBGCS
   val w_size from params.w_size
   val s_size from params.s_size
 
