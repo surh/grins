@@ -64,7 +64,7 @@ process intersect{
       if(\$_ =~ /^>/){ \
         (\$id, @head) = split(/\\s/, \$_); \
         \$id =~ s/>//; \
-        \$id =~ s/\\.[\\d]+$//; \
+        \$id =~ s/\\.[\\d]+\$//; \
         print ">\$id\\n" \
       }else{print "\$_\\n"}} > versionless.fa'
 
