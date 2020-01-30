@@ -97,6 +97,90 @@ process cat_records{
 
 }
 
+process split_in_windows{
+  label 'py3'
+  tag "$genome"
+
+  input:
+  tuple genome, ref from GENOMEBGCS
+  val w_size from params.w_size
+  val s_size from params.s_size
+
+  output:
+  tuple genome, file(ref), file("*_windows.fasta") into WINDOWS
+
+  """
+  ${workflow.projectDir}/split_seq_into_windows.py \
+    --input $ref \
+    --format fasta \
+    --w_size $w_size \
+    --s_size $s_size
+  """
+}
+
+process bowtie2{
+  label 'bowtie2'
+  publishDir "${params.outdir}/bam/", mode: 'rellink'
+  tag "$genome"
+
+  input:
+  tuple genome, file(fasta), file(windows) from WINDOWS
+
+  output:
+  tuple genome, file("${genome}.bam"), file(fasta) into BOWTIE2_RES, BOWTIE_RES_FOR_PLOT
+
+  script:
+  if( params.sensitivity == 'sensitive' )
+    """
+    bowtie2-build $fasta $fasta
+    bowtie2 \
+      -f \
+      --end-to-end \
+      --sensitive \
+      -a \
+      --time \
+      --threads 1 \
+      -x $genome \
+      -U $windows | \
+      samtools view -b - > ${genome}.bam
+    """
+  else if(params.sensitivity == 'very-sensitive')
+    """
+    bowtie2-build $fasta $fasta
+    bowtie2 \
+      -f \
+      --end-to-end \
+      --very-sensitive \
+      -a \
+      --time \
+      --threads 1 \
+      -x $genome \
+      -U $windows | \
+      samtools view -b - > ${genome}.bam
+    """
+    else
+      error "Invalid sensitivity argument ($params.sensitivity)"
+}
+
+process merge_bam_windows{
+  label 'py3'
+  publishDir "${params.outdir}/pGRINS.gff3/", mode: 'rellink'
+  tag "$genome"
+
+  input:
+  tuple genome, file(bam), file(fasta) from BOWTIE2_RES
+
+  output:
+  set genome, file("${genome}.pgrins.gff3"), file(fasta) into GFF3, GFF3_FOR_PLOT
+
+  """
+  ${workflow.projectDir}/produce_windows_from_bam.py \
+    --input $bam \
+    --output ${genome}.pgrins.gff3 \
+    --w_size ${params.w_size}
+  """
+}
+
 // Example nextflow.config
 /*
 process{
@@ -107,6 +191,9 @@ process{
   withLabel: 'py3'{
     module = 'fraserconda'
     conda = '/opt/modules/pkgs/anaconda/3.6/envs/fraserconda'
+  }
+  withLabel: 'bowtie2'{
+    module = 'bowtie2:samtools'
   }
 }
 executor{
