@@ -58,9 +58,21 @@ process intersect{
     sed 's/;/\\t/' | \
     awk '{print "$record\\t" \$2 "\\t" \$3 "\\t" \$1}' > ${record}.bed
 
-  # Intersect bed and get fasta2
-  bedtools getfasta -fi $genomefa -bed ${record}.bed > ${record}_bgcs.fasta
+  # Remove version from accession ID
+  cat $genomefa | \
+    perl -e 'while(<>){chomp; \
+      if(\$_ =~ /^>/){ \
+        (\$id, @head) = split(/\\s/, \$_); \
+        \$id =~ s/>//; \
+        \$id =~ s/\\.[\\d]+$//; \
+        print ">\$id\\n" \
+      }else{print "\$_\\n"}} > versionless.fa'
 
+  # Intersect bed and get fasta2
+  bedtools getfasta \
+    -fi versionless.fa \
+    -bed ${record}.bed \
+    -name > ${record}_bgcs.fasta
   """
 
 
