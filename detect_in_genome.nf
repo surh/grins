@@ -39,47 +39,47 @@ ANTISMASH = Channel.fromPath("${params.antismash}/*/txt/*_BGC.txt",
 
 
 // ANTISMASH.join(GENOMEFA).subscribe{println it}
-GENOMEFA.cross(ANTISMASH).flatten().collate(5).subscribe{println it}
+// GENOMEFA.cross(ANTISMASH).flatten().collate(5).subscribe{println it}
 
 
-// process intersect{
-//   label 'py3'
-//   tag "$genome-$record"
-//   publishDir params.outdir, mode: 'rellink'
-//
-//   input:
-//   tuple genome, file(genomefa), record, file(bgcpreds) from GENOMEFA.cross(ANTISMASH)
-//
-//   output:
-//   tuple genome, file("${record}_bgc.fasta") into BGCFASTAS
-//
-//   """
-//   # Convert to BED
-//   cut -f 1,4 $bgcpreds | \
-//     grep -v BGC_range | \
-//     sed 's/;/\\t/' | \
-//     awk '{print "$record\\t" \$2 "\\t" \$3 "\\t" \$1}' > ${record}.bed
-//
-//   # Remove version from accession ID
-//   cat $genomefa | \
-//     perl -e 'while(<>){chomp; \
-//       if(\$_ =~ /^>/){ \
-//         (\$id, @head) = split(/\\s/, \$_); \
-//         \$id =~ s/>//; \
-//         \$id =~ s/\\.[\\d]+\$//; \
-//         print ">\$id\\n" \
-//       }else{print "\$_\\n"}}' > versionless.fa
-//
-//   # Create index
-//   samtools faidx versionless.fa
-//
-//   # Intersect bed and get fasta2
-//   bedtools getfasta \
-//     -fi versionless.fa \
-//     -bed ${record}.bed \
-//     -name > ${record}_bgcs.fasta
-//   """
-// }
+process intersect{
+  label 'py3'
+  tag "$genome-$record"
+  publishDir params.outdir, mode: 'rellink'
+
+  input:
+  tuple genome, file(genomefa), genome2, record, file(bgcpreds) from GENOMEFA.cross(ANTISMASH).flatten().collate(5)
+
+  output:
+  tuple genome, file("${record}_bgc.fasta") into BGCFASTAS
+
+  """
+  # Convert to BED
+  cut -f 1,4 $bgcpreds | \
+    grep -v BGC_range | \
+    sed 's/;/\\t/' | \
+    awk '{print "$record\\t" \$2 "\\t" \$3 "\\t" \$1}' > ${record}.bed
+
+  # Remove version from accession ID
+  cat $genomefa | \
+    perl -e 'while(<>){chomp; \
+      if(\$_ =~ /^>/){ \
+        (\$id, @head) = split(/\\s/, \$_); \
+        \$id =~ s/>//; \
+        \$id =~ s/\\.[\\d]+\$//; \
+        print ">\$id\\n" \
+      }else{print "\$_\\n"}}' > versionless.fa
+
+  # Create index
+  samtools faidx versionless.fa
+
+  # Intersect bed and get fasta2
+  bedtools getfasta \
+    -fi versionless.fa \
+    -bed ${record}.bed \
+    -name > ${record}_bgcs.fasta
+  """
+}
 
 
 // Example nextflow.config
