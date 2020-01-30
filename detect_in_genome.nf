@@ -65,7 +65,7 @@ process intersect{
         \$id =~ s/>//; \
         \$id =~ s/\\.[\\d]+\$//; \
         print ">\$id\\n" \
-      }else{print "\$_\\n"}}'' > versionless.fa
+      }else{print "\$_\\n"}}' > versionless.fa
 
   # Intersect bed and get fasta2
   bedtools getfasta \
