@@ -42,11 +42,11 @@ ANTISMASH = Channel.fromPath("${params.antismash}/*/txt/*_BGC.txt",
 process intersect{
   label 'py3'
   tag "$genome-$record"
-  publishDir params.outdir
-
+  publishDir params.outdir, mode: 'rellink'
 
   input:
-  tuple genome, file(genomefa), record, file(bgcpreds) from GENOMEFA.join(ANTISMASH)
+  tuple genome, file(genomefa), record, file(bgcpreds)
+    from GENOMEFA.join(ANTISMASH)
 
   output:
   tuple genome, file("${record}_bgc.fasta") into BGCFASTAS
@@ -74,6 +74,7 @@ process{
   queue = 'hbfraser,hns'
   maxFors = 300
   errorStrategy = 'finish'
+  stageInMode = 'rellink'
   withLabel: 'py3'{
     module = 'fraserconda'
     conda = '/opt/modules/pkgs/anaconda/3.6/envs/fraserconda'
