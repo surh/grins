@@ -52,7 +52,7 @@ process intersect{
   tuple genome, file("${record}_bgc.fasta") into BGCFASTAS
 
   """
-   Convert to BED
+  # Convert to BED
   cut -f 4 $bgcpreds |  \
     grep -v BGC_range | \
     sed 's/;/\\t/' | \
