@@ -45,7 +45,7 @@ ANTISMASH = Channel.fromPath("${params.antismash}/*/txt/*_BGC.txt",
 process intersect{
   label 'py3'
   tag "$genome-$record"
-  publishDir params.outdir, mode: 'rellink'
+  publishDir "${params.outdir}/bgcfastas", mode: 'rellink'
 
   input:
   tuple genome, file(genomefa), genome2, record, file(bgcpreds) from GENOMEFA.cross(ANTISMASH).flatten().collate(5)
@@ -80,6 +80,23 @@ process intersect{
     -name > ${record}_bgcs.fasta
   """
 }
+
+process cat_records{
+  tag "$genome"
+  publishDir "${params.outdir}/genomebgcs", mode: 'rellink'
+
+  input:
+  tuple genome, file(records) from BGCFASTAS.groupTuple()
+
+  output:
+  tuple genome, file("${genome}_bgcs.fasta") into GENOMEBGCS
+
+  """
+  cat $records > ${genome}_bgcs.fasta
+  """
+
+}
+
 
 
 // Example nextflow.config
