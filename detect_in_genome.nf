@@ -45,8 +45,7 @@ process intersect{
   publishDir params.outdir, mode: 'rellink'
 
   input:
-  tuple genome, file(genomefa), record, file(bgcpreds)
-    from GENOMEFA.join(ANTISMASH)
+  tuple genome, file(genomefa), record, file(bgcpreds) from GENOMEFA.join(ANTISMASH)
 
   output:
   tuple genome, file("${record}_bgc.fasta") into BGCFASTAS
