@@ -51,7 +51,7 @@ process intersect{
   tuple genome, file(genomefa), genome2, record, file(bgcpreds) from GENOMEFA.cross(ANTISMASH).flatten().collate(5)
 
   output:
-  tuple genome, file("${record}_bgc.fasta") into BGCFASTAS
+  tuple genome, file("${record}_bgcs.fasta") into BGCFASTAS
 
   """
   # Convert to BED
