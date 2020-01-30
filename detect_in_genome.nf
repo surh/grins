@@ -41,10 +41,15 @@ ANTISMASH = Channel.fromPath("${params.antismash}/*/txt/*_BGC.txt",
 // GENOMEFA.join(ANTISMASH).subscribe{println it}
 process intersect{
   label 'py3'
+  tag "$genome-$record"
+  publishDir params.outdir
 
 
   input:
   tuple genome, file(genomefa), record, file(bgcpreds) from GENOMEFA.join(ANTISMASH)
+
+  output:
+  tuple genome, file("${record}_bgc.fasta") into BGCFASTAS
 
   """
   # Convert to BED
