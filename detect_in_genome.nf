@@ -97,8 +97,6 @@ process cat_records{
 
 }
 
-
-
 // Example nextflow.config
 /*
 process{
