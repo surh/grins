@@ -38,7 +38,7 @@ ANTISMASH = Channel.fromPath("${params.antismash}/*/txt/*_BGC.txt",
     file(bgcpreds))}
 
 
-GENOMEFA.join(ANTISMASH).subscribe{println it}
+ANTISMASH.join(GENOMEFA).subscribe{println it}
 process intersect{
   label 'py3'
   tag "$genome-$record"
