@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 // Params
-params.indir = ''
+params.indir = 'genomes/'
 params.outdir = 'output/'
 params.antismash = "antismash/"
 params.format = 'fasta'
@@ -33,7 +33,7 @@ GENOMEFA = Channel.fromPath("${params.indir}/*", type: 'file')
     file(genome_file))}
 ANTISMASH = Channel.fromPath("${params.antismash}/*/txt/*_BGC.txt",
   type: 'file')
-  .map{bgcpreds -> tuple(bgcpreds.getParentFile().getParentFile().name,
+  .map{bgcpreds -> tuple(bgcpreds.getParent().getParent().name,
     bgcpreds.name.replaceAll(/_BGC\.txt$/,''),
     file(bgcpreds))}
 
