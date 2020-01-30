@@ -39,7 +39,7 @@ ANTISMASH = Channel.fromPath("${params.antismash}/*/txt/*_BGC.txt",
 
 
 // ANTISMASH.join(GENOMEFA).subscribe{println it}
-GENOMEFA.cross(ANTISMASH).subscribe{println it}
+GENOMEFA.cross(ANTISMASH).flatten().collate(5).subscribe{println it}
 
 
 // process intersect{
@@ -48,7 +48,7 @@ GENOMEFA.cross(ANTISMASH).subscribe{println it}
 //   publishDir params.outdir, mode: 'rellink'
 //
 //   input:
-//   tuple genome, file(genomefa), record, file(bgcpreds) from ANTISMASH.join(GENOMEFA)
+//   tuple genome, file(genomefa), record, file(bgcpreds) from GENOMEFA.cross(ANTISMASH)
 //
 //   output:
 //   tuple genome, file("${record}_bgc.fasta") into BGCFASTAS
