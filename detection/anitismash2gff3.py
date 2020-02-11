@@ -74,3 +74,27 @@ if __name__ == "__main__":
             for feat in record['features']:
                 if feat['type'] == 'region':
                     i = i + 1
+                    # Get position
+                    location = feat['location'].strip("[]").split(':')
+                    start = int(location[0]) + 1
+                    end = int(location[1])
+
+                    # Get id
+                    reg_num = region['qualifiers']['region_number'][0]
+                    reg_id = 'ID=region_' + reg_num
+
+                    # Get cluster type
+                    product = ','.join(region['qualifiers']['product'])
+                    product = "Product=" + product
+
+                    # Generate attributes
+                    attr = ';'.join([reg_id, product])
+
+                    # Write GFF3 lien
+                    line = "\t".join([record_id, 'antiSMASH', 'region',
+                                      str(start), str(end),
+                                      '.', '+', '.',
+                                      attr]) + "\n"
+                    oh.write(line)
+    oh.close()
+    print("Found {} regions.".format(str(i)))
