@@ -16,6 +16,7 @@
 
 import argparse
 import json
+import os
 
 
 def process_arguments():
@@ -46,6 +47,11 @@ def process_arguments():
     args = parser.parse_args()
 
     # Processing goes here if needed
+    if args.output == "":
+        output = os.path.basename(args.input)
+        output = os.path.splitext(output)[0]
+        output = output + '.gff3'
+        args.output = output
 
     return args
 
@@ -55,4 +61,16 @@ if __name__ == "__main__":
 
     # Read json
     with open(args.input, 'r') as ih:
+        print("Reading antiSMASH JSON file")
         asmash = json.load(ih)
+
+    # Process json
+    with open(args.output, 'w') as oh:
+        oh.write("##gff-version 3\n")
+        i = 0
+        for record in asmash['records']:
+            record_id = record['id']
+            print("Processing record {}...".format(record_id))
+            for feat in record['features']:
+                if feat['type'] == 'region':
+                    i = i + 1
