@@ -80,11 +80,11 @@ if __name__ == "__main__":
                     end = int(location[1])
 
                     # Get id
-                    reg_num = region['qualifiers']['region_number'][0]
+                    reg_num = feat['qualifiers']['region_number'][0]
                     reg_id = 'ID=region_' + reg_num
 
                     # Get cluster type
-                    product = ','.join(region['qualifiers']['product'])
+                    product = ','.join(feat['qualifiers']['product'])
                     product = "Product=" + product
 
                     # Generate attributes
