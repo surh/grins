@@ -1,5 +1,5 @@
 #!/usr/bin/env nextflow
-// Copyright (C) 2019 Sur Herrera Paredes
+// Copyright (C) 2019-2020 Sur Herrera Paredes
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,15 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>
 
+// Parameters
+/*
+--indir
+Directory containing genomes. One file per genome with extension .fa or
+.fasta.
+*/
+
 // Params
 params.indir = 'genomes/'
 params.outdir = 'output/'
-params.antismash = "antismash/"
-params.format = 'fasta'
+// params.antismash = "antismash/"
+// params.format = 'fasta'
 params.sensitivity = 'sensitive'
 params.w_size = 150
 params.s_size = 30
-params.vsearch_id = 0.9
+// params.vsearch_id = 0.9
+params.min_size = 500
 
 
 
