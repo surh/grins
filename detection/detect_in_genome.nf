@@ -75,6 +75,24 @@ process antismash5{
   """
 }
 
+process antismash2gff3{
+  label 'py3'
+  tag "$acc"
+  publishDir "${params.outdir}/antismash.regions/", mode: 'rellink'
+
+  input:
+  tupple acc, file('antismash') from ANTISMASH
+
+  output:
+  tuple acc, file("${acc}.gff3") into ASMASHREGIONS
+
+  """
+  ${workflow.projectDir}/antismash2gff3.py \
+    --input antismash/${acc}.json \
+    --output ${acc}.gff3
+  """
+}
+
 process split_in_windows{
   label 'py3'
   tag "$genome"
