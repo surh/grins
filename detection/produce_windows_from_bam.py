@@ -203,7 +203,7 @@ def write_gff3(windows, output):
             for w in windows[k].windows:
                 id = ''.join(['ID=pGRINS_', str(i)])
                 # Create row, switch to 1-indexed with closed interval
-                row = [k, 'grinspred', 'pGRINS',
+                row = [k, 'bowtie2', 'duplicate',
                        str(w.start+1), str(w.end),
                        '.', '+', '.', id]
                 row = "\t".join(row)
