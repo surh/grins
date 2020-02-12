@@ -51,6 +51,7 @@ def process_arguments():
         output = os.path.basename(args.input)
         output = os.path.splitext(output)[0]
         output = output + '.gff3'
+        print("Setting output file to {}".format(output))
         args.output = output
 
     return args
