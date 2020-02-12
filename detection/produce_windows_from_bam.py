@@ -116,6 +116,11 @@ def process_arguments():
     parser.add_argument("--w_size", help=("Window size (needed?)"),
                         type=int,
                         default=150)
+    parser.add_argument("--min_size",
+                        help=("Minumum size of window in bp to be written"
+                              "to the GFF3 output"),
+                        type=int,
+                        default=0)
 
     # Read arguments
     print("Reading arguments")
@@ -195,20 +200,22 @@ def merge_bam_windows(bam_windows):
     return res
 
 
-def write_gff3(windows, output):
+def write_gff3(windows, output, min_size=0):
     with open(output, 'w') as oh:
         oh.write("##gff-version 3\n")
         i = 1
         for k in windows:
             for w in windows[k].windows:
-                id = ''.join(['ID=pGRINS_', str(i)])
-                # Create row, switch to 1-indexed with closed interval
-                row = [k, 'bowtie2', 'duplicate',
-                       str(w.start+1), str(w.end),
-                       '.', '+', '.', id]
-                row = "\t".join(row)
-                oh.write(row + "\n")
-                i = i + 1
+                if (k.end - k.start) >= min_size:
+                    id = ''.join(['ID=dup_', str(i)])
+                    # Create row, switch to 1-indexed with closed interval
+                    row = [k, 'bowtie2', 'duplicate',
+                           str(w.start+1), str(w.end),
+                           '.', '+', '.', id]
+                    row = "\t".join(row)
+                    oh.write(row + "\n")
+                    i = i + 1
+        print("Wrote {} duplicated regions.".format(str(i)))
     oh.close()
 
     return output
@@ -221,4 +228,4 @@ if __name__ == "__main__":
     res_windows = merge_bam_windows(bam_windows=bam_windows)
     # print("Found:", res_windows.n_windows(), "windows")
     print("Writing results")
-    write_gff3(windows=res_windows, output=args.output)
+    write_gff3(windows=res_windows, output=args.output, min_size=args.min_size)
