@@ -120,7 +120,8 @@ process bowtie2{
   tag "$acc"
 
   input:
-  tuple acc
+  tuple acc, file(fasta), file(windows) from WINDOWS
+  
   output:
   tuple acc, file("${acc}.bam"), file(fasta) into BOWTIE2_RES, BOWTIE_RES_FOR_PLOT
 
