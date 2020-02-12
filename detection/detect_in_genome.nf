@@ -81,7 +81,7 @@ process antismash2gff3{
   publishDir "${params.outdir}/antismash.regions/", mode: 'rellink'
 
   input:
-  tupple acc, file('antismash') from ANTISMASH
+  tuple acc, file('antismash') from ANTISMASH
 
   output:
   tuple acc, file("${acc}.gff3") into ASMASHREGIONS
