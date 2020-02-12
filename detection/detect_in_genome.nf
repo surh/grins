@@ -165,15 +165,18 @@ process merge_bam_windows{
 
   input:
   tuple genome, file(bam), file(fasta) from BOWTIE2_RES
+  val min_size from params.min_size
 
   output:
-  set genome, file("${genome}.pgrins.gff3"), file(fasta) into GFF3, GFF3_FOR_PLOT
+  // set genome, file("${genome}.pgrins.gff3"), file(fasta) into GFF3, GFF3_FOR_PLOT
+  tuple genome, file("${genome}.pgrins.gff3") into GFF3, GFF3_FOR_PLOT
 
   """
   ${workflow.projectDir}/produce_windows_from_bam.py \
     --input $bam \
     --output ${genome}.pgrins.gff3 \
-    --w_size ${params.w_size}
+    --w_size ${params.w_size} \
+    --min_size $min_size
   """
 }
 
