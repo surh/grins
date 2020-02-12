@@ -169,14 +169,40 @@ process merge_bam_windows{
 
   output:
   // set genome, file("${genome}.pgrins.gff3"), file(fasta) into GFF3, GFF3_FOR_PLOT
-  tuple acc, file("${acc}.pgrins.gff3") into GFF3, GFF3_FOR_PLOT
+  tuple acc, file("${acc}.duplicated.gff3") into DUPGFF3
 
   """
   ${workflow.projectDir}/produce_windows_from_bam.py \
     --input $bam \
-    --output ${acc}.pgrins.gff3 \
+    --output ${acc}.duplicated.gff3 \
     --w_size $w_size \
     --min_size $min_size
+  """
+}
+
+process intersect_asmash_dups{
+  label 'py3'
+  publishDir "${params.outdir}/bgcdups.gff3", mode: 'rellink'
+  tag "$acc"
+
+  input:
+  tuple acc, file("duplicated.gff3"), file('regions.gff3')
+    from DUPGFF3.join(ASMASHREGIONS)
+
+  output:
+  tuple acc, file("${acc}.bgcdups.gff3") into BGCDUPS
+
+  """
+  bedtools intersect -wo -a duplicated.gff3 -b regions.gff3 | \
+    cut -f 1-9,18 | \
+    sed 's/ID=region/Region=region/' | \
+    perl -e 'while(<>){
+      chomp;
+      @line = split(/\t/, $_);
+      $line[8] = "$line[8];$line[9]";
+      pop @line;
+      print join("\t", @line) . "\n"
+    }' > ${acc}.bgcdups.gff3
   """
 }
 
