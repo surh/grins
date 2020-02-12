@@ -78,7 +78,7 @@ process antismash5{
 process antismash2gff3{
   label 'py3'
   tag "$acc"
-  publishDir "${params.outdir}/antismash.regions/", mode: 'rellink'
+  publishDir "${params.outdir}/antismash.gff3/", mode: 'rellink'
 
   input:
   tuple acc, file('antismash') from ANTISMASH
@@ -95,15 +95,15 @@ process antismash2gff3{
 
 process split_in_windows{
   label 'py3'
-  tag "$genome"
+  tag "$acc"
 
   input:
-  tuple genome, file(ref) from GENOME4DUPS
+  tuple acc, file(ref) from GENOME4DUPS
   val w_size from params.w_size
   val s_size from params.s_size
 
   output:
-  tuple genome, file("$ref"), file("*_windows.fasta") into WINDOWS
+  tuple acc, file("$ref"), file("*_windows.fasta") into WINDOWS
 
   """
   ${workflow.projectDir}/split_seq_into_windows.py \
@@ -117,13 +117,12 @@ process split_in_windows{
 process bowtie2{
   label 'bowtie2'
   publishDir "${params.outdir}/bam/", mode: 'rellink'
-  tag "$genome"
+  tag "$acc"
 
   input:
-  tuple genome, file(fasta), file(windows) from WINDOWS
-
+  tuple acc
   output:
-  tuple genome, file("${genome}.bam"), file(fasta) into BOWTIE2_RES, BOWTIE_RES_FOR_PLOT
+  tuple acc, file("${acc}.bam"), file(fasta) into BOWTIE2_RES, BOWTIE_RES_FOR_PLOT
 
   script:
   if( params.sensitivity == 'sensitive' )
@@ -138,7 +137,7 @@ process bowtie2{
       --threads 1 \
       -x $fasta \
       -U $windows | \
-      samtools view -b - > ${genome}.bam
+      samtools view -b - > ${acc}.bam
     """
   else if(params.sensitivity == 'very-sensitive')
     """
@@ -152,7 +151,7 @@ process bowtie2{
       --threads 1 \
       -x $fasta \
       -U $windows | \
-      samtools view -b - > ${genome}.bam
+      samtools view -b - > ${acc}.bam
     """
     else
       error "Invalid sensitivity argument ($params.sensitivity)"
@@ -161,21 +160,22 @@ process bowtie2{
 process merge_bam_windows{
   label 'py3'
   publishDir "${params.outdir}/duplicated.gff3/", mode: 'rellink'
-  tag "$genome"
+  tag "$acc"
 
   input:
-  tuple genome, file(bam), file(fasta) from BOWTIE2_RES
+  tuple acc, file(bam), file(fasta) from BOWTIE2_RES
   val min_size from params.min_size
+  val w_size from params.w_size
 
   output:
   // set genome, file("${genome}.pgrins.gff3"), file(fasta) into GFF3, GFF3_FOR_PLOT
-  tuple genome, file("${genome}.pgrins.gff3") into GFF3, GFF3_FOR_PLOT
+  tuple acc, file("${acc}.pgrins.gff3") into GFF3, GFF3_FOR_PLOT
 
   """
   ${workflow.projectDir}/produce_windows_from_bam.py \
     --input $bam \
-    --output ${genome}.pgrins.gff3 \
-    --w_size ${params.w_size} \
+    --output ${acc}.pgrins.gff3 \
+    --w_size $w_size \
     --min_size $min_size
   """
 }
