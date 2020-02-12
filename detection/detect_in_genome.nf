@@ -160,7 +160,7 @@ process bowtie2{
 
 process merge_bam_windows{
   label 'py3'
-  publishDir "${params.outdir}/pGRINS.gff3/", mode: 'rellink'
+  publishDir "${params.outdir}/duplicated.gff3/", mode: 'rellink'
   tag "$genome"
 
   input:
