@@ -68,7 +68,7 @@ def create_window_records(record, w_size=150, s_size=30):
     for pos in range(0, r_len, s_size):
         end = min(pos+w_size, r_len)
         window = record[pos:end]
-        w_id = '_'.join([str(pos), str(end)])
+        w_id = '|'.join([record.id, str(pos), str(end)])
         windows.append(SeqRecord.SeqRecord(id=w_id, seq=window.seq,
                                            description=''))
 
@@ -77,20 +77,24 @@ def create_window_records(record, w_size=150, s_size=30):
 
 if __name__ == "__main__":
     args = process_arguments()
-    i = 0
+    windows = []
+    ids = dict()
     for record in SeqIO.parse(args.input, args.format):
-        if i > 0:
-            raise ValueError("There should be only one record in your input. "
-                             "Only the first record was processed.")
         print(record.id)
-        windows = create_window_records(record, args.w_size, args.s_size)
+        if record.id in ids:
+            raise ValueError("Repeated ID for a sequence record")
+        else:
+            ids[record.id] = 1
+        if '|' in record.id:
+            raise ValueError("Record IDs should not contain the '|' character")
 
-        # Create output name if needed
-        if args.output == '':
-            name = os.path.basename(os.path.splitext(args.input)[0])
-            args.output = name + '_windows.fasta'
+        windows.extend(create_window_records(record, args.w_size, args.s_size))
 
-        with open(args.output, 'w') as oh:
-            SeqIO.write(windows, oh, "fasta")
-        oh.close()
-        i = i + 1
+    # Create output name if needed
+    if args.output == '':
+        name = os.path.basename(os.path.splitext(args.input)[0])
+        args.output = name + '_windows.fasta'
+
+    with open(args.output, 'w') as oh:
+        SeqIO.write(windows, oh, "fasta")
+    oh.close()

@@ -116,6 +116,11 @@ def process_arguments():
     parser.add_argument("--w_size", help=("Window size (needed?)"),
                         type=int,
                         default=150)
+    parser.add_argument("--min_size",
+                        help=("Minumum size of window in bp to be written"
+                              "to the GFF3 output"),
+                        type=int,
+                        default=0)
 
     # Read arguments
     print("Reading arguments")
@@ -133,45 +138,84 @@ def find_bam_windows(file, min_size=150):
     reads = samfile.fetch(until_eof=True)
     multi_windows = []
     for r in reads:
-        start, end = [int(i) for i in r.query_name.split('_')]
-        if r.pos != start and (end - start) >= min_size and r.pos > 0:
-            my_read = [r.query_name, start, end, r.pos, r.mapping_quality]
-            multi_windows.append(my_read)
+        q_ref, q_start, q_end = r.query_name.split('|')
+        q_start = int(q_start)
+        q_end = int(q_end)
+
+        r_ref = r.reference_name
+        # r_ref, r_start, r_end = r.reference_name.split('|')
+        # r_start = int(r_start)
+        # r_end = int(r_end)
+
+        # aln_len = min(q_end - q_start, r_end - r_start)
+        aln_len = q_end - q_start
+        # print(">>>", q_ref, r_ref)
+        # print(">>>aln_len", str(aln_len))
+        # print(">>>min_size", str(min_size))
+        # print(">>>pos", str(r.pos))
+
+        # Keep minimum aln length and depending on record
+        # discard self maps.
+        if aln_len >= min_size and r.pos > 0:
+            # print("hola")
+            if q_ref != r_ref:
+                my_read = [q_ref, q_start, q_end,
+                           r_ref, r.pos, r.pos + min_size,
+                           r.mapping_quality]
+                multi_windows.append(my_read)
+                # print("===", q_ref, r_ref)
+
+            else:
+                if r.pos != q_start:
+                    my_read = [q_ref, q_start, q_end,
+                               r_ref, r.pos, r.pos + min_size,
+                               r.mapping_quality]
+                    multi_windows.append(my_read)
+                    # print("###", q_ref, r_ref)
 
     return multi_windows
 
 
-def merge_bam_windows(bam_windows, w_size=150):
+def merge_bam_windows(bam_windows):
     """Needs improvement. Takes output from find_bam_windows and produces
     windows object with merged overlapping windows.
     NOTE: No support for multiple references (i.e. contig/chromosome)
     """
 
     res = windows()
+    res = dict()
     for w in bam_windows:
         # Add query window
+        if w[0] not in res:
+            res[w[0]] = windows()
         new_w = window(start=w[1], end=w[2])
-        res.add_window(w=new_w)
+        res[w[0]].add_window(w=new_w)
+
         # add target
-        new_w = window(start=w[3], end=w[3]+w_size)
-        res.add_window(w=new_w)
+        if w[3] not in res:
+            res[w[3]] = windows()
+        new_w = window(start=w[4], end=w[5])
+        res[w[3]].add_window(w=new_w)
 
     return res
 
 
-def write_gff3(windows, output):
+def write_gff3(windows, output, min_size=0):
     with open(output, 'w') as oh:
         oh.write("##gff-version 3\n")
         i = 1
-        for w in windows.windows:
-            id = ''.join(['ID=pGRINS_', str(i)])
-            # Create row, switch to 1-indexed with closed interval
-            row = ['seq', 'grinspred', 'pGRINS',
-                   str(w.start+1), str(w.end),
-                   '.', '+', '.', id]
-            row = "\t".join(row)
-            oh.write(row + "\n")
-            i = i + 1
+        for k in windows:
+            for w in windows[k].windows:
+                if (w.end - w.start) >= min_size:
+                    id = ''.join(['ID=dup_', str(i)])
+                    # Create row, switch to 1-indexed with closed interval
+                    row = [k, 'bowtie2', 'duplicate',
+                           str(w.start+1), str(w.end),
+                           '.', '+', '.', id]
+                    row = "\t".join(row)
+                    oh.write(row + "\n")
+                    i = i + 1
+        print("Wrote {} duplicated regions.".format(str(i)))
     oh.close()
 
     return output
@@ -181,7 +225,7 @@ if __name__ == "__main__":
     args = process_arguments()
     bam_windows = find_bam_windows(args.input, min_size=args.w_size)
     # print(bam_windows)
-    res_windows = merge_bam_windows(bam_windows=bam_windows,
-                                    w_size=args.w_size)
-    print("Found:", res_windows.n_windows(), "windows")
-    write_gff3(windows=res_windows, output=args.output)
+    res_windows = merge_bam_windows(bam_windows=bam_windows)
+    # print("Found:", res_windows.n_windows(), "windows")
+    print("Writing results")
+    write_gff3(windows=res_windows, output=args.output, min_size=args.min_size)
