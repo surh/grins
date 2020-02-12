@@ -199,10 +199,10 @@ process intersect_asmash_dups{
     sed 's/ID=region/Region=region/' | \
     perl -e 'while(<>){
       chomp;
-      @line = split(/\t/, $_);
-      $line[8] = "$line[8];$line[9]";
+      @line = split(/\\t/, \$_);
+      \$line[8] = "\$line[8];\$line[9]";
       pop @line;
-      print join("\t", @line) . "\n"
+      print join("\\t", @line) . "\\n"
     }' > ${acc}.bgcdups.gff3
   """
 }
