@@ -121,7 +121,7 @@ process bowtie2{
 
   input:
   tuple acc, file(fasta), file(windows) from WINDOWS
-  
+
   output:
   tuple acc, file("${acc}.bam"), file(fasta) into BOWTIE2_RES, BOWTIE_RES_FOR_PLOT
 
@@ -187,8 +187,8 @@ process intersect_asmash_dups{
   tag "$acc"
 
   input:
-  tuple acc, file("duplicated.gff3"), file('regions.gff3')
-    from DUPGFF3.join(ASMASHREGIONS)
+  tuple acc, file("duplicated.gff3"),
+    file('regions.gff3') from DUPGFF3.join(ASMASHREGIONS)
 
   output:
   tuple acc, file("${acc}.bgcdups.gff3") into BGCDUPS
