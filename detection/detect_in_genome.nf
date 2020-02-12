@@ -19,6 +19,8 @@
 --indir
 Directory containing genomes. One file per genome with extension .fa or
 .fasta.
+--min_size
+Minimum size of duplicated regions to report in bp.
 */
 
 // Params
@@ -39,15 +41,6 @@ params.antismash_cpus = 8
 GENOMEFA = Channel.fromPath("${params.indir}/*", type: 'file')
   .map{genomefa -> tuple(genomefa.name.replaceAll(/\.fa(sta)?$/, ""),
     file(genomefa))}
-// ANTISMASH = Channel.fromPath("${params.antismash}/*/txt/*_BGC.txt",
-//   type: 'file')
-//   .map{bgcpreds -> tuple(bgcpreds.getParent().getParent().name,
-//     bgcpreds.name.replaceAll(/_BGC\.txt$/,''),
-//     file(bgcpreds))}
-
-
-// ANTISMASH.join(GENOMEFA).subscribe{println it}
-// GENOMEFA.cross(ANTISMASH).flatten().collate(5).subscribe{println it}
 GENOMEFA.into{GENOME4DUPS; GENOME4ANTISMASH}
 
 process antismash5{
@@ -169,7 +162,6 @@ process merge_bam_windows{
   val w_size from params.w_size
 
   output:
-  // set genome, file("${genome}.pgrins.gff3"), file(fasta) into GFF3, GFF3_FOR_PLOT
   tuple acc, file("${acc}.duplicated.gff3") into DUPGFF3
 
   """
@@ -206,63 +198,6 @@ process intersect_asmash_dups{
     }' > ${acc}.bgcdups.gff3
   """
 }
-
-// process intersect{
-//   label 'py3'
-//   tag "$genome-$record"
-//   publishDir "${params.outdir}/bgcfastas", mode: 'rellink'
-//
-//   input:
-//   tuple genome, file(genomefa), genome2, record, file(bgcpreds) from GENOMEFA.cross(ANTISMASH).flatten().collate(5)
-//
-//   output:
-//   tuple genome, file("${record}_bgcs.fasta") into BGCFASTAS
-//
-//   """
-//   # Convert to BED
-//   cut -f 1,4 $bgcpreds | \
-//     grep -v BGC_range | \
-//     sed 's/;/\\t/' | \
-//     awk '{print "$record\\t" \$2 "\\t" \$3 "\\t" \$1}' > ${record}.bed
-//
-//   # Remove version from accession ID
-//   cat $genomefa | \
-//     perl -e 'while(<>){chomp; \
-//       if(\$_ =~ /^>/){ \
-//         (\$id, @head) = split(/\\s/, \$_); \
-//         \$id =~ s/>//; \
-//         \$id =~ s/\\.[\\d]+\$//; \
-//         print ">\$id\\n" \
-//       }else{print "\$_\\n"}}' > versionless.fa
-//
-//   # Create index
-//   samtools faidx versionless.fa
-//
-//   # Intersect bed and get fasta2
-//   bedtools getfasta \
-//     -fi versionless.fa \
-//     -bed ${record}.bed \
-//     -name > ${record}_bgcs.fasta
-//   """
-// }
-//
-// process cat_records{
-//   tag "$genome"
-//   publishDir "${params.outdir}/genomebgcs", mode: 'rellink'
-//
-//   input:
-//   tuple genome, file(records) from BGCFASTAS.groupTuple()
-//
-//   output:
-//   tuple genome, file("${genome}_bgcs.fasta") into GENOMEBGCS
-//
-//   """
-//   cat $records > ${genome}_bgcs.fasta
-//   """
-//
-// }
-
-
 
 // Example nextflow.config
 /*
