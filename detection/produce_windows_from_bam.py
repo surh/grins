@@ -206,7 +206,7 @@ def write_gff3(windows, output, min_size=0):
         i = 1
         for k in windows:
             for w in windows[k].windows:
-                if (k.end - k.start) >= min_size:
+                if (w.end - w.start) >= min_size:
                     id = ''.join(['ID=dup_', str(i)])
                     # Create row, switch to 1-indexed with closed interval
                     row = [k, 'bowtie2', 'duplicate',
