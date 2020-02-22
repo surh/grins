@@ -8,11 +8,11 @@ import argparse
 import os
 from os import listdir
 from os.path import isfile, isdir, join
-# import matplotlib
-# matplotlib.use('TkAgg')
-# import matplotlib.pyplot as plt
-# import matplotlib.patches as patches
-# import matplotlib.colors as clr
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import matplotlib.colors as clr
 
 def process_arguments():
     # Read arguments
@@ -39,6 +39,12 @@ def process_arguments():
 
     parser.add_argument("--GRINS_BGC_output", help=("GRINS in BGC output folder"),
                           required=False, type=str, default="./output/GRINS_BGC.gff3")
+    
+    parser.add_argument("--with_plots", help=("Do you wish to plot GRINS regions? [yes/no]"),
+                          required=False, type=str, default="no")
+    
+    parser.add_argument("--plot_output", help=("GRINS in BGC output folder"),
+                          required=False, type=str, default="./output/plots")
     args = parser.parse_args()
 
     return args
@@ -103,33 +109,33 @@ def abs_skew_means(record,start,end,window=150,step=30):
 
     return mean_GC_skew,mean_TA_skew
 
-# # Plotting the graph for each record
-# def plot_graph(name,start,end,GCskew_array,TAskew_array,dupl_region_starts,dupl_region_ends,GRINS_starts,GRINS_ends):
-#         a=np.arange(start,start+len(GCskew_array)*30,30)
-#         plt.figure(0)
-#         fig,ax1=plt.subplots(figsize=(10, 4))
-#         ax1.set_ylim(-1,1)
-#         ax1.set_xlim(start,end)
-#         ax1.grid(False)
-#         plt.plot(a,GCskew_array,color="blue",linewidth=0.5)
-#         plt.plot(a,TAskew_array,color="red",linewidth=0.5)
-#         plt.legend(["GC skew","TA skew"],loc=4)
-#         plt.legend(["Pairwise similarity"],loc=3)
-#         for j in range(0,len(dupl_region_starts)):
-#             region_start=dupl_region_starts[j]
-#             region_end=dupl_region_ends[j]
-#             rect = patches.Rectangle((region_start,1),region_end-region_start,-2,linewidth=1,edgecolor='grey',facecolor='grey', alpha=0.3)
-#             ax1.add_patch(rect)
-#         for k in range(0,len(GRINS_starts)):
-#             region_start=GRINS_starts[k]
-#             region_end=GRINS_ends[k]
-#             rect = patches.Rectangle((region_start,1),region_end-region_start,-2,linewidth=1,edgecolor='teal',facecolor='teal', alpha=0.3)
-#             ax1.add_patch(rect)
+# Plotting the graph for each record
+def plot_graph(plot_folder,accession,start,end,GCskew_array,TAskew_array,dupl_region_starts,dupl_region_ends,GRINS_starts,GRINS_ends):
+        a=np.arange(start,start+len(GCskew_array)*30,30)
+        plt.figure(0)
+        fig,ax1=plt.subplots(figsize=(10, 4))
+        ax1.set_ylim(-1,1)
+        ax1.set_xlim(start,end)
+        ax1.grid(False)
+        plt.plot(a,GCskew_array,color="blue",linewidth=0.5)
+        plt.plot(a,TAskew_array,color="red",linewidth=0.5)
+        plt.legend(["GC skew","TA skew"],loc=4)
+        plt.legend(["Pairwise similarity"],loc=3)
+        for j in range(0,len(dupl_region_starts)):
+            region_start=dupl_region_starts[j]
+            region_end=dupl_region_ends[j]
+            rect = patches.Rectangle((region_start,1),region_end-region_start,-2,linewidth=1,edgecolor='grey',facecolor='grey', alpha=0.3)
+            ax1.add_patch(rect)
+        for k in range(0,len(GRINS_starts)):
+            region_start=GRINS_starts[k]
+            region_end=GRINS_ends[k]
+            rect = patches.Rectangle((region_start,1),region_end-region_start,-2,linewidth=1,edgecolor='teal',facecolor='teal', alpha=0.3)
+            ax1.add_patch(rect)
 
 
-#         plt.title("GRINS in %s, %d-%d kb" % (name,start/1000,end/1000))
-#         plt.savefig("./%s/Plots/%s_GRINS_%d-%dkb.png" % (name,name,start/1000,end/1000) )
-#         plt.close('all')
+        plt.title("GRINS in %s, %d-%d kb" % (accession,start/1000,end/1000))
+        plt.savefig("%s/%s_GRINS_%d-%dkb.png" % (plot_folder,accession,start/1000,end/1000) )
+        plt.close('all')
 
 if __name__ == "__main__":
 
@@ -143,6 +149,8 @@ if __name__ == "__main__":
         os.mkdir(args.GRINS_output)
     if not isdir(args.GRINS_BGC_output):
         os.mkdir(args.GRINS_BGC_output)
+    if not isdir(args.plot_output):
+        os.mkdir(args.plot_output)
 
     for assembly in assembly_accessions:
 
@@ -269,31 +277,30 @@ if __name__ == "__main__":
 
                         SeqIO.write(record_annotated, annotated_file, 'genbank')
 
-                        # for i in range(0,len(sequence),100000):
-                        # # for i in range(1120000,1220000,100000):
-                        #     start=i
-                        #     end=i+100000
-                        #     # print ""
-                        #     # print start,end
-                        #     GCskew_array=GC_skew(str(sequence[start:end]))
-                        #     TAskew_array=TA_skew(str(sequence[start:end]))
+                        if args.with_plots=="yes" or args.with_plots=="Yes" or args.with_plots=="y" or args.with_plots=="Y":
 
-                        #     curr_duplicated_region_starts=[]
-                        #     curr_duplicated_region_ends=[]
-                        #     for item in dupl_locations:
-                        #         # print item[0],item[1]
-                        #         if (item[0]>start and item[0]<end) or (item[1]>start and item[1]<end):
-                        #             # print "bingo!"
-                        #             curr_duplicated_region_starts.append(np.max([start,item[0]]))
-                        #             curr_duplicated_region_ends.append(np.min([end,item[1]]))
-                        #     curr_GRINS_starts=[]
-                        #     curr_GRINS_ends=[]
-                        #     for item in GRINS_locations:
-                        #         if (item[0]>start and item[0]<end) or (item[1]>start and item[1]<end):
-                        #             curr_GRINS_starts.append(np.max([start,item[0]]))
-                        #             curr_GRINS_ends.append(np.min([end,item[1]]))
-
+                            for i in range(0,len(record.seq),100000):
                             
-                        #     # print "duplications",curr_duplicated_region_starts,curr_duplicated_region_ends
-                        #     # print "GRINS",curr_GRINS_starts,curr_GRINS_ends
-                        #     plot_graph(species_name,start,end,GCskew_array,TAskew_array,curr_duplicated_region_starts,curr_duplicated_region_ends,curr_GRINS_starts,curr_GRINS_ends)
+                                start=i
+                                end=i+100000
+
+                                curr_duplicated_region_starts=[]
+                                curr_duplicated_region_ends=[]
+                                for item in dupl_locations:
+                                    # print item[0],item[1]
+                                    if (item[0]>start and item[0]<end) or (item[1]>start and item[1]<end):
+                                        # print "bingo!"
+                                        curr_duplicated_region_starts.append(np.max([start,item[0]]))
+                                        curr_duplicated_region_ends.append(np.min([end,item[1]]))
+                                curr_GRINS_starts=[]
+                                curr_GRINS_ends=[]
+                                for item in GRINS_locations:
+                                    if (item[0]>start and item[0]<end) or (item[1]>start and item[1]<end):
+                                        curr_GRINS_starts.append(np.max([start,item[0]]))
+                                        curr_GRINS_ends.append(np.min([end,item[1]]))
+                                
+                                if len(curr_GRINS_starts)>0:
+                                    GCskew_array=GC_skew(str(record.seq[start:end]))
+                                    TAskew_array=TA_skew(str(record.seq[start:end]))
+                                    
+                                    plot_graph(args.plot_output,record.id,start,end,GCskew_array,TAskew_array,curr_duplicated_region_starts,curr_duplicated_region_ends,curr_GRINS_starts,curr_GRINS_ends)
