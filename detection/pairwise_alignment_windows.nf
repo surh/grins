@@ -27,6 +27,7 @@ INPUTS = Channel.fromPath("${params.indir}/*")
 process pairwise{
   label 'py3'
   publishDir params.outdir, mode: 'rellink'
+  errorStrategy { task.attempt<=3 ? 'retry' : 'finish' }
 
   input:
   file sequence from INPUTS

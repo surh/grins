@@ -4,6 +4,7 @@
 from Bio import SeqIO
 from Bio import pairwise2
 import argparse
+import os
 
 
 def process_arguments():
@@ -62,19 +63,35 @@ if __name__ == "__main__":
         homology_matrix.append([])
         print("Current window:", i)
         subseq1 = sequence[i:i + args.w_size]
-        for j in range(0, len(sequence), args.s_size):
+        # for j in range(i, len(sequence), args.s_size):
+        for j in range(0, i + 1, args.s_size):
             subseq2 = sequence[j:j + args.w_size]
-            alignment = pairwise2.align.localxx(subseq1, subseq2,
-                                                score_only=True)
-            homology_matrix[len(homology_matrix)-1].append(alignment)
+            alignment1 = pairwise2.align.localxx(subseq1, subseq2,
+                                                 score_only=True)
+            alignment2 = pairwise2.align.localxx(subseq1,
+                                                 subseq2.complement()[::-1],
+                                                 score_only=True)
+            score = max(alignment1, alignment2)
+            homology_matrix[len(homology_matrix)-1].append(score)
 
     # saving the results
-    output_name = "_window" + str(args.w_size) \
-                  + "_step" + str(args.s_size) + ".txt"
-    output_name = args.output + '/' + record_name + output_name
+    # output_name = "_window" + str(args.w_size) \
+    #               + "_step" + str(args.s_size) + ".txt"
+    # output_name = args.output + '/' + record_name + output_name
+    output_name = args.output + '/' + os.path.basename(args.input) + '.txt'
     print("Writing output file")
     with open(output_name, 'w') as output_file:
         for i in range(0, len(homology_matrix)):
-            for j in range(0, len(homology_matrix[i])):
-                output_file.write(str(homology_matrix[i][j])+",")
-            output_file.write("\n")
+            # print(i)
+            line = []
+            for j in range(0, len(homology_matrix)):
+                # print("\t" + str(j))
+                if i < j:
+                    line.append(str(homology_matrix[j][i]))
+                    # output_file.write(str(homology_matrix[j][i])+",")
+                else:
+                    line.append(str(homology_matrix[i][j]))
+                    # output_file.write(str(homology_matrix[i][j])+",")
+
+            output_file.write(','.join(line) + "\n")
+            # output_file.write("\n")

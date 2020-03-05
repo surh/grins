@@ -18,20 +18,13 @@
 params.indir = ''
 params.outdir = 'output/'
 params.format = 'genbank'
+params.sensitivity = 'sensitive'
 params.w_size = 150
 params.s_size = 30
 params.vsearch_id = 0.9
 
 // Process params
-if(params.format == 'genbank'){
-  suffix = 'gbk'
-}else if(params.format == 'fasta'){
-  suffix = 'fasta'
-}else{
-  error "Wrong format\n"
-}
-
-SEQS = Channel.fromPath("${params.indir}/*.${suffix}")
+SEQS = Channel.fromPath("${params.indir}/*", type: 'file')
 if(params.format == 'genbank'){
   SEQS.into{GBKS}
   FASTAS = Channel.empty()
@@ -50,10 +43,11 @@ process gbk2fasta{
   file gbk_file from GBKS
 
   output:
-  file '*.fasta' into FORWINDOWS
+  file '*.fasta' into GBK2FASTA
 
   """
-  ${workflow.projectDir}/gbk2fasta.py --input $gbk_file
+  ${workflow.projectDir}/gbk2fasta.py \
+    --input $gbk_file
   """
 }
 
@@ -61,7 +55,7 @@ process split_in_windows{
   label 'py3'
 
   input:
-  file ref from FORWINDOWS
+  file ref from FORWINDOWS.mix(GBK2FASTA)
   val w_size from params.w_size
   val s_size from params.s_size
 
@@ -87,19 +81,37 @@ process bowtie2{
   output:
   set val("$ref"), file("${ref}.bam"), file(fasta) into BOWTIE2_RES, BOWTIE_RES_FOR_PLOT
 
-  """
-  bowtie2-build $fasta $fasta
-  bowtie2 \
-    -f \
-    --end-to-end \
-    --sensitive \
-    -a \
-    --time \
-    --threads 1 \
-    -x $ref \
-    -U $windows | \
-    samtools view -b - > ${ref}.bam
-  """
+  script:
+  if( params.sensitivity == 'sensitive' )
+    """
+    bowtie2-build $fasta $fasta
+    bowtie2 \
+      -f \
+      --end-to-end \
+      --sensitive \
+      -a \
+      --time \
+      --threads 1 \
+      -x $ref \
+      -U $windows | \
+      samtools view -b - > ${ref}.bam
+    """
+  else if(params.sensitivity == 'very-sensitive')
+    """
+    bowtie2-build $fasta $fasta
+    bowtie2 \
+      -f \
+      --end-to-end \
+      --very-sensitive \
+      -a \
+      --time \
+      --threads 1 \
+      -x $ref \
+      -U $windows | \
+      samtools view -b - > ${ref}.bam
+    """
+    else
+      error "Invalid sensitivity argument ($params.sensitivity)"
 }
 
 process merge_bam_windows{
@@ -159,7 +171,8 @@ process vsearch_pgrins{
     --relabel centroid_ \
     --sizeorder \
     --uc ${ref}.clusters.uc \
-    --id $params.vsearch_id
+    --id $params.vsearch_id \
+    --maxseqlength 100000
   """
 
 }
