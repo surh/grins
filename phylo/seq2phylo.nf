@@ -166,10 +166,9 @@ if (myfiles == null){
 
 // ################ PROCESSES ################
 process translate{
+  label 'py3'
   publishDir "${params.outdir}/FAA/", mode: 'copy'
   clusterOptions qos_options
-  module 'anaconda'
-  conda '/opt/modules/pkgs/anaconda/3.6/envs/fraserconda/'
 
   input:
   set filename, file(seqs) from NUCS
@@ -189,7 +188,7 @@ process translate{
 
 process align{
   publishDir "${params.outdir}/ALN/", mode: 'copy'
-  module params.aligner
+  label params.aligner
   cpus params.aln_threads
   memory params.aln_mem
   time params.aln_time
@@ -224,7 +223,7 @@ process align{
 }
 
 process raxml{
-  module 'raxml'
+  label 'raxml'
   publishDir "${params.outdir}/TRE/", mode: 'copy'
   cpus params.phylo_threads
   memory params.phylo_mem
@@ -252,3 +251,32 @@ process raxml{
     -n $filename
   """
 }
+
+// Example nextflow.config
+/*
+process{
+  queue = 'hbfraser,hns'
+  maxFors = 300
+  errorStrategy = 'finish'
+  withLabel: 'py3'{
+    module = 'conda/4.6.14'
+    conda = '/home/groups/hbfraser/modules/packages/conda/4.6.14/envs/fraserconda'
+    // module 'anaconda'
+    // conda '/opt/modules/pkgs/anaconda/3.6/envs/fraserconda/'
+  }
+  withLabel: 'clustalo'{
+    module = 'clustalo'
+  }
+  withLabel: 'mafft'{
+    module = 'mafft'
+  }
+  withLabel: 'raxml'{
+    module = 'raxml'
+  }
+}
+executor{
+  name = 'slurm'
+  queueSize = 500
+  submitRateLitmit = '1 sec'
+}
+*/
