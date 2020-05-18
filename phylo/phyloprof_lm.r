@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-# setwd("/cashew/users/sur/exp/fraserv/2020/today2")
+# setwd("/cashew/users/sur/exp/fraserv/2020/today3")
 library(tidyverse)
 library(broom)
 library(argparser)
@@ -33,6 +33,45 @@ process_arguments <- function(){
   return(args)
 }
 
+#' Title
+#'
+#' @param dat 
+#' @param gene_names 
+#' @param feat_names 
+#' @param meta_names 
+#' @param trans_fun 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+phyloprof_lm <- function(dat, gene_names, feat_names, meta_names = NULL, trans_fun = FALSE){
+  
+  if(!is.null(trans_fun)){
+    cat("Transforming...\n")
+    trans_fun <- match.fun(trans_fun)
+    dat <- trans_fun(dat)
+  }
+  
+  cat("Fitting models...\n")
+  expand_grid(gene_name = gene_names, feat_name = feat_names) %>%
+    pmap_dfr(function(gene_name, feat_name, dat = dat, meta_names = NULL){
+      # gene_name <- "K00001"
+      # feat_name <- "Number.of.duplications.in.the.genome"
+      
+      d <- dat[,c(gene_name, feat_name, meta_names)]
+      colnames(d) <- c("gene", "feat", meta_names)
+      # f1 <- paste(feat_name, "~", gene_name)
+      f1 <- formula(feat ~ .)
+      tidy(lm(f1, data = d)) %>%
+        mutate(feat = feat_name,
+               gene = gene_name) %>%
+        filter(term == "gene") %>%
+        select(-term)
+    }, dat = dat, meta_names = meta_names)
+}
+
+
 args <- process_arguments()
 # args <- list(genes = "/cashew/shared_data/grins/2020-05-12.eggnot_annots/tabs/KEGG_KOs.txt.gz",
 #              feats = "/cashew/users/nivina/2020-03-24.Streptomyces_GRINS_detection/GRINS_detected_in_genomes_and_BGCs.txt",
@@ -54,6 +93,9 @@ genes <- genes %>%
   select(-species) %>%
   replace(is.na(.), 0)
 
+# genes <- genes %>%
+#   select(Genome, starts_with("K000"))
+
 # Read features
 feats <- read_tsv(args$feats,
                   col_types = cols(Genome = col_character(),
@@ -73,6 +115,8 @@ gene_summaries <- genes %>%
             min_count = min(count),
             max_count = max(count)) %>%
   ungroup()
+gene_summaries %>%
+  write_tsv(path = file.path(args$outdir, paste0(args$prefix, "_gene.summaries.txt")))
 
 # Remove constant
 genes <- genes %>%
@@ -80,49 +124,33 @@ genes <- genes %>%
 
 # Combine all data
 dat <- feats %>%
-  left_join(genes, by = "Genome")
+  left_join(genes, by = "Genome") %>%
+  select(-Genome)
+dat
 
 # Create variable name vectors
-gene_names <- setdiff(colnames(genes), "Genome")
-feat_names <- setdiff(colnames(feats), "Genome")
+meta_names <- c("Genome.length", "Number.of.contigs.in.the.genome")
+gene_names <- setdiff(colnames(genes), c("Genome", meta_names))
+feat_names <- setdiff(colnames(feats), c("Genome", meta_names))
 
-# Fit
-models <- expand_grid(gene_name = gene_names, feat_name = feat_names)
-cat("Fitting models\n")
-Res <- models %>%
-  pmap_dfr(function(gene_name, feat_name, dat = dat){
-    d <- dat[,c(gene_name, feat_name)]
-    colnames(d) <- c("gene", "feat")
-    # f1 <- paste(feat_name, "~", gene_name)
-    f1 <- formula(feat ~ gene)
-    tidy(lm(f1, data = d)) %>%
-      mutate(feat = feat_name,
-             gene = gene_name) %>%
-      filter(term != "(Intercept)") %>%
-      select(-term)
-  }, dat = dat)
-
-cat("Fitting log models\n")
-Res.log <- models %>%
-  pmap_dfr(function(gene_name, feat_name, dat = dat){
-    d <- dat[,c(gene_name, feat_name)]
-    colnames(d) <- c("gene", "feat")
-    # f1 <- paste("log10(",feat_name,"+ 1 )", "~", gene_name)
-    f1 <- formula(log(feat + 1) ~ gene)
-    tidy(lm(f1, data = d)) %>%
-      mutate(feat = feat_name,
-             gene = gene_name) %>%
-      filter(term != "(Intercept)") %>%
-      select(-term)
-    }, dat = dat)
-
-# Write results
+# Linear models
+Res <- phyloprof_lm(dat = dat,
+                    gene_names = gene_names,
+                    feat_names = feat_names,
+                    meta_names = meta_names,
+                    trans_fun = NULL)
 Res %>%
   write_tsv(path = file.path(args$outdir, paste0(args$prefix, "_lms.txt")))
 
-Res.log %>%
+# Log models
+Res <-phyloprof_lm(dat = dat,
+                   gene_names = gene_names,
+                   feat_names = feat_names,
+                   meta_names = meta_names,
+                   trans_fun = function(x) log10(x + 1))
+Res %>%
   write_tsv(path = file.path(args$outdir, paste0(args$prefix, "_log.lms.txt")))
 
-gene_summaries %>%
-  write_tsv(path = file.path(args$outdir, paste0(args$prefix, "_gene.summaries.txt")))
+
+
 
