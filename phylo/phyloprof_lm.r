@@ -97,11 +97,12 @@ get_gene_pcs <- function(genes, gene_summaries, prop_genomes = 0.5, n_pcs = 10){
   
   # Select genes for PCA
   pca_genes <- gene_summaries$gene[gene_summaries$n_genomes > prop_genomes * nrow(genes) ]
+  pca_genes <- intersect(colnames(genes), pca_genes)
   
   # Make PCA
   genome_ids <- genes$Genome
   pca_mat <- genes %>%
-    select(pca_genes) %>%
+    select(all_of(pca_genes)) %>%
     as.matrix()
   # pca_mat
   # genes_pca <- prcomp(pca_mat)
@@ -124,6 +125,12 @@ args <- process_arguments()
 #              feats = "/cashew/users/nivina/2020-03-24.Streptomyces_GRINS_detection/GRINS_detected_in_genomes_and_BGCs.txt",
 #              outdir = "output",
 #              prefix = "KEGG_KOs",
+#              n_pcs = 10,
+#              min_genomes_test = 100)
+# args <- list(genes = "/cashew/shared_data/grins/2020-05-12.eggnot_annots/tabs/BiGG_reactions.txt.gz",
+#              feats = "/cashew/users/nivina/2020-03-24.Streptomyces_GRINS_detection/GRINS_detected_in_genomes_and_BGCs.txt",
+#              outdir = "output",
+#              prefix = "BiGG_reactions",
 #              n_pcs = 10,
 #              min_genomes_test = 100)
 
@@ -182,7 +189,7 @@ genes <- genes %>%
   mutate_at(vars(-Genome), function(x) log10(x + 1))
   
 if(args$n_pcs > 0){
-  cat("Calculating gene PCSs")
+  cat("Calculating gene PCSs\n")
   gene_pcs <- get_gene_pcs(genes = genes, gene_summaries = gene_summaries,
                            prop_genomes = 0.5, n_pcs = args$n_pcs)
   feats <- feats %>%
@@ -192,8 +199,10 @@ if(args$n_pcs > 0){
 }
 
 # filter genes before test
+genes_not_tested <- gene_summaries$gene[gene_summaries$n_genomes < args$min_genomes_test]
+genes_not_tested <- intersect(genes_not_tested, colnames(genes))
 genes <- genes %>%
-  select(!all_of(gene_summaries$gene[gene_summaries$n_genomes < args$min_genomes_test]))
+  select(!all_of(genes_not_tested))
 
 # Combine all data
 dat <- feats %>%
