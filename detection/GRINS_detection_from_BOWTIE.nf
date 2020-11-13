@@ -7,7 +7,7 @@ params.outdir = "output/"
 gbk_dir = file(params.gbk)
 gff_dups_dir = file(params.gff_dups)
 
-GBKS = Channel.fromPath("${gbk}/*", type: 'file')
+GBKS = Channel.fromPath("${gbk_dir}/*", type: 'file')
   .map{gbk_file -> tuple(gbk_file.name.replaceAll(/\.gbk$/, ''),
     file(gbk_file))}
 
