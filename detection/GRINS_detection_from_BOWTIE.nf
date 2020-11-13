@@ -11,7 +11,7 @@ GBKS = Channel.fromPath("${gbk_dir}/*", type: 'file')
   .map{gbk_file -> tuple(gbk_file.name.replaceAll(/\.gbk$/, ''),
     file(gbk_file))}
 
-GFFS = Channel.fromPath("${gff_dups_dir}/*", type: 'filr')
+GFFS = Channel.fromPath("${gff_dups_dir}/*", type: 'file')
   .map{dup_file -> tuple(dup_file.name.replaceAll(/\.duplicated.gff3$/, ''),
     file(dup_file))}
 
