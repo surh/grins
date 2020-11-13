@@ -1,8 +1,8 @@
-import Bio
+# import Bio
 from Bio import SeqIO
-from Bio.Seq import Seq
-from Bio.SeqRecord import SeqRecord
-from Bio.SeqFeature import SeqFeature,FeatureLocation
+# from Bio.Seq import Seq
+# from Bio.SeqRecord import SeqRecord
+from Bio.SeqFeature import SeqFeature, FeatureLocation
 import numpy as np
 import argparse
 import os
@@ -10,8 +10,8 @@ from os import listdir
 from os.path import isfile, isdir, join
 # import matplotlib
 # matplotlib.use('TkAgg')
-# import matplotlib.pyplot as plt
-# import matplotlib.patches as patches
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 # import matplotlib.colors as clr
 
 def process_arguments():
