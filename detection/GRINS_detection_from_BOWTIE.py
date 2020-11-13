@@ -39,10 +39,10 @@ def process_arguments():
 
     parser.add_argument("--GRINS_BGC_output", help=("GRINS in BGC output folder"),
                           required=False, type=str, default="./output/GRINS_BGC.gff3")
-    
+
     parser.add_argument("--with_plots", help=("Do you wish to plot GRINS regions? [yes/no]"),
                           required=False, type=str, default="no")
-    
+
     parser.add_argument("--plot_output", help=("GRINS in BGC output folder"),
                           required=False, type=str, default="./output/plots")
     args = parser.parse_args()
@@ -140,7 +140,8 @@ def plot_graph(plot_folder,assembly,accession,start,end,GCskew_array,TAskew_arra
 if __name__ == "__main__":
 
     args = process_arguments()
-    assembly_accessions=[f[:f.find("_genomic.duplicated.gff3")] for f in listdir(args.dupl_input) if isfile(join(args.dupl_input, f))]
+    # assembly_accessions=[f[:f.find("_genomic.duplicated.gff3")] for f in listdir(args.dupl_input) if isfile(join(args.dupl_input, f))]
+    assembly_accessions=[f[:f.find(".duplicated.gff3")] for f in listdir(args.dupl_input) if isfile(join(args.dupl_input, f))]
     sequence_files=[f for f in listdir(args.seq_input) if isfile(join(args.seq_input, f))]
 
     if not isdir(args.seq_output):
@@ -166,7 +167,7 @@ if __name__ == "__main__":
             length_BGC=0
 
             n_dups=0
-        
+
             length_PKS=0
             length_NRPS=0
             length_terpene=0
@@ -188,7 +189,8 @@ if __name__ == "__main__":
 
             # Reading duplication detection results
             # and creating a dictionary to store these
-            with open("%s/%s_genomic.duplicated.gff3" %(args.dupl_input,assembly),'r') as dupl_results_file:
+            # with open("%s/%s_genomic.duplicated.gff3" %(args.dupl_input,assembly),'r') as dupl_results_file:
+            with open("%s/%s.duplicated.gff3" %(args.dupl_input,assembly),'r') as dupl_results_file:
                 dupl_results=dupl_results_file.readlines()
             dupl_location_dict={}
             for i in range(0,len(dupl_results)):
@@ -216,14 +218,14 @@ if __name__ == "__main__":
                 # Making several output files for each record, to store some information
                 with open("./%s/%s.GRINS_BGC.gff3" %(args.GRINS_BGC_output,assembly),'w') as GRINS_BGC_output_file:
                     GRINS_BGC_output_file.write("\t".join(["Record","GRINS start","GRINS end","BGC"])+"\n")
-                    
+
                     with open("./%s/%s.GRINS_CDS.gff3" %(args.GRINS_output,assembly),'w') as GRINS_CDS_output_file:
                         GRINS_CDS_output_file.write("\t".join(["Record","GRINS start","GRINS end","Locus","CDS name"])+"\n")
 
                         with open("./%s/%s.GRINS.gff3" %(args.GRINS_output,assembly),'w') as GRINS_output_file:
                             GRINS_output_file.write("\t".join(["Record","GRINS start","GRINS end"])+"\n")
 
-                            
+
                             # going over records in a GenBank file
                             for record in records:
 
@@ -256,7 +258,7 @@ if __name__ == "__main__":
                                         elif BGC_type=="lanthipeptide":
                                             length_lanthi+=BGC_len
                                         elif BGC_type=="ladderane":
-                                            length_ladderane+=BGC_len   
+                                            length_ladderane+=BGC_len
                                         elif BGC_type=="nucleoside":
                                             length_nucleoside+=BGC_len
 
@@ -274,11 +276,11 @@ if __name__ == "__main__":
 
                                     # recording the duplicated region as a feature
                                     dupl_feature=SeqFeature(FeatureLocation(start=dupl_locations[i][0], end=dupl_locations[i][1]), type='Duplication')
-                                    record_annotated.features.append(dupl_feature)  
+                                    record_annotated.features.append(dupl_feature)
 
                                     if dupl_locations[i][1]-dupl_locations[i][0]>=500:
                                         mean_GCskew,mean_TAskew=abs_skew_means(record,dupl_locations[i][0],dupl_locations[i][1],150,30)
-                                        
+
                                         # GRINS found
                                         if mean_GCskew>=0.15 and mean_TAskew>=0.15:
 
@@ -313,9 +315,9 @@ if __name__ == "__main__":
                                                         elif curr_BGC_type=="lanthipeptide":
                                                             n_GRINS_lanthi+=1
                                                         elif curr_BGC_type=="ladderane":
-                                                            n_GRINS_ladderane+=1     
+                                                            n_GRINS_ladderane+=1
                                                         elif curr_BGC_type=="nucleoside":
-                                                            n_GRINS_nucleoside+=1                                                            
+                                                            n_GRINS_nucleoside+=1
                                                         break
 
                                             # checking if GRINS is in a CDS
@@ -347,7 +349,7 @@ if __name__ == "__main__":
                                                     gene_function="N/a"
                                                 else:
                                                     gene_function=curr_feature.qualifiers.get('gene_functions')[0]
-                                                GRINS_CDS_output_file.write("\t".join([record.id,"GRINSdetect","GRINS",str(GRINS_start),str(GRINS_end),".","+",".","locus_tag="+locus_tag+",gene_function="+gene_function])+"\n")        
+                                                GRINS_CDS_output_file.write("\t".join([record.id,"GRINSdetect","GRINS",str(GRINS_start),str(GRINS_end),".","+",".","locus_tag="+locus_tag+",gene_function="+gene_function])+"\n")
 
                                 # adding the current record to the output GenBank file
                                 SeqIO.write(record_annotated, annotated_file, 'genbank')
@@ -359,7 +361,7 @@ if __name__ == "__main__":
                                         os.mkdir(args.plot_output+"/"+assembly)
 
                                     for i in range(0,len(record.seq),100000):
-                                    
+
                                         start=i
                                         end=i+100000
 
@@ -377,13 +379,12 @@ if __name__ == "__main__":
                                             if (item[0]>start and item[0]<end) or (item[1]>start and item[1]<end):
                                                 curr_GRINS_starts.append(np.max([start,item[0]]))
                                                 curr_GRINS_ends.append(np.min([end,item[1]]))
-                                        
+
                                         # if len(curr_GRINS_starts)>0:
                                         GCskew_array=GC_skew(str(record.seq[start:end]))
                                         TAskew_array=TA_skew(str(record.seq[start:end]))
-                                        
+
                                         plot_graph(args.plot_output,assembly,record.id,start,end,GCskew_array,TAskew_array,curr_duplicated_region_starts,curr_duplicated_region_ends,curr_GRINS_starts,curr_GRINS_ends)
-                                
+
             # Recording information about this accession in the overall output file
             output_file.write("\t".join([assembly,str(length_genome),str(n_contigs_genome),str(n_dups),str(n_BGC),str(length_BGC),str(length_PKS),str(length_NRPS),str(length_terpene),str(length_lanthi),str(length_ladderane),str(length_nucleoside),str(n_GRINS_total),str(n_GRINS_CDS),str(n_GRINS_BGC),str(n_GRINS_PKS),str(n_GRINS_NRPS),str(n_GRINS_terpenes),str(n_GRINS_lanthi),str(n_GRINS_ladderane),str(n_GRINS_nucleoside)])+"\n")
-
