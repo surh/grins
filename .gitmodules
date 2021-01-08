@@ -1,0 +1,3 @@
+[submodule "sutilspy"]
+	path = sutilspy
+	url = git@github.com:surh/sutilspy
