@@ -1,0 +1,6 @@
+[submodule "sutilspy"]
+	path = sutilspy
+	url = git@github.com:surh/sutilspy
+[submodule "annotation/run_roary"]
+	path = annotation/run_roary
+	url = git@github.com:surh/run_roary
