@@ -10,9 +10,9 @@ Please cite the code in this repository with the following:
 
 ## Directories
 
-* **annotations**: Code to annotate genomes
+* **annotations**: Code to annotate genomes.
 
-* **checkn**: Code to run [checkM](https://github.com/Ecogenomics/CheckM)
+* **checkm**: Code to run [checkM](https://github.com/Ecogenomics/CheckM).
 
 * **detection**: Code to detect GRINS.
 
