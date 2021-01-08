@@ -1,6 +1,7 @@
+# Detecting GRINS
 This folder contains the scripts for detecting GRINS
 
-# Key files
+## Key files
 
 * **antismash2gff3.py**: Converts antiSMASH 5 BGC predictions to GFF3 format.
 
