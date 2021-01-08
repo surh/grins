@@ -17,6 +17,13 @@ script of the same name.
 * **GRINS_detection_pairwise_identity.py**: Script to detect GRINS within
 PKS clusters.
 
+* **pairwise_alignment_windows.nf**: Pipeline that parallelizes the python
+script of the same name.
+
+* **pairwise_alignment_windows.py**: Script that splits PKS cluster sequences
+into windows and performs pairwise alignments which can be used to identify
+duplicated regions and GRINS.
+
 * **produce_windows_from_bam.py**: Reads bowtie2 BAM output and identifies
 duplicated regions.
 
