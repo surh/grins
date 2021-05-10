@@ -6,7 +6,7 @@ Please cite the code in this repository with the following:
 
     Nivina A, Herrera Paredes S, Fraser H & Khosla C. "GRINS: genetic
     elements that recode assembly-line polyketide synthases and
-    accelerate their diversification". *In review*.
+    accelerate their diversification". *In press*.
 
 ## Directories
 
