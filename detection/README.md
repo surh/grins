@@ -179,12 +179,12 @@ And you should be able to see the results in the newly created directory with
 `ls -l first_step/`, which should show something like:
 
 ```
-total 0                                                                                              │
-drwxrwsr-x 2 sur science  56 ago 11 14:25 antismash                                                  │
-drwxrwsr-x 2 sur science  61 ago 11 14:31 antismash.gff3                                             │
-drwxrwsr-x 2 sur science 112 ago 11 14:40 bam                                                        │
-drwxrwsr-x 2 sur science  69 ago 11 14:40 bgcdups.gff3                                               │
-drwxrwsr-x 2 sur science  72 ago 11 14:40 duplicated.gff3   
+total 0
+drwxrwsr-x 2 sur science  56 ago 11 14:25 antismash
+drwxrwsr-x 2 sur science  61 ago 11 14:31 antismash.gff3
+drwxrwsr-x 2 sur science 112 ago 11 14:40 bam
+drwxrwsr-x 2 sur science  69 ago 11 14:40 bgcdups.gff3
+drwxrwsr-x 2 sur science  72 ago 11 14:40 duplicated.gff3
 ```
 
 ### Identifying GRINS
