@@ -76,4 +76,26 @@ for a full explanation of details and options. At the end of
 [each](https://github.com/surh/grins/blob/ad4259bd86a5c587bb2e5ede7ba895192828b8f3/detection/detect_in_genome.nf#L202-L231)
 [nextflow](https://github.com/surh/grins/blob/ad4259bd86a5c587bb2e5ede7ba895192828b8f3/detection/GRINS_detection_from_BOWTIE.nf#L42-L59)
 (**.nf**) script there is a commented section titled `Example nextflow.config`
-which shows the nextflow config that we utilized
+which shows the `nextflow.config` file that we utilized for each step.
+
+In brief, we use nextlow labels to indicate to each process which dependencies
+it needs and where to find them. So if some dependencies are not readily
+available your nextflow configuration must include something like:
+
+```nextflow
+process{
+  // ...
+  withLabel: 'py3'{
+    // Tell nextflow to load the Python 3 environment with the required modules.
+  }
+  withLabel: 'bedtools'{
+    // Tell nextflow to load bedtools
+  }
+  withLabel: 'bowtie2'{
+    // Tell nextflow to load bowtie2 & samtools
+  }
+  withLabel: 'antismash5'{
+    // Tell nextflow to load antiSMASH5
+  }
+}
+```
