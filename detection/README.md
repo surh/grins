@@ -110,6 +110,7 @@ You will need to place the fasta genome assembly file of this  genome
 (and all genomes you want to process) in a dedicated directory. The fasta
 files need to have `.fasta` or `.fa` extensions to be recognized.
 
+### Getting example genome
 The following comands will: 1) create a new directory `genomes_fasta` for
 our input files, 2) download the compressed fasta assembly into the directory
 above, 3) uncompress the genome, 4) change the file extension so that it
@@ -135,13 +136,16 @@ drwxrwsr-x 3 sur science      34 ago 11 14:08 ../
 -rw-rw-r-- 1 sur science 3227034 jun 22  2018 GCF_003253775.1_ASM325377v1_genomic.fasta
 ```
 
-Now you are ready to run the first step of the pipeline. If you haven't,
-download the code with the following command. Feel free to use your path
-of choice.
+### Downloading the code for predicting GRINS
+
+If you haven't, download the code with the following command.
+Feel free to use your path of choice.
 
 ```bash
 git clone git@github.com:surh/grins /path/to/grins/repo
 ```
+
+### Annotating genomes and finding duplicated regions
 
 The first step of the pipeline is running the `detect_in_genome.nf` nextflow
 script. The full set of parameters is
@@ -182,6 +186,8 @@ drwxrwsr-x 2 sur science 112 ago 11 14:40 bam                                   
 drwxrwsr-x 2 sur science  69 ago 11 14:40 bgcdups.gff3                                               │
 drwxrwsr-x 2 sur science  72 ago 11 14:40 duplicated.gff3   
 ```
+
+### Identifying GRINS
 
 The second step of the pipeline consists in running the nextflow script
 `GRINS_detection_from_BOWTIE.nf`.
