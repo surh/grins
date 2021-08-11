@@ -146,7 +146,8 @@ git clone git@github.com:surh/grins /path/to/grins/repo
 The first step of the pipeline is running the `detect_in_genome.nf` nextflow
 script. The full set of parameters is
 [documented in the script itself](https://github.com/surh/grins/blob/10753e80b0bfca2a26e6eb7c19824e82ef74b2ac/detection/detect_in_genome.nf#L17-L41).
-But you can start with the default parameters by running:
+But you can start with the default parameters by running the following command.
+Make sure you use the path where you downloaded the repository.
 
 ```bash
 nextflow run /path/to/grins/repo/detection/detect_in_genome.nf --indir genomes_fasta --outdir first_step --antismash_cpus 2
