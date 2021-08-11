@@ -136,15 +136,17 @@ drwxrwsr-x 3 sur science      34 ago 11 14:08 ../
 ```
 
 Now you are ready to run the first step of the pipeline. If you haven't,
-download the code with:
+download the code with the following command. Feel free to use your path
+of choice.
 
 ```bash
 git clone git@github.com:surh/grins /path/to/grins/repo
 ```
 
-The full set of
-parameters is [documented in the script itself](https://github.com/surh/grins/blob/10753e80b0bfca2a26e6eb7c19824e82ef74b2ac/detection/detect_in_genome.nf#L17-L41). But assuming you have configured
-nextflow correctly
+The first step of the pipeline is running the `detect_in_genome.nf` nextflow
+script. The full set of parameters is
+[documented in the script itself](https://github.com/surh/grins/blob/10753e80b0bfca2a26e6eb7c19824e82ef74b2ac/detection/detect_in_genome.nf#L17-L41).
+But you can start with the default parameters by running:
 
 ```bash
 nextflow run /path/to/grins/repo/detection/detect_in_genome.nf --indir genomes_fasta --outdir first_step
