@@ -61,3 +61,6 @@ We recommend compiling locally and installing samtools as an Lmod module.
 Since pybedtools requires this software, you might have installed it when you
 created the Python 3 conda environment. If not, we recommend compiling locally
 and installing asn an Lmod module.
+
+* **nextflow (20.10.0 build 5430)**: Check [their website](https://www.nextflow.io/) for details.
+We recommend placing the nextflow executable directly in your PATH.
