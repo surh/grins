@@ -45,8 +45,9 @@ own conda environment. See [their documentation](https://docs.antismash.secondar
 See also [our conda environment .yml file](../conda_envs/antismash.yml).
 
 * **Python (3.6.13)**: Python 3 is required including the following modules:
-argparse, biopython, json, os, pybedtools. We recommend to have a conda environment with
-these dependencies. See our [conda environment .yml file](../conda_envs/fraserconda.yml)
+argparse, biopython, json, matplotlib, numpy, os, and pybedtools. We recommend
+to have a conda environment with these dependencies.
+See our [conda environment .yml file](../conda_envs/fraserconda.yml)
 for precise versions. Please note that this environment include many additional
 Python 3 modules which are not required.
 
