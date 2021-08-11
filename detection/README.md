@@ -64,3 +64,16 @@ and installing asn an Lmod module.
 
 * **nextflow (20.10.0 build 5430)**: Check [their website](https://www.nextflow.io/) for details.
 We recommend placing the nextflow executable directly in your PATH.
+
+## Nextflow configuration
+
+The current pipeline is divided in two nextflow sub-pipelines. Depending on
+the type of installations you might need to use a `nextflow.config` file
+to indicate where the different dependencies are located.
+
+See the [nextflow documentation](https://www.nextflow.io/docs/latest/index.html)
+for a full explanation of details and options. At the end of
+[each]
+[nextflow]
+(**.nf**) script there is a commented section titled `Example nextflow.config`
+which shows the nextflow config that we utilized
