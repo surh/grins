@@ -21,6 +21,16 @@ Please cite the code in this repository with the following:
 
 * **phylo**: Code for phylogenetic analysis.
 
+* **conda_envs**: Conda environment .yml files to recreate the environments
+in the publication.
+
+## Detecting GRINS
+
+Instructions for running the code used to predict GRINS in novel genomes are
+in the [detection directory](detection). Bear in mind that the current
+workflow requires unannotated fasta assemblies as input, and performs
+de-novo annotation.
+
 ## Copyright & License
 
     (C) Copyright 2017-2021 Sur Herrera Paredes, Aleksandra Nivina
