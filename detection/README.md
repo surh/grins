@@ -102,9 +102,18 @@ process{
 
 ## Workflow example
 
-Once
+Below is an example of how to run the pipeline for a single genome. We will
+use as example the RefSeq representative genome of *Mycobacterium leprae*
+(GCF_003253775.1_ASM325377).
 
-Download the fasta genomic
+You will need to place the fasta genome assembly file of this  genome
+(and all genomes you want to process) in a dedicated directory. The fasta
+files need to have `.fasta` or `.fa` extensions to be recognized.
+
+The following comands will: 1) create a new directory `genomes_fasta` for
+our input files, 2) download the compressed fasta assembly into the directory
+above, 3) uncompress the genome, 4) change the file extension so that it
+works with the pipeline:
 
 ```bash
 mkdir genomes_fasta
@@ -113,9 +122,11 @@ gzip -d genomes_fasta/GCF_003253775.1_ASM325377v1_genomic.fna.gz
 rename 's/.fna/.fasta/' genomes_fasta/*.fna
 ```
 
-```bash
-ls -l genomes_fasta
-```
+That last line is overkill for a single file, but it can be useful to change
+the extension of large numbers of files with one command.
+
+You can list the contents of the newly created directory with
+`ls -l genomes_fasta`, and you should see something like:
 
 ```
 total 3152
@@ -124,8 +135,16 @@ drwxrwsr-x 3 sur science      34 ago 11 14:08 ../
 -rw-rw-r-- 1 sur science 3227034 jun 22  2018 GCF_003253775.1_ASM325377v1_genomic.fasta
 ```
 
-Find duplicates
+Now you are ready to run the first step of the pipeline. If you haven't,
+download the code with:
 
+```bash
+git clone git@github.com:surh/grins /path/to/grins/repo
+```
+
+The full set of
+parameters is [documented in the script itself](https://github.com/surh/grins/blob/10753e80b0bfca2a26e6eb7c19824e82ef74b2ac/detection/detect_in_genome.nf#L17-L41). But assuming you have configured
+nextflow correctly
 
 ```bash
 nextflow run /path/to/grins/repo/detection/detect_in_genome.nf --indir genomes_fasta --outdir first_step
