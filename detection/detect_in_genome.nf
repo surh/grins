@@ -174,7 +174,7 @@ process merge_bam_windows{
 }
 
 process intersect_asmash_dups{
-  label 'py3'
+  label 'bedtools'
   publishDir "${params.outdir}/bgcdups.gff3", mode: 'rellink'
   tag "$acc"
 
@@ -207,6 +207,10 @@ process{
   errorStrategy = 'finish'
   stageInMode = 'rellink'
   withLabel: 'py3'{
+    module = 'fraserconda'
+    conda = '/opt/modules/pkgs/anaconda/3.6/envs/fraserconda'
+  }
+  withLabel: 'bedtools'{
     module = 'fraserconda'
     conda = '/opt/modules/pkgs/anaconda/3.6/envs/fraserconda'
   }
