@@ -80,7 +80,7 @@ which shows the `nextflow.config` file that we utilized for each step.
 
 In brief, we use nextlow labels to indicate to each process which dependencies
 it needs and where to find them. So if some dependencies are not readily
-available your nextflow configuration must include something like:
+available, your nextflow configuration must include something like:
 
 ```nextflow
 process{
