@@ -74,7 +74,7 @@ to indicate where the different dependencies are located.
 See the [nextflow documentation](https://www.nextflow.io/docs/latest/index.html)
 for a full explanation of details and options. At the end of
 [each](https://github.com/surh/grins/blob/ad4259bd86a5c587bb2e5ede7ba895192828b8f3/detection/detect_in_genome.nf#L202-L231)
-[nextflow](https://github.com/surh/grins/blob/ad4259bd86a5c587bb2e5ede7ba895192828b8f3/detection/GRINS_detection_from_BOWTIE.nf#L42-L59)
+[nextflow](https://github.com/surh/grins/blob/005d9dae4a3a619f2aecaee1bb24b81ea869883b/detection/GRINS_detection_from_BOWTIE.nf#L59-L88)
 (**.nf**) script there is a commented section titled `Example nextflow.config`
 which shows the `nextflow.config` file that we utilized for each step.
 
@@ -207,8 +207,9 @@ total 0
 lrwxrwxrwx 1 sur science 99 ago 11 14:53 GCF_003253775.1_ASM325377v1_genomic.gbk -> ../first_step/antismash/GCF_003253775.1_ASM325377v1_genomic/GCF_003253775.1_ASM325377v1_genomic.gbk
 ```
 Now you are ready to run the second part of the pipeline. There are only three
-options and you can run it wiht something like:
+options and you can run it with the command below.
+Make sure you use the path where you downloaded the repository.
 
 ```bash
-nextflow run /path/to/GRINS_detection_from_BOWTIE.nf --gbk asmash_genbanks/ --gff_dups first_step/duplicated.gff3/ --outdir second_step
+nextflow run /path/to/grins/repo/detection/GRINS_detection_from_BOWTIE.nf --gbk asmash_genbanks/ --gff_dups first_step/duplicated.gff3/ --outdir second_step
 ```
