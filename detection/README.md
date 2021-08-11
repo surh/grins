@@ -36,8 +36,9 @@ The following software is required to run the current GRINS detection workflow.
 The versions specified are those that were tested. It is possbile that the
 workflow will run with similar versions but it has not been tested.
 
-The recommended setup is to have conda installed as an LMOD module, and then
-install dependencies as either other LMOD modules or conda environments.
+The recommended setup is to have conda installed as an
+[Lmod](https://lmod.readthedocs.io/en/latest/index.html) module, and then
+install dependencies as either other Lmod modules or conda environments.
 
 * **antiSMASH (5.1.1 or 5.1.2)**: We recommend installing antiSMASH to its
 own conda environment. See [their documentation](https://docs.antismash.secondarymetabolites.org/install/).
