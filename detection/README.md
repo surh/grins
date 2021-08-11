@@ -107,5 +107,16 @@ Once
 Download the fasta genomic
 
 ```bash
-wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/253/775/GCF_003253775.1_ASM325377v1/GCF_003253775.1_ASM325377v1_genomic.fna.gz
+mkdir genomes_fasta
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/253/775/GCF_003253775.1_ASM325377v1/GCF_003253775.1_ASM325377v1_genomic.fna.gz -P genomes_fasta/
+gzip -d genomes_fasta/GCF_003253775.1_ASM325377v1_genomic.fna.gz
+rename 's/.fna/.fasta/' genomes_fasta/*.fna
+```
+Find duplicates
+
+
+```bash
+
+
+
 ```
