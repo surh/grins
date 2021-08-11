@@ -247,7 +247,7 @@ containing specific results per genome:
   genome, with duplicated regions (not necessarily GRINS) shaded in grey.
 
 Some of these files can be empty if there are no GRINS regions detected. For the
-genome in our example, we can quickly see tha there are only 3 duplicated
+genome in our example, we can quickly see that there are only 3 duplicated
 regions and non of thems is a GRINS:
 
 ```bash
