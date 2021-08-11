@@ -41,4 +41,4 @@ install dependencies as either other LMOD modules or conda environments.
 
 * **antiSMASH (5.1.1 or 5.1.2)**: We recommend installing antiSMASH to its
 own conda environment. See [their documentation](https://docs.antismash.secondarymetabolites.org/install/).
-See also [our conda environment .yml file](conda_envs/antismash.yml).
+See also [our conda environment .yml file](../conda_envs/antismash.yml).
