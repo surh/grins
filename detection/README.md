@@ -154,4 +154,4 @@ nextflow run /path/to/grins/repo/detection/detect_in_genome.nf --indir genomes_f
 ```
 
 This step can take a while depending on your system, specific genome, and
-number of antiSMASH 5 threads.
+number of antiSMASH 5 cpus.
