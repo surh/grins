@@ -7,12 +7,14 @@ This folder contains the scripts for detecting GRINS
 
 * **detect_in_genome.nf**: Pipeline to detect duplicated regions in
 bacterial genomes in fasta format. Includes annotations via antiSMASH 5.
+This is the first part of the workflow.
 
 * **GRINS_detection_from_BOWTIE.py**: Takes duplicated regions identified by
 `detect_in_genome.nf` and identifies GRINS regions.
 
 * **GRINS_detection_from_BOWTIE.nf**: Pipeline that parallelizes the python
-script of the same name.
+script of the same name. This is the second and last part of the
+workflow.
 
 * **GRINS_detection_pairwise_identity.py**: Script to detect GRINS within
 PKS clusters.
