@@ -99,3 +99,13 @@ process{
   }
 }
 ```
+
+## Workflow
+
+Once
+
+Download the fasta genomic
+
+```bash
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/253/775/GCF_003253775.1_ASM325377v1/GCF_003253775.1_ASM325377v1_genomic.fna.gz
+```
