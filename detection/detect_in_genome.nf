@@ -19,19 +19,33 @@
 --indir
 Directory containing genomes. One file per genome with extension .fa or
 .fasta.
+
+--outdir
+Name for output directory. [output]
+
+--sensitivity
+Alignment sensitivity parameter for bowtie2. Either 'sensitive' or
+'very-sensitive'. [sensitive]
+
+--w_size
+Size in bp for the sliding window to search for duplications. [150]
+
+--s_size
+Step size in bp for the sliding windows to search for duplications. [30]
+
 --min_size
-Minimum size of duplicated regions to report in bp.
+Minimum size of duplicated regions to report in bp. [500]
+
+--antismash_cpus
+Number of threads to use for antiSMASH 5 predictions. [8]
 */
 
 // Params
 params.indir = 'genomes/'
 params.outdir = 'output/'
-// params.antismash = "antismash/"
-// params.format = 'fasta'
 params.sensitivity = 'sensitive'
 params.w_size = 150
 params.s_size = 30
-// params.vsearch_id = 0.9
 params.min_size = 500
 params.antismash_cpus = 8
 

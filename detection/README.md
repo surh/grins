@@ -112,11 +112,21 @@ wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/253/775/GCF_003253775.1_AS
 gzip -d genomes_fasta/GCF_003253775.1_ASM325377v1_genomic.fna.gz
 rename 's/.fna/.fasta/' genomes_fasta/*.fna
 ```
+
+```bash
+ls -l genomes_fasta
+```
+
+```
+total 3152
+drwxrwsr-x 2 sur science      62 ago 11 14:08 ./
+drwxrwsr-x 3 sur science      34 ago 11 14:08 ../
+-rw-rw-r-- 1 sur science 3227034 jun 22  2018 GCF_003253775.1_ASM325377v1_genomic.fasta
+```
+
 Find duplicates
 
 
 ```bash
-
-
-
+nextflow run /path/to/grins/repo/detection/detect_in_genome.nf --indir genomes_fasta --outdir first_step
 ```
