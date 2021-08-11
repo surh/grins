@@ -59,4 +59,5 @@ We recommend compiling locally and installing samtools as an Lmod module.
 
 * **bedtools (2.30)**: Check [their website](https://bedtools.readthedocs.io/en/latest/index.html) for details.
 Since pybedtools requires this software, you might have installed it when you
-created the Python 3 conda environment.
+created the Python 3 conda environment. If not, we recommend compiling locally
+and installing asn an Lmod module.
