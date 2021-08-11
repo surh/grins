@@ -219,7 +219,6 @@ Make sure you use the path where you downloaded the repository.
 ```bash
 nextflow run /path/to/grins/repo/detection/GRINS_detection_from_BOWTIE.nf --gbk asmash_genbanks/ --gff_dups first_step/duplicated.gff3/ --outdir second_step
 ```
-
 When it is done you should see something like:
 
 ```
@@ -230,3 +229,29 @@ executor >  slurm (1)
 ```
 
 ### Understanding the output
+
+A new directory named which you can list with `ls -l second_step` will have
+the final output of the pipeline. This directory will have two subdirectories:
+
+* **second_step/res**: Will a txt file per genome, which summarises the results
+of the GRINS detection in each of those genomes.
+* **second_step/output**: Will in turn have one further subdirectory per
+genome, and each of those genome directories will have four subdirectories
+containing specific results per genome:
+  * *genomes_GRINS/*: Will have the annotated genbank files with GRINS annotations
+  included, which can be imported into other software.
+  * *GRINS_BGC.gff3/*: Will be a GFF3 file of the GRINS that fall within
+  biosynthetic gene clusters.
+  * *GRINS.gff3/*: Will be a GFF3 file of all the GRINS in a genome.
+  * *plots/*: This will have plots of GC skews for different sections of the
+  genome, with duplicated regions (not necessarily GRINS) shaded in grey.
+
+Some of these files can be empty if there are no GRINS regions detected. For the
+genome in our example, we can quickly see tha there are only 3 duplicated
+regions and non of thems is a GRINS:
+
+```bash
+→ cut -f 4,13 second_step/res/GCF_003253775.1_ASM325377v1_genomic.txt                                │
+Number of duplications in the genome    Number of GRINS detected in the genome                       │//  Process parameters
+3       0  
+```
