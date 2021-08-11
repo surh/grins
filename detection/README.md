@@ -219,3 +219,14 @@ Make sure you use the path where you downloaded the repository.
 ```bash
 nextflow run /path/to/grins/repo/detection/GRINS_detection_from_BOWTIE.nf --gbk asmash_genbanks/ --gff_dups first_step/duplicated.gff3/ --outdir second_step
 ```
+
+When it is done you should see something like:
+
+```
+N E X T F L O W  ~  version 20.10.0
+Launching `/home/sur/micropopgen/src/grins/detection/GRINS_detection_from_BOWTIE.nf` [focused_payne] - revision: d75e29b08b
+executor >  slurm (1)
+[db/3dc949] process > grinspred (GCF_003253775.1_ASM325377v1_genomic) [100%] 1 of 1 ✔
+```
+
+### Understanding the output
