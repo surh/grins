@@ -251,7 +251,7 @@ genome in our example, we can quickly see tha there are only 3 duplicated
 regions and non of thems is a GRINS:
 
 ```bash
-→ cut -f 4,13 second_step/res/GCF_003253775.1_ASM325377v1_genomic.txt                                │
-Number of duplications in the genome    Number of GRINS detected in the genome                       │//  Process parameters
-3       0  
+→ cut -f 4,13 second_step/res/GCF_003253775.1_ASM325377v1_genomic.txt
+Number of duplications in the genome    Number of GRINS detected in the genome
+3       0
 ```
