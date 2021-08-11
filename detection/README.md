@@ -43,3 +43,8 @@ install dependencies as either other Lmod modules or conda environments.
 * **antiSMASH (5.1.1 or 5.1.2)**: We recommend installing antiSMASH to its
 own conda environment. See [their documentation](https://docs.antismash.secondarymetabolites.org/install/).
 See also [our conda environment .yml file](../conda_envs/antismash.yml).
+
+* **Python (3.6.13)**: Python 3 is required including the following modules:
+argparse, Bio, json, os. See our [conda environment .yml file](../conda_envs/fraserconda.yml)
+for precise versions. Please note that this environment include many additional
+Python 3 modules which are not required.
