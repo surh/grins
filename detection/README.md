@@ -73,7 +73,7 @@ to indicate where the different dependencies are located.
 
 See the [nextflow documentation](https://www.nextflow.io/docs/latest/index.html)
 for a full explanation of details and options. At the end of
-[each]
-[nextflow]
+[each](https://github.com/surh/grins/blob/ad4259bd86a5c587bb2e5ede7ba895192828b8f3/detection/detect_in_genome.nf#L202-L231)
+[nextflow](https://github.com/surh/grins/blob/ad4259bd86a5c587bb2e5ede7ba895192828b8f3/detection/GRINS_detection_from_BOWTIE.nf#L42-L59)
 (**.nf**) script there is a commented section titled `Example nextflow.config`
 which shows the nextflow config that we utilized
