@@ -100,7 +100,7 @@ process{
 }
 ```
 
-## Workflow
+## Workflow example
 
 Once
 

@@ -221,19 +221,19 @@ process{
   errorStrategy = 'finish'
   stageInMode = 'rellink'
   withLabel: 'py3'{
-    module = 'fraserconda'
-    conda = '/opt/modules/pkgs/anaconda/3.6/envs/fraserconda'
+    module = 'anaconda'
+    conda = '/opt/modules/pkgs/anaconda/4.8/envs/fraserconda'
   }
   withLabel: 'bedtools'{
-    module = 'fraserconda'
-    conda = '/opt/modules/pkgs/anaconda/3.6/envs/fraserconda'
+    module = 'anaconda'
+    conda = '/opt/modules/pkgs/anaconda/4.8/envs/fraserconda'
   }
   withLabel: 'bowtie2'{
     module = 'bowtie2:samtools'
   }
   withLabel: 'antismash5'{
     module = 'anaconda'
-    conda = '/opt/modules/pkgs/anaconda/3.6/envs/antismash5'
+    conda = '/opt/modules/pkgs/anaconda/4.8/envs/antismash'
   }
 }
 
