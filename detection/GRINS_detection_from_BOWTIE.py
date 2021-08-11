@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# Copyright (C) 2019-2021 Aleksandra Nivina, Sur Herrera Paredes
+
 # import Bio
 from Bio import SeqIO
 # from Bio.Seq import Seq

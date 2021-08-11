@@ -186,7 +186,7 @@ drwxrwsr-x 2 sur science  72 ago 11 14:40 duplicated.gff3
 The second step of the pipeline consists in running the nextflow script
 `GRINS_detection_from_BOWTIE.nf`.
 
-For running this script we must first create a directory with the
+For running this second part we must first create a directory with the
 antiSMASH-annotated genomes in genbank format. This is easy to do for
 one genome, but can become unwieldy as their number increases. The following
 bash commands will create a directory with all the genomes from the previous
@@ -198,4 +198,17 @@ mkdir asmash_genbanks
 cd asmash_genbanks/
 find ../first_step/antismash/ -mindepth 1 -maxdepth 1 -exec basename {} \; | while read g; do ln -s ../first_step/antismash/$g/$g.gbk $g.gbk; done
 cd ../
+```
+You can check the results of the previous commands with `ls -l asmash_genbanks`,
+and you should see something like:
+
+```
+total 0
+lrwxrwxrwx 1 sur science 99 ago 11 14:53 GCF_003253775.1_ASM325377v1_genomic.gbk -> ../first_step/antismash/GCF_003253775.1_ASM325377v1_genomic/GCF_003253775.1_ASM325377v1_genomic.gbk
+```
+Now you are ready to run the second part of the pipeline. There are only three
+options and you can run it wiht something like:
+
+```bash
+nextflow run /path/to/GRINS_detection_from_BOWTIE.nf --gbk asmash_genbanks/ --gff_dups first_step/duplicated.gff3/ --outdir second_step
 ```
