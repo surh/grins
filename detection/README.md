@@ -95,7 +95,7 @@ process{
     // Tell nextflow to load bowtie2 & samtools
   }
   withLabel: 'antismash5'{
-    // Tell nextflow to load antiSMASH5
+    // Tell nextflow to load antiSMASH 5
   }
 }
 ```
