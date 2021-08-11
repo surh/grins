@@ -1,12 +1,15 @@
-# GRINS
+[![DOI](https://img.shields.io/badge/DOI-10.1073%2Fpnas.2100751118-blue.svg)](https://doi.org/10.1073/pnas.2100751118)
 
-This repository contains code asssociated with the GRINS manuscript.
+# GRINS: Genetic elements that recode assembly-line polyketide synthases and accelerate their diversification
+
+This repository contains code asssociated with the following publication.
 
 Please cite the code in this repository with the following:
 
     Nivina A, Herrera Paredes S, Fraser H & Khosla C. "GRINS: genetic
     elements that recode assembly-line polyketide synthases and
-    accelerate their diversification". *In press*.
+    accelerate their diversification". PNAS June 29, 2021 118 (26) e2100751118;
+    [https://doi.org/10.1073/pnas.2100751118](https://doi.org/10.1073/pnas.2100751118)
 
 ## Directories
 
