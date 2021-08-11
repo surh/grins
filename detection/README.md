@@ -154,4 +154,47 @@ nextflow run /path/to/grins/repo/detection/detect_in_genome.nf --indir genomes_f
 ```
 
 This step can take a while depending on your system, specific genome, and
-number of antiSMASH 5 cpus.
+number of antiSMASH 5 cpus. When it finishes, you should see something like:
+
+```
+N E X T F L O W  ~  version 20.10.0
+Launching `/home/sur/micropopgen/src/grins/detection/detect_in_genome.nf` [exotic_linnaeus] - revision: 64f432c5ae
+executor >  slurm (6)
+[c0/881fae] process > antismash5 (GCF_003253775.1_ASM325377v1_genomic)    [100%] 1 of 1 ✔
+[0c/654fde] process > antismash2gff3 (GCF_003253775.1_ASM325377v1_geno... [100%] 1 of 1 ✔
+[2f/1ddd03] process > split_in_windows (GCF_003253775.1_ASM325377v1_ge... [100%] 1 of 1 ✔
+[53/a2c15a] process > bowtie2 (GCF_003253775.1_ASM325377v1_genomic)       [100%] 1 of 1 ✔
+[60/970e77] process > merge_bam_windows (GCF_003253775.1_ASM325377v1_g... [100%] 1 of 1 ✔
+[df/7d7ec4] process > intersect_asmash_dups (GCF_003253775.1_ASM325377... [100%] 1 of 1 ✔
+Completed at: 11-Aug-2021 14:40:23
+Duration    : 20m 2s
+CPU hours   : 0.6
+Succeeded   : 6
+```
+And you should be able to see the results in the newly created directory with
+`ls -l first_step/`, which should show something like:
+
+```
+total 0                                                                                              │
+drwxrwsr-x 2 sur science  56 ago 11 14:25 antismash                                                  │
+drwxrwsr-x 2 sur science  61 ago 11 14:31 antismash.gff3                                             │
+drwxrwsr-x 2 sur science 112 ago 11 14:40 bam                                                        │
+drwxrwsr-x 2 sur science  69 ago 11 14:40 bgcdups.gff3                                               │
+drwxrwsr-x 2 sur science  72 ago 11 14:40 duplicated.gff3   
+```
+
+The second step of the pipeline consists in running the nextflow script
+`GRINS_detection_from_BOWTIE.nf`.
+
+For running this script we must first create a directory with the
+antiSMASH-annotated genomes in genbank format. This is easy to do for
+one genome, but can become unwieldy as their number increases. The following
+bash commands will create a directory with all the genomes from the previous
+step. It must be run from the **same directory** where you have performed all
+previous operations
+
+```bash
+mkdir asmash_genbanks
+cd asmash_genbanks/
+find ../first_step/antismash/ -mindepth 1 -maxdepth 1 -exec basename {} \; | while read g; do ln -s ../first_step/antismash/$g/$g.gbk $g.gbk; done
+```
