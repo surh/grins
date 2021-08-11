@@ -45,6 +45,13 @@ own conda environment. See [their documentation](https://docs.antismash.secondar
 See also [our conda environment .yml file](../conda_envs/antismash.yml).
 
 * **Python (3.6.13)**: Python 3 is required including the following modules:
-argparse, Bio, json, os. See our [conda environment .yml file](../conda_envs/fraserconda.yml)
+argparse, biopython, json, os. We recommend to have a conda environment with
+these dependencies. See our [conda environment .yml file](../conda_envs/fraserconda.yml)
 for precise versions. Please note that this environment include many additional
 Python 3 modules which are not required.
+
+* **bowtie2 (2.4.1)**: Check [their website](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) for details.
+We recommend compiling locally and installing bowtie2 as an Lmod module.
+
+* **samtools (1.7 or 1.10)**. Check [their website](http://www.htslib.org/) for details.
+We recommend compiling locally and installing samtools as an Lmod module.
