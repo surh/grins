@@ -149,5 +149,8 @@ script. The full set of parameters is
 But you can start with the default parameters by running:
 
 ```bash
-nextflow run /path/to/grins/repo/detection/detect_in_genome.nf --indir genomes_fasta --outdir first_step
+nextflow run /path/to/grins/repo/detection/detect_in_genome.nf --indir genomes_fasta --outdir first_step --antismash_cpus 2
 ```
+
+This step can take a while depending on your system, specific genome, and
+number of antiSMASH 5 threads.
