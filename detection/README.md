@@ -197,4 +197,5 @@ previous operations
 mkdir asmash_genbanks
 cd asmash_genbanks/
 find ../first_step/antismash/ -mindepth 1 -maxdepth 1 -exec basename {} \; | while read g; do ln -s ../first_step/antismash/$g/$g.gbk $g.gbk; done
+cd ../
 ```
