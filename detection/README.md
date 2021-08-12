@@ -34,9 +34,10 @@ duplicated regions.
 
 ## Dependencies
 
-The following software is required to run the current GRINS detection workflow.
-The versions specified are those that were tested. It is possbile that the
-workflow will run with similar versions but it has not been tested.
+The software listed below is required to run the current GRINS detection
+workflow. The versions specified in parenthesis those that were used
+in the [publication](https://doi.org/10.1073/pnas.2100751118). We expect
+that the workflow will work with similar versions, but it has not been tested.
 
 The recommended setup is to have conda installed as an
 [Lmod](https://lmod.readthedocs.io/en/latest/index.html) module, and then
@@ -159,8 +160,9 @@ Make sure you use the path where you downloaded the repository.
 nextflow run /path/to/grins/repo/detection/detect_in_genome.nf --indir genomes_fasta --outdir first_step --antismash_cpus 2
 ```
 
-This step can take a while depending on your system, specific genome, and
-number of antiSMASH 5 cpus. When it finishes, you should see something like:
+This step, specifically the bowtie2 mapping, can take a while depending on
+your system, number of genomes, specific genomes, and number of antiSMASH 5
+cpus. When it finishes, you should see something like:
 
 ```
 N E X T F L O W  ~  version 20.10.0
