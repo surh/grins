@@ -49,7 +49,7 @@ process grinspred{
 
   """
   mkdir output
-  python ${workflow.projectDir}/GRINS_detection_from_BOWTIE.py \
+  python3 ${workflow.projectDir}/GRINS_detection_from_BOWTIE.py \
     --seq_input gbk/ \
     --dupl_input dup/ \
     --with_plots yes
