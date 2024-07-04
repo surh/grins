@@ -67,9 +67,12 @@ def create_window_records(record, w_size=150, s_size=30):
     r_len = len(record)
     for pos in range(0, r_len, s_size):
         end = min(pos+w_size, r_len)
-        window = record[pos:end]
-        w_id = '|'.join([record.id, str(pos), str(end)])
-        windows.append(SeqRecord.SeqRecord(id=w_id, seq=window.seq,
+        if (end-pos) < 50:
+	    break
+        else:
+            window = record[pos:end]
+            w_id = '|'.join([record.id, str(pos), str(end)])
+            windows.append(SeqRecord.SeqRecord(id=w_id, seq=window.seq,
                                            description=''))
 
     return windows
